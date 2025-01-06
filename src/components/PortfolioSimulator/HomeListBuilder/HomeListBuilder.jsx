@@ -28,7 +28,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     const [legacyYears, setLegacyYears] = useState(initialData?.legacyYears || 25);
     const [growthStrategy, setGrowthStrategy] = useState(() => {
         if (initialData?.homes) {
-            return initialData.homes[0].willReinvest ? "reinvestment" : "building";
+            return initialData.homes[0].willReinvest ? "reinvestment" : "payOffPrinciple";
         }
         return "reinvestment";
     });
@@ -207,6 +207,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                 onChange={(e) => {
                                     const value = parseInt(e.target.value);
                                     setLegacyYears(value);
+                                    setHomes([]);
                                 }}
                                 className="mt-1" 
                             />
@@ -234,7 +235,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                             <div className="text-xs text-gray-500">Use refinancing to buy more properties</div>
                                         </div>
                                     </SelectItem>
-                                    <SelectItem value="building">
+                                    <SelectItem value="payOffPrinciple">
                                         <div>
                                             <div className="font-medium">Pay off principle</div>
                                             <div className="text-xs text-gray-500">Build equity without refinancing</div>
@@ -271,7 +272,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             <InputGroup 
                                 icon={Percent} 
                                 label="Annual Appreciation (%)"
-                                hint="Historical average: 3.5-6.5%"
+                                hint="Historical average: 4-5%"
                             >
                                 <Select
                                     value={currentForm.percentAnnualHomeAppreciation.toString()}
@@ -330,7 +331,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <SelectItem value="20">20%</SelectItem>
                                         <SelectItem value="25">25%</SelectItem>
                                         <SelectItem value="30">30%</SelectItem>
-                                        <SelectItem value="100">Cash Purchase</SelectItem>
+                                        {growthStrategy === "payOffPrinciple" && (
+                                            <SelectItem value = "100">Cash Purchase</SelectItem>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </InputGroup>

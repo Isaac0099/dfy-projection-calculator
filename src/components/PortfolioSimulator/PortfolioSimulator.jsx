@@ -16,6 +16,7 @@ const PortfolioSimulator = () => {
             homes: data.homes,
             projectionYears: data.projectionYears,
             legacyYears: data.legacyYears,
+            growthStrategy: data.growthStrategy,
             results: results
         });
         setShowResults(true);

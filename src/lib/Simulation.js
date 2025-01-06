@@ -60,6 +60,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
         const fractionOfHomePriceToGetIn = (home.percentDownPayment + 7) / 100;
         const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
         if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
+          home.doARefinance(month);
           newHomesAddedThisMonth.push(
             new House(
               month,
@@ -82,24 +83,26 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     let portfolioValueEntry = 0;
     let debtEntry = 0;
     let equityEntry = 0;
-    let equityIncomeEntry = 0;
+    let equityIncomeEntry = 0; // this is solely showing a hypothetical income. Our simulation is not assuming they will actually take this out until retirement
+    let rentIncomeEntry = 0;
 
     for (let home of homes) {
       const homeValue = home.getCurrentHomeValue(month);
       const homeDebt = home.getRemainingBalance(month);
-      const monthsIntoSchedule = month - home.monthOfLatestMortgageOrRefinance;
 
       portfolioValueEntry += homeValue;
       debtEntry += homeDebt;
       equityEntry += homeValue - homeDebt;
-      equityIncomeEntry += homeValue * (home.percentAnnualHomeAppreciation / 100) * 0.75;
+      equityIncomeEntry += homeValue * (home.percentAnnualHomeAppreciation / 100); // Summing up the total appreciation amount for the year
+      rentIncomeEntry += home.calculateNetRentalIncome(month);
     }
 
     // Calculate monthly equity income
     if (homes.length > 0) {
-      equityIncomeEntry -= homes[0].getCurrentRefiCost(month);
+      equityIncomeEntry *= 0.75; // Only using 75 of our appreciation to be conservative
+      equityIncomeEntry -= homes[0].getCurrentRefiCost(month); // Taking out the cost to withdraw this equity via a refinance
     }
-    equityIncomeEntry = equityIncomeEntry / 12;
+    equityIncomeEntry = equityIncomeEntry / 12; // Splitting it across 12 months
 
     // Add data point for this month
     graphingData.push({
@@ -110,6 +113,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
       debt: debtEntry,
       equity: equityEntry,
       equityIncome: equityIncomeEntry,
+      rentIncome: rentIncomeEntry,
     });
   }
 

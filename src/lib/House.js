@@ -29,6 +29,7 @@ class House {
     );
     this.refinanceSchedule = [];
     this.willReinvest = willReinvest;
+    this.initialMonthlyRent = this.initialHomePrice * 0.0085; // assuming initial rent value is about 0.85% of the inital price
     this.id = id;
   }
 
@@ -62,6 +63,12 @@ class House {
     return remainingBalance;
   }
 
+  isCurrentlyPaidOff(currentMonth) {
+    if (currentMonth - this.monthOfLatestMortgageOrRefinance > this.schedule.length) {
+      return true;
+    }
+    return false;
+  }
   /**
    * Calculates refinance potential payout
    * @param {number} percentAnnualHomeAppreciationRate - Annual home appreciation rate as a percentage
@@ -205,6 +212,41 @@ class House {
     });
 
     return desiredAmount;
+  }
+
+  calculateMonthlyRent(currentMonth) {
+    // Calculate rent appreciation
+    // Using 80% of the home appreciation rate for rent growth
+    const rentAppreciationRate = (this.percentAnnualHomeAppreciation * 0.8) / 100;
+    const monthsSincePurchase = currentMonth - this.monthOfPurchase;
+    const appreciatedRent = this.initialMonthlyRent * Math.pow(1 + rentAppreciationRate, monthsSincePurchase / 12);
+
+    return appreciatedRent;
+  }
+
+  calculateNetRentalIncome(currentMonth) {
+    // Only calculate for paid off homes
+    const remainingBalance = this.getRemainingBalance(currentMonth);
+    if (remainingBalance > 0) {
+      return 0;
+    }
+
+    const grossRent = this.calculateMonthlyRent(currentMonth);
+
+    // Operating expenses breakdown
+    const expenses = {
+      maintenance: grossRent * 0.08, // 8% for maintenance
+      management: grossRent * 0.1, // 10% for property management
+      propertyTax: grossRent * 0.15, // 15% for property tax
+      insurance: grossRent * 0.05, // 5% for insurance
+      vacancy: grossRent * 0.07, // 7% vacancy rate
+      misc: grossRent * 0.05, // 5% miscellaneous expenses
+    };
+
+    // Total expenses approximately 50% of gross rent
+    const totalExpenses = Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
+
+    return grossRent - totalExpenses;
   }
 }
 
