@@ -16,6 +16,14 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     return null;
   }
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   // Calculate total out of pocket costs from starting homes
   let totalOutOfPocket = 0;
   startingHomes.forEach((home) => {
@@ -52,7 +60,6 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
         const fractionOfHomePriceToGetIn = (home.percentDownPayment + 7) / 100;
         const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
         if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
-          home.doARefinance(month);
           newHomesAddedThisMonth.push(
             new House(
               month,

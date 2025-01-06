@@ -271,7 +271,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             <InputGroup 
                                 icon={Percent} 
                                 label="Annual Appreciation (%)"
-                                hint="Historical average: 3-7%"
+                                hint="Historical average: 3.5-6.5%"
                             >
                                 <Select
                                     value={currentForm.percentAnnualHomeAppreciation.toString()}
@@ -286,7 +286,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <SelectValue placeholder="Select rate" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {Array.from({ length: 9 }, (_, i) => 3 + i * 0.5).map((rate) => (
+                                        {Array.from({ length: 7 }, (_, i) => 3.5 + i * 0.5).map((rate) => (
                                             <SelectItem key={rate} value={rate.toString()}>
                                                 {rate.toFixed(1)}%
                                             </SelectItem>

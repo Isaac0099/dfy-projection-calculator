@@ -76,7 +76,6 @@ class House {
     if (this.willReinvest === false) {
       return 0;
     }
-    const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
     const currentHomeValue =
       this.initialHomePrice *
       Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
@@ -93,8 +92,6 @@ class House {
    * @returns {Number} payment
    */
   doARefinance(currentMonth) {
-    const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
-
     // Payout information
     const currentHomeValue =
       this.initialHomePrice *
@@ -163,8 +160,6 @@ class House {
   refinanceForAmount(currentMonth, desiredAmount) {
     // First check if we have enough equity to do any refinance
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
-    const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
-    const currentMonthIndex = currentMonth - this.monthOfLatestMortgageOrRefinance;
     const currentBalance = this.getRemainingBalance(currentMonth);
     const currentEquity = currentHomeValue - currentBalance;
     const refiCost = this.getCurrentRefiCost(currentMonth);
@@ -179,6 +174,7 @@ class House {
     const totalNeeded = currentBalance + desiredAmount; // + refiCost
 
     // Check if this is possible
+    // if not we'll do a refiance for as much as we can
     if (totalNeeded > maxNewLoanAmount) {
       // Can't get desired amount - calculate max we could get
       const maxPossiblePayout = Math.max(0, maxNewLoanAmount - currentBalance - refiCost);
