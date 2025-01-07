@@ -9,6 +9,7 @@
 import House from "@/lib/House";
 import { calculateAnnualIRR } from "./utils/IRRCalculator";
 import { getWeightedAverageAppreciation, copyHomes } from "./utils/utils";
+import { use } from "react";
 
 export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   legacyYears += projectionYears;
@@ -147,30 +148,48 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
   let annualPayout = 0;
 
+  const useEquityIncome = homesCopy[0].willReinvest;
+  console.log(useEquityIncome);
+
   for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
-    if (month % 12 === 1) {
-      // Calculate total portfolio value and desired payout
-      const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
-      const desiredAnnualPayout =
-        totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
+    // Finding equity income if they chose reinvest growthStrategy and rent income if they did not
+    if (useEquityIncome) {
+      if (month % 12 === 1) {
+        // Calculate total portfolio value and desired payout
+        const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
+        const desiredAnnualPayout =
+          totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
 
-      // Find home with highest equity for refinancing
-      const homeWithHighestEquity = homesCopy.reduce((max, home) => {
-        const currentHomeValue = home.getCurrentHomeValue(month);
-        let currentEquity = currentHomeValue - home.getRemainingBalance(month);
-        let maxEquity = max.getCurrentHomeValue(month) - max.getRemainingBalance(month);
+        // Find home with highest equity for refinancing
+        const homeWithHighestEquity = homesCopy.reduce((max, home) => {
+          const currentHomeValue = home.getCurrentHomeValue(month);
+          let currentEquity = currentHomeValue - home.getRemainingBalance(month);
+          let maxEquity = max.getCurrentHomeValue(month) - max.getRemainingBalance(month);
 
-        return currentEquity > maxEquity ? home : max;
-      }, homesCopy[0]);
+          return currentEquity > maxEquity ? home : max;
+        }, homesCopy[0]);
 
-      // Attempt to get the desired payout through refinancing
-      annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+        // Attempt to get the desired payout through refinancing
+        annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+      }
+
+      withdrawalGraphingData.push({
+        month: month,
+        withdrawalMonthlyIncome: annualPayout / 12,
+      });
+    } else {
+      let rentIncome = 0;
+      let grossRentIncome = 0;
+      for (let home of homesCopy) {
+        rentIncome += home.calculateNetRentalIncome(month);
+        grossRentIncome += home.calculateMonthlyRent(month);
+      }
+      withdrawalGraphingData.push({
+        month: month,
+        withdrawalMonthlyIncome: rentIncome,
+        grossRentIncome: grossRentIncome,
+      });
     }
-
-    withdrawalGraphingData.push({
-      month: month,
-      withdrawalMonthlyIncome: annualPayout / 12,
-    });
   }
 
   // Calculate final legacy equity

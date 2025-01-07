@@ -89,7 +89,7 @@ export const copyHomes = (homes) => {
         home.percentDownPayment,
         home.percentAnnualInterestRate,
         home.loanTermYears,
-        home.willReInvest,
+        home.willReinvest,
         home.id
       )
     );

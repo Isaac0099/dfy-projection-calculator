@@ -44,6 +44,7 @@ const PortfolioSimulator = () => {
                     homes={simulationData.homes}
                     projectionYears={simulationData.projectionYears}
                     legacyYears={simulationData.legacyYears}
+                    growthStrategy={simulationData.growthStrategy}
                     results={simulationData.results}
                     onReset={handleReset}
                     onEdit={handleEdit}

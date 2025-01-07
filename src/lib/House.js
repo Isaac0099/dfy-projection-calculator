@@ -29,7 +29,7 @@ class House {
     );
     this.refinanceSchedule = [];
     this.willReinvest = willReinvest;
-    this.initialMonthlyRent = this.initialHomePrice * 0.0085; // assuming initial rent value is about 0.85% of the inital price
+    this.initialMonthlyRent = this.initialHomePrice * 0.007; // assuming initial rent value is about 0.7% of the inital price
     this.id = id;
   }
 
@@ -39,7 +39,6 @@ class House {
   }
 
   getCurrentEquity(currentMonth) {
-    const monthsIntoAmoSchedule = currentMonth - this.monthOfLatestMortgageOrRefinance;
     const homeValue = this.getCurrentHomeValue(currentMonth);
     const remainingBalance = this.getRemainingBalance(currentMonth);
     return homeValue - remainingBalance;
@@ -87,8 +86,8 @@ class House {
       this.initialHomePrice *
       Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
     const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipleOnMortgage = this.getRemainingBalance(currentMonth);
-    const payout = grossPayout - remainingPrincipleOnMortgage; // we are working under the assumption that the refinance is done immediately after the mortgage payment for this month
+    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
+    const payout = grossPayout - remainingPrincipalOnMortgage; // we are working under the assumption that the refinance is done immediately after the mortgage payment for this month
 
     return payout;
   }
@@ -104,8 +103,8 @@ class House {
       this.initialHomePrice *
       Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
     const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipleOnMortgage = this.getRemainingBalance(currentMonth);
-    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipleOnMortgage;
+    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
+    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipalOnMortgage;
 
     // New loan info (updating class fields)
     this.monthOfLatestMortgageOrRefinance = currentMonth;
@@ -141,8 +140,8 @@ class House {
       Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
     const fractionOfHomeUsedInPayout = (100 - newPercentDownPayment) / 100;
     const grossPayout = currentHomeValue * fractionOfHomeUsedInPayout - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipleOnMortgage = this.getRemainingBalance(currentMonth);
-    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipleOnMortgage;
+    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
+    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipalOnMortgage;
 
     // New loan info (updating class fields)
     this.monthOfLatestMortgageOrRefinance = currentMonth;
@@ -216,38 +215,49 @@ class House {
 
   calculateMonthlyRent(currentMonth) {
     // Calculate rent appreciation
-    // Using 80% of the home appreciation rate for rent growth
-    const rentAppreciationRate = (this.percentAnnualHomeAppreciation * 0.8) / 100;
+    const rentAppreciationRate = 1.03;
     const monthsSincePurchase = currentMonth - this.monthOfPurchase;
-    const appreciatedRent = this.initialMonthlyRent * Math.pow(1 + rentAppreciationRate, monthsSincePurchase / 12);
+    const appreciatedRent = this.initialMonthlyRent * Math.pow(rentAppreciationRate, monthsSincePurchase / 12);
 
     return appreciatedRent;
   }
 
   calculateNetRentalIncome(currentMonth) {
+    let totalExpenses = 0;
     // Only calculate for paid off homes
     const remainingBalance = this.getRemainingBalance(currentMonth);
     if (remainingBalance > 0) {
-      return 0;
+      totalExpenses += this.schedule[1].paymentAmount;
     }
 
     const grossRent = this.calculateMonthlyRent(currentMonth);
+    if (currentMonth === 360) {
+      console.log(`gross rent: ${formatCurrency(grossRent)}`);
+    }
 
     // Operating expenses breakdown
     const expenses = {
-      maintenance: grossRent * 0.08, // 8% for maintenance
-      management: grossRent * 0.1, // 10% for property management
+      maintenance: grossRent * 0.08, // 8% for maintenance and vancancies
+      management: grossRent * 0.08, // 8% for property management
       propertyTax: grossRent * 0.15, // 15% for property tax
       insurance: grossRent * 0.05, // 5% for insurance
-      vacancy: grossRent * 0.07, // 7% vacancy rate
+      capitalExpenditures: grossRent * 0.07, // 5% Capital Expenditures
       misc: grossRent * 0.05, // 5% miscellaneous expenses
     };
 
     // Total expenses approximately 50% of gross rent
-    const totalExpenses = Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
+    totalExpenses += Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
 
     return grossRent - totalExpenses;
   }
 }
+
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 export default House;

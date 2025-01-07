@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, Settings, Clock, Home as HomeIcon } from 'lucid
 
 const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
   const [expanded, setExpanded] = useState(false);
-  const strategy = homes[0].willReinvest ? "Equity Reinvestment" : "Equity Building";
+  const strategy = homes[0].willReinvest ? "Equity Reinvestment" : "Paying Off Principal";
   
   return (
     <Card className="mb-4 bg-gray-100">

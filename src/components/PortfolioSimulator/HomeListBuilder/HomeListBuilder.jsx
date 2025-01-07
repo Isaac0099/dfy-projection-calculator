@@ -28,7 +28,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     const [legacyYears, setLegacyYears] = useState(initialData?.legacyYears || 25);
     const [growthStrategy, setGrowthStrategy] = useState(() => {
         if (initialData?.homes) {
-            return initialData.homes[0].willReinvest ? "reinvestment" : "payOffPrinciple";
+            return initialData.homes[0].willReinvest ? "reinvestment" : "payOffPrincipal";
         }
         return "reinvestment";
     });
@@ -135,7 +135,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             currentForm.percentDownPayment,
             currentForm.percentAnnualInterestRate,
             currentForm.loanTermYears,
-            growthStrategy === "reinvestment",
+            growthStrategy === "reinvestment", // Placing this boolean here as our value for the willReinvest parameter in this house object
             generateId() 
         );
         setHomes([...homes, newHome]);
@@ -155,7 +155,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             setError("Please enter a years in retirement of 1 year minimum");
             return;
         }
-        onCalculate({ homes, projectionYears, legacyYears });
+        onCalculate({ homes, growthStrategy, projectionYears, legacyYears });
     };
 
     return (
@@ -176,7 +176,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Simulation Settings</CardTitle>
-                        <CardDescription>Configure your investment timeline and strategy.</CardDescription>
+                        <CardDescription>
+                            <p>Configure your investment timeline and strategy.</p>
+                            <p className="text-xs font-serifitalic pl-1 text">changing these clears your portfolio</p>
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <InputGroup 
@@ -235,9 +238,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                             <div className="text-xs text-gray-500">Use refinancing to buy more properties</div>
                                         </div>
                                     </SelectItem>
-                                    <SelectItem value="payOffPrinciple">
+                                    <SelectItem value="payOffPrincipal">
                                         <div>
-                                            <div className="font-medium">Pay off principle</div>
+                                            <div className="font-medium">Pay off principal</div>
                                             <div className="text-xs text-gray-500">Build equity without refinancing</div>
                                         </div>
                                     </SelectItem>
@@ -331,7 +334,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <SelectItem value="20">20%</SelectItem>
                                         <SelectItem value="25">25%</SelectItem>
                                         <SelectItem value="30">30%</SelectItem>
-                                        {growthStrategy === "payOffPrinciple" && (
+                                        {growthStrategy === "payOffPrincipal" && (
                                             <SelectItem value = "100">Cash Purchase</SelectItem>
                                         )}
                                     </SelectContent>

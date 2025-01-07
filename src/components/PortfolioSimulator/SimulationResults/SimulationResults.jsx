@@ -11,6 +11,10 @@ import { formatYAxisTick, formatTooltipValue, formatKeyMetricCardNumber } from '
 import ComparisonChart from './components/ComparisonChart';
 import MetricCard from './components/MetricCard';
 import MetricsGrid from './components/MetricsGrid';
+import RentCalculationPanel from './components/RentCalculationPanel';
+import EquityCalculationPanel from './components/EquityCalculationPanel';
+import ComparisonExplainer from './components/ComparisonExplainer';
+import IncomePotentialExplainer from './components/IncomePotentialExplainer';
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-US", {
@@ -38,8 +42,10 @@ const ChartSection = ({ title, description, children }) => (
 );
 
 
-export const SimulationResults = ({ homes, projectionYears, legacyYears, results, onReset, onEdit }) => {
+export const SimulationResults = ({ homes, projectionYears, legacyYears, growthStrategy, results, onReset, onEdit }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  console.log(`Simulation Results Growth strategy: ${growthStrategy}`)
 
   // Calculate the changes
   const calculateEquityChange = () => {
@@ -123,7 +129,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, results
             <span className="hidden md:inline lg:hidden">Compare Investments</span>
             <span className="md:hidden">Compare</span>
           </TabsTrigger>
-          <TabsTrigger value="withdrawal monthly income">Retirement Income</TabsTrigger>
+          <TabsTrigger value="retirement income">Retirement Income</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -182,26 +188,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, results
             description="Projected possible monthly income through equity access"
           >
             <div className="space-y-4">
-              <Alert className="bg-blue-50 border-blue-200">
-                <AlertTitle className="text-blue-800 font-sans font-bold">How is this Calculated?</AlertTitle>
-                <AlertDescription className="text-blue-700 font-sans">
-                  <p>This chart displays <span className="italic font-bold">potential tax-free monthly income</span> income from strategic equity access.</p> 
-                  <p>The model calculates a hypothetical amount you could withdraw each month by refinancing your property, based on its expected appreciation.</p>
-                  <p>Our simulation assumes you don&apos;t take this money out, but here we show what is possible to emphasize its growth.</p>
-                  
-                  <p>Since home values typically increase over time, this approach can provide sustainable income as long as withdraws stay within the appreciation limits.</p>
-
-                  <div className='flex items-center gap-2 bg-white pl-3 rounded-md pt-1 mt-4 rounded-b-none'>
-                    <p className="text-sm font-bold text-gray-700">Monthly Income Calculation:</p>
-                    <p className="font-sans text-orange-600">
-                      [[Σ(HomeValue × HomeAppreciation)] × 0.75 − RefiCost] ÷ 12
-                    </p>
-                  </div>
-                  <p className="bg-white rounded-b-md rounded-t-none pt-0 pb-2 mb-0 text-xs italic text-gray-600 pl-3">
-                    We use 75% of the appreciation rate to ensure sustainable withdrawals
-                  </p>
-                </AlertDescription>
-              </Alert>
+              <IncomePotentialExplainer /> 
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart 
@@ -238,65 +225,6 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, results
           </ChartSection>
         </TabsContent>
 
-        <TabsContent value="withdrawal monthly income">
-          <ChartSection 
-            title="Withdrawal Period Income Simulation"
-            description="This chart shows your potential monthly income during retirement, calculated from annual refinancing of your highest-equity property."
-          >
-            <div className="space-y-5">
-              <Alert className="bg-blue-50 border-blue-200">
-                <AlertTitle className="text-blue-800 font-sans font-bold">How is this Calculated?</AlertTitle>
-                <AlertDescription className="text-blue-700 font-sans">
-                  <p>This chart illustrates your retirement <span className="italic font-bold">tax-free income</span> through strategic equity access.</p>
-                  <p>The simulation shows annual refinancing of your highest-equity property, with proceeds distributed as monthly income.</p>
-                  <p></p>
-                  <p className="italic text-xs">(If withdrawal income appears lower than income potential chart, your portfolio&apos;s target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.)</p>
-                  <div className='flex items-center gap-2 bg-white pl-3 rounded-md pt-1 mt-4 rounded-b-none'>
-                    <p className="text-sm font-bold text-gray-700">Target Monthly Income:</p>
-                    <p className="font-sans text-orange-600">
-                      (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ 12
-                    </p>
-                  </div>
-                  <p className="bg-white rounded-b-md rounded-t-none pt-0 pb-2 mb-0 text-xs italic text-gray-600 pl-3">
-                      We use 75% of the appreciation rate to ensure sustainable withdrawals
-                  </p>
-                </AlertDescription>
-              </Alert>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart 
-                    data={results.withdrawalGraphingData}
-                    margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="month"
-                      tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                      interval={11}
-                      label={{
-                        value:"Years",
-                        position: "bottom",
-                        offset: 0
-                      }}
-                    />
-                    <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
-                    <Tooltip 
-                      formatter={(value) => formatTooltipValue(value)}
-                      labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="withdrawalMonthlyIncome" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </ChartSection>
-        </TabsContent>
 
         <TabsContent value="properties">
           <ChartSection 
@@ -340,6 +268,69 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, results
             </div>
           </ChartSection>
         </TabsContent>
+
+
+        <TabsContent value="retirement income">
+          <ChartSection 
+            title="Withdrawal Period Income Simulation"
+            description="This chart shows your potential monthly income during retirement. Calculated from annual refinancing of your highest-equity property or by showing your income from rent, depending on your chosen growth strategy."
+          >
+            <div className="space-y-5">
+              { growthStrategy === "reinvestment" &&
+                <EquityCalculationPanel />
+              }
+              { growthStrategy === "payOffPrincipal" &&
+                <RentCalculationPanel />
+              }
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart 
+                    data={results.withdrawalGraphingData}
+                    margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="month"
+                      tickFormatter={(month) => `${Math.floor(month / 12)}`}
+                      interval={11}
+                      label={{
+                        value:"Years",
+                        position: "bottom",
+                        offset: 0
+                      }}
+                    />
+                    <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
+                    <Tooltip 
+                      formatter={(value) => formatTooltipValue(value)}
+                      labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
+                    />
+                    {growthStrategy === "payOffPrincipal" &&
+                      <Line 
+                      type="monotone"
+                      name="Gross Rent" 
+                      dataKey="grossRentIncome" 
+                      stroke="#8daffe"
+                      strokeWidth={2}
+                      dot={false}
+                      />
+                    }
+                    <Line 
+                      type="monotone" 
+                      dataKey="withdrawalMonthlyIncome" 
+                      stroke="#f97316" 
+                      strokeWidth={2}
+                      dot={false}
+                      name = "Monthly Income From Rent"
+                    />
+                    {growthStrategy === "payOffPrincipal" &&
+                    <Legend verticalAlign="top" align="right" />
+                    }
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </ChartSection>
+        </TabsContent>
         
         <TabsContent value="comparison">
           <ChartSection 
@@ -347,24 +338,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, results
             description="Compare real estate returns with traditional investment vehicles"
           >
             <div className="space-y-4">
-              <Alert className="bg-blue-50 border-blue-200">
-                <AlertTitle className="text-blue-800 font-semibold pb-1">Why Compare Investments?</AlertTitle>
-                <AlertDescription className="text-blue-700">
-                  <p>
-                    This comparison shows how real estate investment through DFY can potentially outperform traditional investment vehicles, 
-                    factoring in benefits like leverage and appreciation. This graph assumes the same time of input and amount for investment(s) into
-                    each strategy 
-                  </p>
-                  <p>
-                    (here it shows {formatCurrency(results.totalOutOfPocket)} for each strategy.) 
-                  </p>
-                  <p>
-                    Real estate has further tax benefits 
-                    over these options not reflected here
-                  </p>
-                  <p className="italic font-semibold text-xs pt-2"> NOTE: Your best results will come with choosing to actively refinance properties to buy more throughout the growth period</p>
-                </AlertDescription>
-              </Alert>
+              <ComparisonExplainer results={results}/>
               
               <ComparisonChart 
                 projectionYears={projectionYears}
