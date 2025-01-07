@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertCircle, Calculator, TrendingUp } from 'lucide-react';
 
 const EquityCalculationPanel = () => {
@@ -46,7 +45,7 @@ const EquityCalculationPanel = () => {
             <span className="text-xs font-medium text-gray-900">Additional Details</span>
           </div>
           <p className="text-xs text-gray-600">
-            If withdrawal income appears lower than income potential chart, your portfolio's target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.
+            If withdrawal income appears lower than income potential chart, your portfolio&apos;s target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.
           </p>
         </div>
       </div>

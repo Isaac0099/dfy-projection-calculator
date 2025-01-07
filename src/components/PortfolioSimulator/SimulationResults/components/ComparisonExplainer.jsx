@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertCircle, TrendingUp } from 'lucide-react';
 
 const ComparisonExplainer = ({ results }) => {

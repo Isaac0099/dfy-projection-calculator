@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertCircle, Calculator } from 'lucide-react';
 
 const RentCalculationPanel = () => {
