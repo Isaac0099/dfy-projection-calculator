@@ -40,16 +40,29 @@ export const formatNumber = (value) => {
   };
 };
 
+const formatNumberNoK = (value) => {
+  const absValue = Math.abs(value);
+  if (absValue >= 1000000) {
+    return {
+      value: value / 1000000,
+      suffix: "M",
+    };
+  }
+  return {
+    value: value,
+    suffix: "",
+  };
+};
+
 export const formatYAxisTick = (value, key) => {
   const { value: formattedValue, suffix } = formatNumber(value);
   return `$${formattedValue.toLocaleString()}${suffix}`;
 };
 
 export const formatTooltipValue = (value, key) => {
-  const { value: formattedValue, suffix } = formatNumber(value);
-  if (suffix === "k") {
-    return `$${formattedValue.toFixed(0)}${suffix}`;
-  } else if (suffix === "M") {
+  const { value: formattedValue, suffix } = formatNumberNoK(value);
+
+  if (suffix === "M") {
     return `$${formattedValue.toFixed(3)}${suffix}`;
   } else {
     return `$${parseInt(formattedValue).toLocaleString()}${suffix}`;

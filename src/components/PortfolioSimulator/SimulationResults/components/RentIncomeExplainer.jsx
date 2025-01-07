@@ -67,7 +67,7 @@ const RentIncomeExplainer = () => {
 
               <div className="border-t border-gray-200 p-2 bg-gray-100/50">
                 <div className="flex items-center gap-1">
-                  <span className="text-gray-500 text-sm">+ Mortgage Unless Paid Off</span>
+                  <span className="text-gray-500 text-sm">+ Mortgage Until Paid Off</span>
                   <span className="text-gray-400 text-sm">(6.5% interest rate)</span>
                 </div>
               </div>

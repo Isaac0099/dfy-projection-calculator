@@ -29,10 +29,11 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
           savingsValue += topValue * Math.pow(savingsReturn, (yearsSinceInvestment));
         }
       }
-      totalRentAddition += results.graphingData[month].rentIncome
       if (!reinvesting) {
+        totalRentAddition += results.graphingData[month].rentIncome
         realEstateValue += totalRentAddition;
       }
+      console.log(`totalRentAddition: ${totalRentAddition}`)
       data.push({
         month,
         'Real Estate (Equity)': realEstateValue,
@@ -42,6 +43,7 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
         'Savings Account': savingsValue
       });
     }
+    console.log(results.graphingData)
     return data;
   };
 

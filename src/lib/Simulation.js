@@ -64,15 +64,6 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
         const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
         if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
           const payout = home.doARefinance(month);
-          // const payout = home.refinanceForAmount(month, costToGetIntoNewHome);
-          // console.log("New home from refinance:", {
-          //   originalHomeValue: home.getCurrentHomeValue(month),
-          //   newHomeValue: home.getCurrentHomeValue(month),
-          //   payout: payout,
-          //   costToGetIntoNewHome: costToGetIntoNewHome,
-          //   month: month,
-          // });
-
           newHomesAddedThisMonth.push(
             new House(
               month,
@@ -159,7 +150,6 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   /////// WITHDRAWAL PERIOD
   let withdrawalGraphingData = [];
   let homesCopy = copyHomes(homes);
-  console.log(`homesCopy length: ${homesCopy.length}`);
   let legacyEquity = 0;
   let legacyPortfolio = 0;
   let cummulativeIncome = 0; // running total of recieved income, either equity or rent based on their growthStrategy
