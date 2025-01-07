@@ -64,14 +64,13 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
         const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
         if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
           const payout = home.doARefinance(month);
-          // console.log("New home from refinance:", {
-          //   originalHomeValue: home.getCurrentHomeValue(month),
-          //   newHomeValue: home.getCurrentHomeValue(month),
-          //   payout: payout,
-          //   costToGetIntoNewHome: costToGetIntoNewHome,
-          //   month: month,
-          // });
-          // console.log(`month ${month}, payout: ${payout}`);
+          console.log("New home from refinance:", {
+            originalHomeValue: home.getCurrentHomeValue(month),
+            newHomeValue: home.getCurrentHomeValue(month),
+            payout: payout,
+            costToGetIntoNewHome: costToGetIntoNewHome,
+            month: month,
+          });
 
           newHomesAddedThisMonth.push(
             new House(
@@ -159,6 +158,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   /////// WITHDRAWAL PERIOD
   let withdrawalGraphingData = [];
   let homesCopy = copyHomes(homes);
+  console.log(`homesCopy length: ${homesCopy.length}`);
   let legacyEquity = 0;
   let legacyPortfolio = 0;
 
@@ -170,6 +170,9 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
     // Finding equity income if they chose reinvest growthStrategy and rent income if they did not
     if (useEquityIncome) {
+      const equity = homesCopy.reduce((sum, home) => {
+        return sum + home.getCurrentEquity(month);
+      }, 0);
       if (month % 12 === 1) {
         // Calculate total portfolio value and desired payout
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
@@ -192,6 +195,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
       withdrawalGraphingData.push({
         month: month,
         withdrawalMonthlyIncome: annualPayout / 12,
+        equity,
       });
     } else {
       let rentIncome = 0;

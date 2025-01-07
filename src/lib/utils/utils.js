@@ -89,18 +89,24 @@ export function getWeightedAverageAppreciation(homes) {
 export const copyHomes = (homes) => {
   let homesCopy = [];
   for (let home of homes) {
-    homesCopy.push(
-      new House(
-        home.monthOfPurchase,
-        home.initialHomePrice,
-        home.percentAnnualHomeAppreciation,
-        home.percentDownPayment,
-        home.percentAnnualInterestRate,
-        home.loanTermYears,
-        home.willReinvest,
-        home.id
-      )
+    const newHome = new House(
+      home.monthOfPurchase,
+      home.initialHomePrice,
+      home.percentAnnualHomeAppreciation,
+      home.percentDownPayment,
+      home.percentAnnualInterestRate,
+      home.loanTermYears,
+      home.willReinvest,
+      home.id
     );
+
+    // Copy over current mortgage state
+    newHome.monthOfLatestMortgageOrRefinance = home.monthOfLatestMortgageOrRefinance;
+    newHome.loanAmount = home.loanAmount;
+    newHome.schedule = [...home.schedule]; // Make a copy of the current amortization schedule
+    newHome.refinanceSchedule = [...home.refinanceSchedule]; // Copy refinance history
+
+    homesCopy.push(newHome);
   }
   return homesCopy;
 };

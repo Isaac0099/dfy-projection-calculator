@@ -15,29 +15,11 @@ import RentIncomeExplainer from './components/RentIncomeExplainer';
 import EquityCalculationPanel from './components/EquityCalculationPanel';
 import ComparisonExplainer from './components/ComparisonExplainer';
 import IncomePotentialExplainer from './components/IncomePotentialExplainer';
-
-
-const ChartSection = ({ title, description, children }) => (
-  <Card className="mb-4">
-    <CardHeader className="pb-2">
-      <div className="flex items-start justify-between">
-        <div>
-          <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </div>
-      </div>
-    </CardHeader>
-    <CardContent>
-      {children}
-    </CardContent>
-  </Card>
-);
+import ChartSection from './components/ChartSection';
 
 
 export const SimulationResults = ({ homes, projectionYears, legacyYears, growthStrategy, results, onReset, onEdit }) => {
   const [showDetails, setShowDetails] = useState(false);
-
-  console.log(`Simulation Results Growth strategy: ${growthStrategy}`)
 
   // Calculate the changes
   const calculateEquityChange = () => {
@@ -318,6 +300,14 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                       dot={false}
                       name = "Net Income"
                     />
+                    {/* <Line 
+                      type="monotone" 
+                      dataKey="equity" 
+                      stroke="#f97316" 
+                      strokeWidth={2}
+                      dot={false}
+                      name = "equity"
+                    /> */}
                     {growthStrategy === "payOffPrincipal" &&
                     <Legend verticalAlign="top" align="right" />
                     }

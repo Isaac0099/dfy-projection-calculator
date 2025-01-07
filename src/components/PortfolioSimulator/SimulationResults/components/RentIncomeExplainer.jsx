@@ -16,7 +16,7 @@ const RentIncomeExplainer = () => {
             <div className="flex items-center gap-2">
               <span className="text-gray-600 font-medium min-w-28">Initial Rent</span>
               <span className="text-orange-500 bg-gray-100 px-2 py-0.5 rounded-sm text-sm">
-                Initial Home Price × 0.7%
+                Initial Home Price × 0.67%
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ const RentIncomeExplainer = () => {
                 <div>
                   <div className="flex items-center justify-between p-2 border-b border-r border-gray-200">
                     <span className="text-gray-600">Maintenance</span>
-                    <span className="text-orange-500 font-mono tabular-nums">8%</span>
+                    <span className="text-orange-500 font-mono tabular-nums">6%</span>
                   </div>
                   <div className="flex items-center justify-between p-2 border-r border-gray-200">
                     <span className="text-gray-600">Insurance</span>
@@ -60,7 +60,7 @@ const RentIncomeExplainer = () => {
                   </div>
                   <div className="flex items-center justify-between p-2">
                     <span className="text-gray-600">Property Tax</span>
-                    <span className="text-orange-500 tabular-nums">15%</span>
+                    <span className="text-orange-500 tabular-nums">14%</span>
                   </div>
                 </div>
               </div>
