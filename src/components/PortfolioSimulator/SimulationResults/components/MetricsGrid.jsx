@@ -1,4 +1,4 @@
-import { Wallet, DollarSign, Home, TrendingUp, Calendar, ScrollText } from 'lucide-react';
+import { Wallet, DollarSign, Banknote, Home, TrendingUp, Calendar, ScrollText } from 'lucide-react';
 import MetricCard from './MetricCard';
 import { formatTooltipValue } from '@/lib/utils/utils';
 
@@ -7,6 +7,7 @@ const MetricsGrid = ({
   homes,
   projectionYears,
   legacyYears,
+  growthStrategy,
   calculateEquityChange,
   calculatePortfolioChange,
 }) => {
@@ -87,6 +88,12 @@ const MetricsGrid = ({
           icon={ScrollText}
           title="Legacy Portfolio Value"
           value={formatCurrency(results.legacyPortfolio)}
+          description={`The total value of your portfolio at end of your retirement.`}
+        />
+         <MetricCard
+          icon={Banknote}
+          title={growthStrategy === "reinvestment" ? `Total tax free equity income over ${legacyYears} years` : `Total Positive Cash Flow over ${legacyYears} years`}
+          value={formatCurrency(results.cummulativeIncome)}
           description={`The total value of your portfolio at end of your retirement.`}
         />
       </Section>

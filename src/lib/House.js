@@ -155,7 +155,6 @@ class House {
     // First check if we have enough equity to do any refinance
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const currentBalance = this.getRemainingBalance(currentMonth);
-    const currentEquity = currentHomeValue - currentBalance;
     const refiCost = this.getCurrentRefiCost(currentMonth);
 
     // We need the refinance to:
@@ -165,7 +164,7 @@ class House {
     // 4. Leave at least 25% equity in the home
 
     const maxNewLoanAmount = currentHomeValue * 0.75; // Can't borrow more than 75% of value
-    const totalNeeded = currentBalance + desiredAmount + this.getCurrentRefiCost(currentMonth); // + refiCost
+    const totalNeeded = currentBalance + desiredAmount + refiCost;
 
     // Check if this is possible
     // if not we'll do a refiance for as much as we can

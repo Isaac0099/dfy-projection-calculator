@@ -54,6 +54,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
         homes={homes}
         projectionYears={projectionYears}
         legacyYears={legacyYears}
+        growthStrategy={growthStrategy}
         calculateEquityChange={calculateEquityChange}
         calculatePortfolioChange={calculatePortfolioChange}
       />
@@ -294,11 +295,11 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                     }
                     <Line 
                       type="monotone" 
-                      dataKey="withdrawalMonthlyIncome" 
+                      dataKey="monthlyIncome" 
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
-                      name = "Net Income"
+                      name = {growthStrategy ==="reinvestment" ? "Tax-free Monthly Income" : "Monthly Income"}
                     />
                     {/* <Line 
                       type="monotone" 
