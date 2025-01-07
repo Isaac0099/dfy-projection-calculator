@@ -93,7 +93,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             currentForm.monthOfPurchase
         );
         const downPaymentAmount = adjustedPrice * (currentForm.percentDownPayment / 100);
-        const closingCosts = adjustedPrice * 0.07;
+        const closingCosts = currentForm.percentDownPayment !== 100 ? (adjustedPrice * 0.07) : (adjustedPrice * 0.045);
         return downPaymentAmount + closingCosts;
     }, [currentForm.homePrice, currentForm.percentDownPayment, 
         currentForm.percentAnnualHomeAppreciation, currentForm.monthOfPurchase]);
@@ -147,8 +147,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
     const handleCalculate = () => {
         setError("");
-        if (!projectionYears || projectionYears < 5 || projectionYears > 80) {
-            setError("Please enter an investment period between 5 and 80 years");
+        if (!projectionYears || projectionYears < 5 || projectionYears > 60) {
+            setError("Please enter an investment period between 5 and 60 years");
             return;
         }
         if (!legacyYears || legacyYears < 1 ) {
@@ -185,7 +185,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                         <InputGroup 
                             icon={Calendar} 
                             label="Years to Retirement (Building Phase)"
-                            hint="Period of active investment: 15-30 years"
+                            hint="Period of active investment: 5-60"
                         >
                             <Input
                                 type="number"
@@ -392,7 +392,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             <InputGroup 
                                 icon={DollarSign} 
                                 label="Total Out of Pocket"
-                                hint="Down payment + closing costs (7%)"
+                                hint= {currentForm.percentDownPayment !== 100 ? "Down payment + closing costs (7%)" : "Down payment + closing costs (4.5% for cash purhcases)"}
+                                
                             >
                                 <div className="h-9 px-3 py-2 rounded-md border bg-gray-100 border-gray-950 text-sm font-medium">
                                     ${Math.round(totalOutOfPocket).toLocaleString()}

@@ -9,7 +9,6 @@
 import House from "@/lib/House";
 import { calculateAnnualIRR } from "./utils/IRRCalculator";
 import { getWeightedAverageAppreciation, copyHomes } from "./utils/utils";
-import { use } from "react";
 
 export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   legacyYears += projectionYears;
@@ -58,16 +57,28 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     // Check for possibility of buying new homes via refinancing
     if (homes.length !== 0) {
       for (let home of homes) {
-        const fractionOfHomePriceToGetIn = (home.percentDownPayment + 7) / 100;
+        let fractionOfHomePriceToGetIn = (home.percentDownPayment + 7) / 100;
+        if (home.percentDownPayment === 100) {
+          fractionOfHomePriceToGetIn = 0.25; // if they chose to pay with cash then immediatly refinance thats on them. They can deal with the 25%
+        }
         const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
         if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
-          home.doARefinance(month);
+          const payout = home.doARefinance(month);
+          // console.log("New home from refinance:", {
+          //   originalHomeValue: home.getCurrentHomeValue(month),
+          //   newHomeValue: home.getCurrentHomeValue(month),
+          //   payout: payout,
+          //   costToGetIntoNewHome: costToGetIntoNewHome,
+          //   month: month,
+          // });
+          // console.log(`month ${month}, payout: ${payout}`);
+
           newHomesAddedThisMonth.push(
             new House(
               month,
               home.getCurrentHomeValue(month),
               home.percentAnnualHomeAppreciation,
-              home.percentDownPayment,
+              home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
               home.percentAnnualInterestRate,
               home.loanTermYears,
               home.willReinvest,
@@ -86,6 +97,8 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     let equityEntry = 0;
     let equityIncomeEntry = 0; // this is solely showing a hypothetical income. Our simulation is not assuming they will actually take this out until retirement
     let rentIncomeEntry = 0;
+    let mortgagePaymentSum = 0;
+    let grossRentIncome = 0;
 
     for (let home of homes) {
       const homeValue = home.getCurrentHomeValue(month);
@@ -96,6 +109,8 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
       equityEntry += homeValue - homeDebt;
       equityIncomeEntry += homeValue * (home.percentAnnualHomeAppreciation / 100); // Summing up the total appreciation amount for the year
       rentIncomeEntry += home.calculateNetRentalIncome(month);
+      grossRentIncome += home.calculateMonthlyRent(month);
+      mortgagePaymentSum += home.getCurrentMortgagePayment(month);
     }
 
     // Calculate monthly equity income
@@ -115,6 +130,8 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
       equity: equityEntry,
       equityIncome: equityIncomeEntry,
       rentIncome: rentIncomeEntry,
+      mortgagePaymentSum: mortgagePaymentSum,
+      grossRentIncome: grossRentIncome,
     });
   }
 
@@ -149,7 +166,6 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   let annualPayout = 0;
 
   const useEquityIncome = homesCopy[0].willReinvest;
-  console.log(useEquityIncome);
 
   for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
     // Finding equity income if they chose reinvest growthStrategy and rent income if they did not

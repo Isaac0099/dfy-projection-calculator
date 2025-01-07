@@ -7,22 +7,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import SettingsSummary from './components/SettingsSummary';
-import { formatYAxisTick, formatTooltipValue, formatKeyMetricCardNumber } from '@/lib/utils/utils';
+import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
 import ComparisonChart from './components/ComparisonChart';
 import MetricCard from './components/MetricCard';
 import MetricsGrid from './components/MetricsGrid';
-import RentCalculationPanel from './components/RentCalculationPanel';
+import RentIncomeExplainer from './components/RentIncomeExplainer';
 import EquityCalculationPanel from './components/EquityCalculationPanel';
 import ComparisonExplainer from './components/ComparisonExplainer';
 import IncomePotentialExplainer from './components/IncomePotentialExplainer';
-
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
 
 
 const ChartSection = ({ title, description, children }) => (
@@ -130,6 +122,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             <span className="md:hidden">Compare</span>
           </TabsTrigger>
           <TabsTrigger value="retirement income">Retirement Income</TabsTrigger>
+          {/* <TabsTrigger value="rent v mortgage">Rent v Mortgage</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="overview">
@@ -217,6 +210,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
+                      name="Equity Income Potential"
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -280,7 +274,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                 <EquityCalculationPanel />
               }
               { growthStrategy === "payOffPrincipal" &&
-                <RentCalculationPanel />
+                <RentIncomeExplainer />
               }
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -320,7 +314,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
-                      name = "Monthly Income From Rent"
+                      name = "Net Income"
                     />
                     {growthStrategy === "payOffPrincipal" &&
                     <Legend verticalAlign="top" align="right" />
@@ -344,6 +338,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                 projectionYears={projectionYears}
                 equityData={results.graphingData.map(data => data.equity)}
                 initialHomes={homes}
+                results={results}
               />
               
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4 px-4">
@@ -386,6 +381,56 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                   </ul>
                 </Card>
               </div>
+            </div>
+          </ChartSection>
+        </TabsContent>
+
+        <TabsContent value="rent v mortgage">
+          <ChartSection 
+            title="Rents Vs Mortages"
+            description=""
+          >
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart 
+                  data={results.graphingData}
+                  margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="month"
+                    tickFormatter={(month) => `${Math.floor(month / 12)}`}
+                    interval={11}
+                    label={{
+                      value:"Years",
+                      position: "bottom",
+                      offset: 0
+                    }}
+                  />
+                  <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
+                  <Tooltip 
+                    formatter={(value) => formatTooltipValue(value)}
+                    labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
+                  />
+                  <Line 
+                    type="monotone" 
+                    name="Rent income"
+                    dataKey="rentIncome" 
+                    stroke="#338c1f" 
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  {/* <Line 
+                    type="monotone"
+                    name="Total of all mortgage payments" 
+                    dataKey="mortgagePaymentSum" 
+                    stroke="#f97316"
+                    strokeWidth={2}
+                    dot={false}
+                  /> */}
+                  <Legend verticalAlign="top" align="right"/>
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </ChartSection>
         </TabsContent>

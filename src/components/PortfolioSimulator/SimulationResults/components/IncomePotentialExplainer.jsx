@@ -31,7 +31,7 @@ const IncomePotentialExplainer = () => {
             {/* Step 1 */}
             <div className="p-2 border-b border-gray-200">
               <div className="flex items-center gap-2">
-                <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">1</span>
+                <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">1</span>
                 <div className="flex items-center gap-1">
                   <Sigma className="text-orange-500 w-4 h-4" />
                   <span className="text-orange-500">(Home Value × Annual Appreciation)</span>
@@ -42,7 +42,7 @@ const IncomePotentialExplainer = () => {
             {/* Step 2 */}
             <div className="p-2 border-b border-gray-200">
               <div className="flex items-center gap-2">
-                <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">2</span>
+                <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">2</span>
                 <div className="flex items-center gap-1">
                   <span className="text-orange-500">(Total × 0.75)</span>
                   <MinusCircle className="text-orange-500 w-4 h-4" />
@@ -54,7 +54,7 @@ const IncomePotentialExplainer = () => {
             {/* Step 3 */}
             <div className="p-2 border-b border-gray-200">
               <div className="flex items-center gap-2">
-                <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">3</span>
+                <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">3</span>
                 <div className="flex items-center gap-1">
                   <DivideCircle className="text-orange-500 w-4 h-4" />
                   <span className="text-orange-500">Divide by 12 months</span>

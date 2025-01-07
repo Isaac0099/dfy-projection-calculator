@@ -19,17 +19,23 @@ class House {
     this.percentAnnualHomeAppreciation = percentAnnualHomeAppreciation;
     this.percentDownPayment = percentDownPayment;
     this.percentAnnualInterestRate = percentAnnualInterestRate;
-    this.loanTermYears = loanTermYears;
-    this.loanAmount = (homePrice * (100 - percentDownPayment)) / 100;
     this.amoCalc = new AmortizationCalculator();
-    this.schedule = this.amoCalc.generateAmortizationSchedule(
-      this.loanAmount,
-      this.percentAnnualInterestRate,
-      this.loanTermYears
-    );
+    if (this.percentDownPayment < 100) {
+      this.loanTermYears = loanTermYears;
+      this.loanAmount = (homePrice * (100 - percentDownPayment)) / 100;
+      this.schedule = this.amoCalc.generateAmortizationSchedule(
+        this.loanAmount,
+        this.percentAnnualInterestRate,
+        this.loanTermYears
+      );
+    } else if (this.percentDownPayment === 100) {
+      this.loanTermYears = 0;
+      this.loanAmount = 0;
+      this.schedule = [];
+    }
     this.refinanceSchedule = [];
     this.willReinvest = willReinvest;
-    this.initialMonthlyRent = this.initialHomePrice * 0.007; // assuming initial rent value is about 0.7% of the inital price
+    this.initialMonthlyRent = this.initialHomePrice * 0.0067; // assuming initial rent value is about 0.67% of the inital price
     this.id = id;
   }
 
@@ -48,6 +54,19 @@ class House {
     return 7000 * Math.pow(1.025, currentMonth / 12);
   }
 
+  getCurrentMortgagePayment(currentMonth) {
+    const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
+    if (monthsSinceMortgageOrRefinance < 0) {
+      return 0;
+    }
+    if (monthsSinceMortgageOrRefinance > this.schedule.length) {
+      return 0;
+    }
+    if (monthsSinceMortgageOrRefinance < this.schedule.length) {
+      return this.schedule[1].paymentAmount;
+    }
+  }
+
   getTOPValue() {
     const fractionOfHomePriceForTOP = (this.percentDownPayment + 7) / 100;
     return this.initialHomePrice * fractionOfHomePriceForTOP;
@@ -55,6 +74,9 @@ class House {
 
   getRemainingBalance(currentMonth) {
     let remainingBalance = 0;
+    if (this.percentDownPayment === 100) {
+      return 0;
+    }
     const monthsIntoAmoSchedule = currentMonth - this.monthOfLatestMortgageOrRefinance;
     if (monthsIntoAmoSchedule < this.schedule.length) {
       remainingBalance = this.schedule[monthsIntoAmoSchedule].remainingBalance;
@@ -121,49 +143,15 @@ class House {
     return payoutAfterPayingOffCurrentMortgage;
   }
 
-  /**
-   * Does a partial refinance.
-   * @param {*} currentMonth
-   * @param {*} newPercentDownPayment
-   * @returns
-   */
-  doAPartialRefinance(currentMonth, newPercentDownPayment) {
-    if (newPercentDownPayment < 25) {
-      throw new Error("Down payment for refinance cannot be lower than 25 percent.");
-    }
-
-    const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
-
-    // Payout information
-    const currentHomeValue =
-      this.initialHomePrice *
-      Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
-    const fractionOfHomeUsedInPayout = (100 - newPercentDownPayment) / 100;
-    const grossPayout = currentHomeValue * fractionOfHomeUsedInPayout - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
-    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipalOnMortgage;
-
-    // New loan info (updating class fields)
-    this.monthOfLatestMortgageOrRefinance = currentMonth;
-    this.loanAmount = currentHomeValue * 0.75;
-    this.loanTermYears = 30;
-    this.percentDownPayment = newPercentDownPayment;
-    this.schedule = this.amoCalc.generateAmortizationSchedule(
-      this.loanAmount,
-      Number(this.percentAnnualInterestRate),
-      Number(this.loanTermYears)
-    );
-    this.refinanceSchedule.push({ month: currentMonth, amount: payoutAfterPayingOffCurrentMortgage });
-
-    return payoutAfterPayingOffCurrentMortgage;
-  }
-
   /* Attempts to refinance the house to get a specific dollar amount out.
    * @param {number} currentMonth - The current month in the simulation
    * @param {number} desiredAmount - The amount we want to get from the refinance
    * @returns {number} The actual amount we can get from the refinance (0 if not possible)
    */
   refinanceForAmount(currentMonth, desiredAmount) {
+    if (currentMonth === this.monthOfLatestMortgageOrRefinance) {
+      throw new Error("can't get possible refinance details for the month you do a refinance");
+    }
     // First check if we have enough equity to do any refinance
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const currentBalance = this.getRemainingBalance(currentMonth);
@@ -185,7 +173,7 @@ class House {
       // Can't get desired amount - calculate max we could get
       const maxPossiblePayout = Math.max(0, maxNewLoanAmount - currentBalance - refiCost);
       this.monthOfLatestMortgageOrRefinance = currentMonth;
-      this.loanAmount = maxPossiblePayout;
+      this.loanAmount = maxNewLoanAmount;
       this.schedule = this.amoCalc.generateAmortizationSchedule(
         this.loanAmount,
         Number(this.percentAnnualInterestRate),
@@ -197,6 +185,7 @@ class House {
     // If we get here, we can do the refinance for the desired amount
     // Update the house's state
     this.monthOfLatestMortgageOrRefinance = currentMonth;
+    this.loanTermYears = 30;
     this.loanAmount = totalNeeded;
     this.schedule = this.amoCalc.generateAmortizationSchedule(
       this.loanAmount,
@@ -231,21 +220,16 @@ class House {
     }
 
     const grossRent = this.calculateMonthlyRent(currentMonth);
-    if (currentMonth === 360) {
-      console.log(`gross rent: ${formatCurrency(grossRent)}`);
-    }
 
     // Operating expenses breakdown
     const expenses = {
-      maintenance: grossRent * 0.08, // 8% for maintenance and vancancies
+      maintenance: grossRent * 0.06, // 6% for maintenance and vancancies
       management: grossRent * 0.08, // 8% for property management
-      propertyTax: grossRent * 0.15, // 15% for property tax
+      propertyTax: grossRent * 0.14, // 14% for property tax
       insurance: grossRent * 0.05, // 5% for insurance
-      capitalExpenditures: grossRent * 0.07, // 5% Capital Expenditures
-      misc: grossRent * 0.05, // 5% miscellaneous expenses
     };
 
-    // Total expenses approximately 50% of gross rent
+    // Total expenses approximately 36% of gross rent
     totalExpenses += Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
 
     return grossRent - totalExpenses;

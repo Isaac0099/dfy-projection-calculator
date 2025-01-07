@@ -2,7 +2,9 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatTooltipValue, formatYAxisTick } from '@/lib/utils/utils';
 
-const ComparisonChart = ({ projectionYears, equityData, initialHomes }) => {
+const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) => {
+  const reinvesting = initialHomes[0].willReinvest;
+  let totalRentAddition = 0; // for adjusting our real estate returns if they don't use reinvesting.
   // Generate comparison data
   const generateData = () => {
     const data = [];
@@ -12,6 +14,7 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes }) => {
     const savingsReturn = 1.02; // 2% annual return 
 
     for (let month = 0; month <= projectionYears*12; month++) {
+      let realEstateValue = equityData[month]
       let stockValue = 0;
       let mixedValue = 0;
       let bondsValue = 0;
@@ -26,9 +29,13 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes }) => {
           savingsValue += topValue * Math.pow(savingsReturn, (yearsSinceInvestment));
         }
       }
+      totalRentAddition += results.graphingData[month].rentIncome
+      if (!reinvesting) {
+        realEstateValue += totalRentAddition;
+      }
       data.push({
         month,
-        'Real Estate (Equity)': equityData[month],
+        'Real Estate (Equity)': realEstateValue,
         'Stock Market': stockValue,
         'Mixed': mixedValue,
         'Bonds': bondsValue,
