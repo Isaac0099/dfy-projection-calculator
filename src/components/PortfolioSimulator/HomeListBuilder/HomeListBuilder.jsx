@@ -9,7 +9,7 @@ import { Separator } from '@radix-ui/react-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InputGroup } from "@/components/ui/InputGroup";
-import WelcomeBanner from "@/components/PortfolioSimulator/HomeListBuilder/components/WelcomeBanner"
+import WelcomeBanner from "./components/WelcomeBanner"
 import { Trash2, Plus, Home, DollarSign, Calendar, Percent, ArrowUpRight, TrendingUp, Clock} from 'lucide-react';
 import House from '@/lib/House';
 import { generateId } from '@/lib/utils/utils.js';
