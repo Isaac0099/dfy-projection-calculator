@@ -78,23 +78,23 @@ const MetricsGrid = ({
 
       {/* Legacy Section */}
       <Section title="Legacy" icon={ScrollText}>
+      <MetricCard
+          icon={ScrollText}
+          title="Legacy Portfolio Value"
+          value={formatCurrency(results.legacyPortfolio)}
+          description={`The total value of your portfolio at end of your retirement.`}
+        />
         <MetricCard
           icon={ScrollText}
           title="Legacy Equity"
           value={formatCurrency(results.legacyEquity)}
           description={`The amount of equity you will have at the end of your projected retirement to pass on. This is after withdrawing from it for ${legacyYears} years in retirement.`}
         />
-        <MetricCard
-          icon={ScrollText}
-          title="Legacy Portfolio Value"
-          value={formatCurrency(results.legacyPortfolio)}
-          description={`The total value of your portfolio at end of your retirement.`}
-        />
          <MetricCard
           icon={Banknote}
-          title={growthStrategy === "reinvestment" ? `Total tax free equity income over ${legacyYears} years` : `Total Positive Cash Flow over ${legacyYears} years`}
+          title={growthStrategy === "reinvestment" ? `Total tax free equity income over ${legacyYears} years.` : `Total Positive Cash Flow over ${legacyYears} years.`}
           value={formatCurrency(results.cummulativeIncome)}
-          description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life` : `The sum of all rent income over ${legacyYears} years after expense have been removed`}
+          description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life.` : `The sum of all rent income over ${legacyYears} years after expense have been removed.`}
         />
       </Section>
     </div>
