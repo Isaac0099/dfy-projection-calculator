@@ -70,16 +70,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
         </button>
         
         {showDetails && (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <MetricCard
-              icon={DollarSign}
-              title="Monthly Equity Income"
-              value={formatCurrency((results.graphingData[projectionYears*12].portfolioValue * 
-                results.homes[0].percentAnnualHomeAppreciation/100 * 0.75 - 
-                results.homes[0].getCurrentRefiCost(projectionYears*12)) / 12)}
-              description="Tax-free through refinancing"
-              small={true}
-            />
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             <MetricCard
               icon={Percent}
               title="Leverage Ratio"

@@ -36,7 +36,7 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
       console.log(`totalRentAddition: ${totalRentAddition}`)
       data.push({
         month,
-        'Real Estate (Equity)': realEstateValue,
+        'Real Estate': realEstateValue,
         'Stock Market': stockValue,
         'Mixed': mixedValue,
         'Bonds': bondsValue,
@@ -67,13 +67,26 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
             labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
           />
           <Legend verticalAlign='top' height={30}/>
-          <Line 
+          {reinvesting && 
+            <Line 
+              type="monotone" 
+              dataKey="Real Estate" 
+              stroke="#f97316" 
+              strokeWidth={2} 
+              dot={false}
+              name="Real Estate (Equity)"
+            />
+          }
+          {!reinvesting &&
+            <Line 
             type="monotone" 
-            dataKey="Real Estate (Equity)" 
+            dataKey="Real Estate" 
             stroke="#f97316" 
             strokeWidth={2} 
             dot={false}
-          />
+            name="Real Estate (Equity + Total Net Rent Income)"
+            />
+          }
           <Line 
             type="monotone" 
             dataKey="Stock Market" 
