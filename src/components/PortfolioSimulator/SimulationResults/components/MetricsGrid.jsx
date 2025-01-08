@@ -19,7 +19,7 @@ const MetricsGrid = ({
     }).format(amount);
 
   const Section = ({ title, icon: Icon, children }) => (
-    <div className="flex flex-col gap-4 p-4 bg-gray-200 rounded-lg shadow-lg border">
+    <div className="flex flex-col gap-4 p-4 bg-gray-200 rounded-md shadow-lg border">
       <header className="flex items-center gap-3 mb-0">
         <Icon className="h-6 w-6 text-orange-500" />
         <h2 className="text-lg font-bold text-gray-800">{title}</h2>

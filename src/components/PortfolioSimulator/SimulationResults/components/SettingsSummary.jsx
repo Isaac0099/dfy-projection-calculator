@@ -7,7 +7,7 @@ const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
   const strategy = homes[0].willReinvest ? "Equity Reinvestment" : "Paying Off Principal";
   
   return (
-    <Card className="mb-4 bg-gray-100">
+    <Card className="mb-4 bg-gray-100 rounded-md rounded-t-lg">
       <CardHeader className="py-2 px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">

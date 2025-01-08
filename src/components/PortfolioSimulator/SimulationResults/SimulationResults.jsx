@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LogoBanner } from './components/LogoBanner';
 import SettingsSummary from './components/SettingsSummary';
 import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
 import ComparisonChart from './components/ComparisonChart';
@@ -37,14 +38,15 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-4">
       {/* Main Summary Alert */}
-      <Alert className="bg-orange-50 border-orange-200">
+      <LogoBanner />
+      {/* <Alert className="bg-orange-50 border-orange-200">
         <AlertTitle className="text-2xl font-semibold text-orange-800">
           Portfolio Projection Summary
         </AlertTitle>
         <AlertDescription className="text-orange-700">
           Showing what&apos;s possible with DFY
         </AlertDescription>
-      </Alert>
+      </Alert> */}
 
       <SettingsSummary homes={homes} projectionYears={projectionYears} legacyYears={legacyYears}/>
 
