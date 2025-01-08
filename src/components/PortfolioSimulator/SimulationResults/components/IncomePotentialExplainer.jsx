@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, Calculator, DivideCircle, Sigma, MinusCircle } from 'lucide-react';
+import { AlertCircle, Calculator, Divide, Sigma, Minus } from 'lucide-react';
 
 const IncomePotentialExplainer = () => {
   return (
@@ -33,8 +33,9 @@ const IncomePotentialExplainer = () => {
               <div className="flex items-center gap-2">
                 <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">1</span>
                 <div className="flex items-center gap-1">
+                  <p className="text-orange-500">Portfolio growth over the next year =</p>
                   <Sigma className="text-orange-500 w-4 h-4" />
-                  <span className="text-orange-500">(Home Value × Annual Appreciation)</span>
+                  <span className="text-orange-500">(Current Home Value × Percent Appreciation) x 75%</span>
                 </div>
               </div>
             </div>
@@ -44,8 +45,8 @@ const IncomePotentialExplainer = () => {
               <div className="flex items-center gap-2">
                 <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">2</span>
                 <div className="flex items-center gap-1">
-                  <span className="text-orange-500">(Total × 0.75)</span>
-                  <MinusCircle className="text-orange-500 w-4 h-4" />
+                  <span className="text-orange-500">Annual Growth After Costs = Portfolio Growth </span>
+                  <Minus className="text-orange-500 w-4 h-4" />
                   <span className="text-orange-500">Refi Costs</span>
                 </div>
               </div>
@@ -56,8 +57,9 @@ const IncomePotentialExplainer = () => {
               <div className="flex items-center gap-2">
                 <span className="text-orange-700 px-1.5 py-0.5 rounded text-xs font-medium">3</span>
                 <div className="flex items-center gap-1">
-                  <DivideCircle className="text-orange-500 w-4 h-4" />
-                  <span className="text-orange-500">Divide by 12 months</span>
+                  <span className="text-orange-500">Monthly Income = Annual Growth After Refi Cost</span>
+                  <Divide className="text-orange-500 w-4 h-4" />
+                  <span className="text-orange-500">12 monhths</span>
                 </div>
               </div>
             </div>
