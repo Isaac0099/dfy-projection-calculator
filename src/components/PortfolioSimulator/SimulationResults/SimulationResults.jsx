@@ -173,7 +173,10 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
                         offset: 0
                       }}
                     />
-                    <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
+                    <YAxis 
+                      tickFormatter={(value) => formatYAxisTick(value)} 
+                      width={projectionYears > 10 ? 66 : 60}
+                    />
                     <Tooltip 
                       formatter={(value) => formatTooltipValue(value)}
                       labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}

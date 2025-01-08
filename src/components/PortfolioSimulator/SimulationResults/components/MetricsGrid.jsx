@@ -53,7 +53,7 @@ const MetricsGrid = ({
           title="Portfolio Value"
           value={formatCurrency(results.graphingData[projectionYears * 12].portfolioValue)}
           change={parseFloat(calculatePortfolioChange())}
-          description="Total value of all properties at the end of the growth period"
+          description="Total value of all properties at the end of the building period"
         />
         <MetricCard
           icon={DollarSign}
@@ -72,7 +72,7 @@ const MetricsGrid = ({
           icon={TrendingUp}
           title="Annual ROI Based on Equity"
           value={`${results.annualPercentReturnFromEquity.toFixed(1)}%`}
-          description="Return on investment during your growth phase based on an IRR calculation reflecting equity value"
+          description="Return on investment during your building phase based on an IRR calculation reflecting equity value"
         />
       </Section>
 

@@ -222,13 +222,12 @@ class House {
 
     // Operating expenses breakdown
     const expenses = {
-      maintenance: grossRent * 0.06, // 6% for maintenance and vancancies
-      management: grossRent * 0.08, // 8% for property management
+      management: 99 * Math.pow(1.025, currentMonth / 12), // $99 per month * inflation adjustment for property management
       propertyTax: grossRent * 0.14, // 14% for property tax
       insurance: grossRent * 0.05, // 5% for insurance
+      misc: grossRent * 0.05, // 5% for maintenance and vancancies
     };
 
-    // Total expenses approximately 36% of gross rent
     totalExpenses += Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
 
     return grossRent - totalExpenses;

@@ -1,26 +1,20 @@
 // HomeListBuilder.jsx
 
 import React, { useState, useMemo } from 'react';
+import DFYLogo from '../../../../public/DFYLogo.png'
+import dfyHorizontal from '../../../../public/dfyHorizontal.png'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@radix-ui/react-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Trash2, Plus, Home, DollarSign, Calendar, Percent } from 'lucide-react';
+import { InputGroup } from "@/components/ui/InputGroup";
+import WelcomeBanner from "./components/WelcomeBanner"
+import { Trash2, Plus, Home, DollarSign, Calendar, Percent, ArrowUpRight, TrendingUp, Clock} from 'lucide-react';
 import House from '@/lib/House';
 import { generateId } from '@/lib/utils/utils.js';
 
-const InputGroup = ({ icon: Icon, label, children, hint }) => (
-    <div className="space-y-1">
-        <div className="flex items-center space-x-2">
-            <Icon className="h-4 w-4 text-orange-600" />
-            <label className="text-sm font-medium text-gray-700">{label}</label>
-        </div>
-        {children}
-        {hint && <p className="text-xs text-gray-500">{hint}</p>}
-    </div>
-);
 
 export const HomeListBuilder = ({ onCalculate, initialData }) => {
     // Initialize state with either initial data or defaults
@@ -147,7 +141,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
     const handleCalculate = () => {
         setError("");
-        if (!projectionYears || projectionYears < 5 || projectionYears > 60) {
+        if (projectionYears === undefined || projectionYears === null || projectionYears < 5 || projectionYears > 60) {
             setError("Please enter an investment period between 5 and 60 years");
             return;
         }
@@ -161,14 +155,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     return (
         <div className="max-w-7xl mx-auto p-4 space-y-4">
             {/* Welcome Alert */}
-            <Alert className="bg-orange-50 border-orange-200">
-                <AlertTitle className="text-lg font-semibold text-orange-800">
-                    DFY Portfolio Growth Simulator
-                </AlertTitle>
-                <AlertDescription className="text-orange-700">
-                    Configure your investment strategy and add properties to simulate long-term growth potential.
-                </AlertDescription>
-            </Alert>
+            <WelcomeBanner DFYLogo={DFYLogo}/>
 
             {/* Main Configuration Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -178,7 +165,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                         <CardTitle className="text-lg">Simulation Settings</CardTitle>
                         <CardDescription>
                             <p>Configure your investment timeline and strategy.</p>
-                            <p className="text-xs font-serifitalic pl-1 text">changing these clears your portfolio</p>
+                            <p className="text-xs font-serifitalic  text">changing these clears your portfolio</p>
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -453,7 +440,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <div className="text-sm text-gray-600">
                                             Purchase: {home.monthOfPurchase} months from now • 
                                             {home.percentDownPayment}% down • 
-                                            {home.loanTermYears}yr term • 
+                                            {home.loanTermYears} yr term • 
                                             {home.percentAnnualHomeAppreciation}% appreciation
                                         </div>
                                     </div>

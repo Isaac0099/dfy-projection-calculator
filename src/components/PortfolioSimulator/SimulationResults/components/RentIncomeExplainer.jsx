@@ -60,20 +60,20 @@ const RentIncomeExplainer = () => {
               <div className="bg-gray-50 rounded border border-gray-200">
                 <div className="grid grid-cols-2 md:grid-cols-4 text-sm divide-x divide-y md:divide-y-0 divide-gray-200">
                   <div className="p-2">
-                    <div className="text-gray-600">Maintenance</div>
-                    <div className="text-orange-500 font-medium mt-0.5">6%</div>
-                  </div>
-                  <div className="p-2">
                     <div className="text-gray-600">Insurance</div>
                     <div className="text-orange-500 font-medium mt-0.5">5%</div>
                   </div>
                   <div className="p-2">
                     <div className="text-gray-600">Management</div>
-                    <div className="text-orange-500 font-medium mt-0.5">8%</div>
+                    <div className="text-orange-500 font-medium mt-0.5">$99 per month + 2.5% inflation</div>
                   </div>
                   <div className="p-2">
                     <div className="text-gray-600">Property Tax</div>
                     <div className="text-orange-500 font-medium mt-0.5">14%</div>
+                  </div>
+                  <div className="p-2">
+                    <div className="text-gray-600">Misc.</div>
+                    <div className="text-orange-500 font-medium mt-0.5">6%</div>
                   </div>
                 </div>
 
