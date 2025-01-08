@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from 'react';
 import DFYLogo from '../../../../public/DFYLogo.png'
-import dfyHorizontal from '../../../../public/dfyHorizontal.png'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
