@@ -40,7 +40,7 @@ const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
             </div>
             <div className="flex items-center space-x-2">
               <HomeIcon className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{homes.length} properties</span>
+              <span className="text-sm">{homes.length} {homes.length > 1 ? "properties" : "property"}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Settings className="h-4 w-4 text-orange-600" />

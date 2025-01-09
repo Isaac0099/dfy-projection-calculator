@@ -32,8 +32,8 @@ const EquityCalculationExplainer = () => {
                 (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ 12
               </code>
             </div>
-            <p className="text-xs text-gray-600">
-              We use 75% of the appreciation rate to ensure sustainable withdrawals
+            <p className="text-xs text-gray-600 italic py-0 my-0">
+              We use 75% of the appreciation rate to be conservative and ensure sustainable withdrawals. 
             </p>
           </div>
         </div>
@@ -46,6 +46,9 @@ const EquityCalculationExplainer = () => {
           </div>
           <p className="text-xs text-gray-600">
             If withdrawal income appears lower than income potential chart, your portfolio&apos;s target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.
+          </p>
+          <p className="text-xs text-gray-600 py-0 my-0">
+            (Refinance Cost is assumed to be $7,000 with 2.5% inflation adjustment)
           </p>
         </div>
       </div>

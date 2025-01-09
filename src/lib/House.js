@@ -171,6 +171,10 @@ class House {
     if (totalNeeded > maxNewLoanAmount) {
       // Can't get desired amount - calculate max we could get
       const maxPossiblePayout = Math.max(0, maxNewLoanAmount - currentBalance - refiCost);
+      // if the payout would be negative after costs we don't do a refinance and return 0;
+      if (maxPossiblePayout <= 0) {
+        return 0;
+      }
       this.monthOfLatestMortgageOrRefinance = currentMonth;
       this.loanAmount = maxNewLoanAmount;
       this.schedule = this.amoCalc.generateAmortizationSchedule(

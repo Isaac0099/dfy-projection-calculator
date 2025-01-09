@@ -121,7 +121,10 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
           return currentEquity > maxEquity ? home : max;
         }, homesCopy[0]);
 
-        annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+        // If our desired payout is greater than 0 including refinance cost then we will go ahead and do the refinance
+        if (desiredAnnualPayout > 0) {
+          annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+        }
         monthlyIncome = annualPayout / 12;
       }
 

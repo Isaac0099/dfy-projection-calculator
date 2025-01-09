@@ -97,8 +97,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             setError("Please enter a down payment percent between 1 and 100");
             return;
         }
-        if (!currentForm.homePrice || currentForm.homePrice < 100_000 || currentForm.homePrice > 1_000_000) {
-            setError("Please enter a home price between 100,000 and 1,000,000");
+        if (!currentForm.homePrice || currentForm.homePrice < 200_000 || currentForm.homePrice > 1_000_000) {
+            setError("Please enter a home price between 200,000 and 1,000,000");
             return;
         }
         if (!currentForm.loanTermYears || (currentForm.loanTermYears !== 15 && currentForm.loanTermYears !== 20 && currentForm.loanTermYears !== 30)) {
@@ -140,12 +140,12 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
     const handleCalculate = () => {
         setError("");
-        if (projectionYears === undefined || projectionYears === null || projectionYears < 5 || projectionYears > 60) {
-            setError("Please enter an investment period between 5 and 60 years");
+        if (projectionYears === undefined || projectionYears === null || projectionYears < 1 || projectionYears > 60) {
+            setError("Please enter a number of years to retirement between 1 and 60 years");
             return;
         }
         if (!legacyYears || legacyYears < 1 ) {
-            setError("Please enter a years in retirement of 1 year minimum");
+            setError("Please enter a number of years in retirement between 1 and 60");
             return;
         }
         onCalculate({ homes, growthStrategy, projectionYears, legacyYears });
@@ -170,7 +170,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                         <InputGroup 
                             icon={Calendar} 
                             label="Years to Retirement (Building Phase)"
-                            hint="Period of active investment: 5-60"
+                            hint="Period of active investment: 1-60"
                         >
                             <Input
                                 type="number"
@@ -204,6 +204,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             label="Growth Strategy"
                             hint="Choose how to utilize property equity"
                             warning="Changing this clears your portfolio"
+                            description="This field determines wheter our simulation focusses on equity based income or rent based income."
                         >
                             <Select
                                 defaultValue={growthStrategy}
@@ -246,7 +247,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             <InputGroup 
                                 icon={Home} 
                                 label="Home Value Today ($)"
-                                hint="Today's value: 100k - 1M"
+                                hint="Today's value: 200k - 1M"
                             >
                                 <Input
                                     type="text"
@@ -329,6 +330,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                 icon={Calendar} 
                                 label="Loan Term (Years)"
                                 hint={currentForm.percentDownPayment === 100 ? "Not applicable for cash purchase" : "Common terms: 15, 20, or 30 years"}
+                                description="Choose how long the mortgage on this house is for. However, be aware that shorter mortgages have higher payments that likely will not be totally covered by the rent income for the house"
                             >
                                 <Select
                                     value={currentForm.percentDownPayment === 100 ? "0" : currentForm.loanTermYears.toString()}

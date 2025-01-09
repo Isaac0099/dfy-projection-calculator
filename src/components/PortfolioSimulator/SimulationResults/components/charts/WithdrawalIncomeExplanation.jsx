@@ -1,8 +1,6 @@
-
-import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 
-const WithdrawalExplanation = () => {
+const WithdrawalIncomeExplanation = () => {
   return (
     <Card className="bg-white border-0 shadow-none pt-0">
       <CardContent className="p-1 pt-0 space-y-1">
@@ -14,7 +12,7 @@ const WithdrawalExplanation = () => {
               (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ 12
             </p>
             <p className="text-xs italic text-gray-600 pl-2">
-                We use 75% of the appreciation rate to ensure sustainable withdrawals
+                We use 75% of the appreciation rate to ensure sustainable withdrawals. <span>Refincance cost is assumed to be $7,000 w/ 2.5% inflation</span>
             </p>
           </div>
         </div>
@@ -29,7 +27,7 @@ const WithdrawalExplanation = () => {
   );
 };
 
-export default WithdrawalExplanation;
+export default WithdrawalIncomeExplanation;
 
 
 
