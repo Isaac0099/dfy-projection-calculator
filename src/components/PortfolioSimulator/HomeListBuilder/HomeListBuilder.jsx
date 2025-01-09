@@ -162,9 +162,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Simulation Settings</CardTitle>
-                        <CardDescription>
+                        <CardDescription className="mb-0">
                             <p>Configure your investment timeline and strategy.</p>
-                            <p className="text-xs font-serifitalic  text">changing these clears your portfolio</p>
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -179,7 +178,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                 onChange={(e) => {
                                     const value = parseInt(e.target.value);
                                     setProjectionYears(value);
-                                    setHomes([]);
                                 }}
                                 className="mt-1" 
                             />
@@ -196,7 +194,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                 onChange={(e) => {
                                     const value = parseInt(e.target.value);
                                     setLegacyYears(value);
-                                    setHomes([]);
                                 }}
                                 className="mt-1" 
                             />
@@ -206,6 +203,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             icon={Percent} 
                             label="Growth Strategy"
                             hint="Choose how to utilize property equity"
+                            warning="Changing this clears your portfolio"
                         >
                             <Select
                                 defaultValue={growthStrategy}

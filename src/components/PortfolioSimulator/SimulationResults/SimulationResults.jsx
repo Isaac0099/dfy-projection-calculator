@@ -9,13 +9,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
 import SettingsSummary from './components/SettingsSummary';
 import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
-import ComparisonChart from './components/ComparisonChart';
+import OverviewChart from './components/charts/OverviewChart';
+import PropertiesChart from './components/charts/PropertiesChart';
+import ComparisonChart from './components/charts/ComparisonChart';
 import MetricCard from './components/MetricCard';
 import MetricsGrid from './components/MetricsGrid';
-import RentIncomeExplainer from './components/RentIncomeExplainer';
-import EquityCalculationPanel from './components/EquityCalculationPanel';
-import ComparisonExplainer from './components/ComparisonExplainer';
-import IncomePotentialExplainer from './components/IncomePotentialExplainer';
+import RentIncomeExplainer from './components/charts/RentIncomeExplainer';
+import EquityCalculationExplainer from './components/charts/EquityCalculationExplainer';
+import RetirementIncomeChart from './components/charts/RetirementIncomeChart';
+import ComparisonExplainer from './components/charts/ComparisonExplainer';
+import IncomePotentialExplainer from './components/charts/IncomePotentialExplainer';
+import RentVMortgageChart from './components/charts/RentVMortgageChart';
 import ChartSection from './components/ChartSection';
 
 
@@ -34,20 +38,13 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
     const end = results.graphingData[projectionYears*12].portfolioValue;
     return ((end - start) / start * 100).toFixed(1);
   };
-
+  
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-4">
-      {/* Main Summary Alert */}
+      {/* DFY Logo across the top */}
       <LogoBanner />
-      {/* <Alert className="bg-orange-50 border-orange-200">
-        <AlertTitle className="text-2xl font-semibold text-orange-800">
-          Portfolio Projection Summary
-        </AlertTitle>
-        <AlertDescription className="text-orange-700">
-          Showing what&apos;s possible with DFY
-        </AlertDescription>
-      </Alert> */}
-
+      
+      {/* Summary of Input Settings Used to Genertate These Results*/}
       <SettingsSummary homes={homes} projectionYears={projectionYears} legacyYears={legacyYears}/>
 
      {/* All Metrics in Timeline Layout */}
@@ -106,48 +103,9 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Portfolio Growth"
             description="Track your portfolio value and equity growth over time"
           >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart 
-                  data={results.graphingData}
-                  margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month"
-                    tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                    interval={11}
-                    label={{
-                      value:"Years",
-                      position: "bottom",
-                      offset: 0
-                    }}
-                  />
-                  <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
-                  <Tooltip 
-                    formatter={(value) => formatTooltipValue(value)}
-                    labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                  />
-                  <Line 
-                    type="monotone" 
-                    name="Portfolio Value"
-                    dataKey="portfolioValue" 
-                    stroke="#338c1f" 
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line 
-                    type="monotone"
-                    name="Equity" 
-                    dataKey="equity" 
-                    stroke="#f97316"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Legend verticalAlign="top" align="right"/>
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <OverviewChart
+              results={results}
+            />
           </ChartSection>
         </TabsContent>
 
@@ -204,41 +162,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Property Growth"
             description="Track your property acquisition over time"
           >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart 
-                  data={results.graphingData}
-                  margin={{ top: 10, right: 10, left: 0, bottom: 15 }} 
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month"
-                    tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                    interval={11}
-                    label={{
-                      value:"Years",
-                      position: "bottom",
-                      offset: 0
-                    }}
-                  />
-                  <YAxis 
-                    allowDecimals={false}
-                    domain={[0, results.homes.length]}
-                  />
-                  <Tooltip 
-                    formatter={(value) => [value, "Properties"]}
-                    labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                  />
-                  <Line 
-                    type="stepAfter" 
-                    dataKey="propertyCount" 
-                    stroke="#f97316" 
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <PropertiesChart results={results} />
           </ChartSection>
         </TabsContent>
 
@@ -250,67 +174,15 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
           >
             <div className="space-y-5">
               { growthStrategy === "reinvestment" &&
-                <EquityCalculationPanel />
+                <EquityCalculationExplainer />
               }
               { growthStrategy === "payOffPrincipal" &&
                 <RentIncomeExplainer />
               }
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart 
-                    data={results.withdrawalGraphingData}
-                    margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="month"
-                      tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                      interval={11}
-                      label={{
-                        value:"Years",
-                        position: "bottom",
-                        offset: 0
-                      }}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => formatYAxisTick(value)}
-                      width={65} />
-                    <Tooltip 
-                      formatter={(value) => formatTooltipValue(value)}
-                      labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                    />
-                    {growthStrategy === "payOffPrincipal" &&
-                      <Line 
-                      type="monotone"
-                      name="Gross Rent" 
-                      dataKey="grossRentIncome" 
-                      stroke="#8daffe"
-                      strokeWidth={2}
-                      dot={false}
-                      />
-                    }
-                    <Line 
-                      type="monotone" 
-                      dataKey="monthlyIncome" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                      name = {growthStrategy ==="reinvestment" ? "Tax-free Monthly Income" : "Monthly Income"}
-                    />
-                    {/* <Line 
-                      type="monotone" 
-                      dataKey="equity" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                      name = "equity"
-                    /> */}
-                    {growthStrategy === "payOffPrincipal" &&
-                    <Legend verticalAlign="top" align="right" />
-                    }
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <RetirementIncomeChart 
+                growthStrategy={growthStrategy}
+                results={results}
+              />
             </div>
           </ChartSection>
         </TabsContent>
@@ -379,48 +251,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Rents Vs Mortages"
             description=""
           >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart 
-                  data={results.graphingData}
-                  margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month"
-                    tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                    interval={11}
-                    label={{
-                      value:"Years",
-                      position: "bottom",
-                      offset: 0
-                    }}
-                  />
-                  <YAxis tickFormatter={(value) => formatYAxisTick(value)} />
-                  <Tooltip 
-                    formatter={(value) => formatTooltipValue(value)}
-                    labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                  />
-                  <Line 
-                    type="monotone" 
-                    name="Rent income"
-                    dataKey="rentIncome" 
-                    stroke="#338c1f" 
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  {/* <Line 
-                    type="monotone"
-                    name="Total of all mortgage payments" 
-                    dataKey="mortgagePaymentSum" 
-                    stroke="#f97316"
-                    strokeWidth={2}
-                    dot={false}
-                  /> */}
-                  <Legend verticalAlign="top" align="right"/>
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <RentVMortgageChart results={results} />
           </ChartSection>
         </TabsContent>
       </Tabs>

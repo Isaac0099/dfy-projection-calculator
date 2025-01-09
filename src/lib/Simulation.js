@@ -1,139 +1,189 @@
-// // Simulation.js
-
-// ///// takes the list of homes from homeListBuilder,
-// ///// runs simulation for specified years of growth period time,
-// ///// saves graphing numbers throughout this time and a few final values at then end of this period
-// ///// run a quick withdrawal period simulation for the purpose fo finding what the amount left over is that they can give to their kids
-// ///// returns result object with all useful info from the simulation.
-
 import House from "@/lib/House";
 import { calculateAnnualIRR } from "./utils/IRRCalculator";
-import { getWeightedAverageAppreciation, copyHomes } from "./utils/utils";
+import { getWeightedAverageAppreciation, copyHomes, formatCurrency } from "./utils/utils";
 
-export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
-  legacyYears += projectionYears;
-  if (startingHomes.length === 0) {
-    return null;
+// Helper functions for cleaner code
+const calculateTotalOutOfPocket = (homes) => {
+  return homes.reduce((total, home) => {
+    return total + (home.initialHomePrice * (home.percentDownPayment + 7)) / 100;
+  }, 0);
+};
+
+const createInitialCashflows = (homes) => {
+  return homes.map((home) => ({
+    month: home.monthOfPurchase,
+    amount: -(home.initialHomePrice * (home.percentDownPayment + 7)) / 100,
+  }));
+};
+
+const processNewHomesPurchases = (month, startingHomes) => {
+  const newHomesThisMonth = startingHomes.filter((home) => home.monthOfPurchase === month);
+  const remainingHomes = startingHomes.filter((home) => home.monthOfPurchase !== month);
+  return { newHomesThisMonth, remainingHomes };
+};
+
+const processRefinancing = (month, existingHomes) => {
+  const newHomesFromRefinancing = [];
+
+  for (const home of existingHomes) {
+    // For cash purchases (100% down), we still use 25% down for future purchases
+    // This maintains consistency with the reinvestment strategy
+    let fractionForNewHome = (home.percentDownPayment + 7) / 100;
+    if (home.percentDownPayment === 100) {
+      fractionForNewHome = 0.25; // 25% down payment for reinvestment after cash purchase
+    }
+    const costForNewHome = home.getCurrentHomeValue(month) * fractionForNewHome;
+
+    if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
+      const payout = home.doARefinance(month);
+      newHomesFromRefinancing.push(
+        new House(
+          month,
+          home.getCurrentHomeValue(month),
+          home.percentAnnualHomeAppreciation,
+          home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
+          home.percentAnnualInterestRate,
+          home.loanTermYears,
+          home.willReinvest,
+          Date.now()
+        )
+      );
+    }
   }
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(amount);
+  return newHomesFromRefinancing;
+};
+
+const calculateMonthlyMetrics = (month, homes) => {
+  const metrics = {
+    propertyCount: homes.length,
+    portfolioValue: 0,
+    debt: 0,
+    equity: 0,
+    equityIncome: 0,
+    rentIncome: 0,
+    mortgagePaymentSum: 0,
+    grossRentIncome: 0,
   };
 
-  // Calculate total out of pocket costs from starting homes
-  let totalOutOfPocket = 0;
-  startingHomes.forEach((home) => {
-    totalOutOfPocket += (home.initialHomePrice * (home.percentDownPayment + 7)) / 100;
-  });
+  for (const home of homes) {
+    const homeValue = home.getCurrentHomeValue(month);
+    const homeDebt = home.getRemainingBalance(month);
 
-  const homes = []; // List of all homes purchased (input + growth)
-  let graphingData = []; // Monthly values for graphs and results
-  let cashflows = []; // Track all cash flows for IRR calculation
-
-  // Add initial investments as negative cash flows
-  startingHomes.forEach((home) => {
-    const initialInvestment = -(home.initialHomePrice * (home.percentDownPayment + 7)) / 100;
-    cashflows.push({
-      month: home.monthOfPurchase,
-      amount: initialInvestment,
-    });
-  });
-
-  // GROWTH PERIOD
-  for (let month = 0; month <= projectionYears * 12; month++) {
-    // Add any input homes to simulation homes if it's their purchase month
-    let newHomesAddedThisMonth = [];
-    for (let home of startingHomes) {
-      if (home.monthOfPurchase === month) {
-        newHomesAddedThisMonth.push(home);
-      }
-    }
-    startingHomes = startingHomes.filter((home) => home.monthOfPurchase !== month);
-
-    // Check for possibility of buying new homes via refinancing
-    if (homes.length !== 0) {
-      for (let home of homes) {
-        let fractionOfHomePriceToGetIn = (home.percentDownPayment + 7) / 100;
-        if (home.percentDownPayment === 100) {
-          fractionOfHomePriceToGetIn = 0.25; // if they chose to pay with cash then immediatly refinance thats on them. They can deal with the 25%
-        }
-        const costToGetIntoNewHome = home.getCurrentHomeValue(month) * fractionOfHomePriceToGetIn;
-        if (home.willReinvest && home.getPossibleRefinancePayout(month) > costToGetIntoNewHome) {
-          const payout = home.doARefinance(month);
-          newHomesAddedThisMonth.push(
-            new House(
-              month,
-              home.getCurrentHomeValue(month),
-              home.percentAnnualHomeAppreciation,
-              home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
-              home.percentAnnualInterestRate,
-              home.loanTermYears,
-              home.willReinvest,
-              Date.now()
-            )
-          );
-        }
-      }
-    }
-    homes.push(...newHomesAddedThisMonth);
-
-    // Calculate metrics for this month
-    const propertyCountEntry = homes.length;
-    let portfolioValueEntry = 0;
-    let debtEntry = 0;
-    let equityEntry = 0;
-    let equityIncomeEntry = 0; // this is solely showing a hypothetical income. Our simulation is not assuming they will actually take this out until retirement
-    let rentIncomeEntry = 0;
-    let mortgagePaymentSum = 0;
-    let grossRentIncome = 0;
-
-    for (let home of homes) {
-      const homeValue = home.getCurrentHomeValue(month);
-      const homeDebt = home.getRemainingBalance(month);
-
-      portfolioValueEntry += homeValue;
-      debtEntry += homeDebt;
-      equityEntry += homeValue - homeDebt;
-      equityIncomeEntry += homeValue * (home.percentAnnualHomeAppreciation / 100); // Summing up the total appreciation amount for the year
-      rentIncomeEntry += home.calculateNetRentalIncome(month);
-      grossRentIncome += home.calculateMonthlyRent(month);
-      mortgagePaymentSum += home.getCurrentMortgagePayment(month);
-    }
-
-    // Calculate monthly equity income
-    if (homes.length > 0) {
-      equityIncomeEntry *= 0.75; // Only using 75 of our appreciation to be conservative
-      equityIncomeEntry -= homes[0].getCurrentRefiCost(month); // Taking out the cost to withdraw this equity via a refinance
-    }
-    equityIncomeEntry = equityIncomeEntry / 12; // Splitting it across 12 months
-
-    // Add data point for this month
-    graphingData.push({
-      month: month,
-      year: Math.floor(month / 12),
-      propertyCount: propertyCountEntry,
-      portfolioValue: portfolioValueEntry,
-      debt: debtEntry,
-      equity: equityEntry,
-      equityIncome: equityIncomeEntry,
-      rentIncome: rentIncomeEntry,
-      mortgagePaymentSum: mortgagePaymentSum,
-      grossRentIncome: grossRentIncome,
-    });
+    metrics.portfolioValue += homeValue;
+    metrics.debt += homeDebt;
+    metrics.equity += homeValue - homeDebt;
+    metrics.equityIncome += homeValue * (home.percentAnnualHomeAppreciation / 100);
+    metrics.rentIncome += home.calculateNetRentalIncome(month);
+    metrics.grossRentIncome += home.calculateMonthlyRent(month);
+    metrics.mortgagePaymentSum += home.getCurrentMortgagePayment(month);
   }
 
-  // Add final portfolio value as positive cash flow
-  const finalGrowthPeriodEquity = graphingData[projectionYears * 12].equity;
-  cashflows.push({
-    month: projectionYears * 12,
-    amount: finalGrowthPeriodEquity,
-  });
+  // Adjust equity income if there are homes
+  if (homes.length > 0) {
+    // Calculate annual equity income first
+    const annualEquityIncome = metrics.equityIncome * 0.75; // Conservative estimate
+    // Subtract annual refinance cost
+    const adjustedAnnualIncome = annualEquityIncome - homes[0].getCurrentRefiCost(month);
+    // Convert to monthly at the end to maintain calculation order
+    metrics.equityIncome = adjustedAnnualIncome / 12;
+  }
+
+  return metrics;
+};
+
+const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquityIncome) => {
+  const homesCopy = copyHomes(homes);
+  const withdrawalData = {
+    graphingData: [],
+    legacyEquity: 0,
+    legacyPortfolio: 0,
+    cumulativeIncome: 0,
+  };
+
+  const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
+  let annualPayout = 0;
+  let monthlyIncome = 0;
+
+  for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
+    if (useEquityIncome) {
+      const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
+
+      if (month % 12 === 1) {
+        const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
+        const desiredAnnualPayout =
+          totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
+
+        // Find home with highest equity for refinancing
+        const homeWithHighestEquity = homesCopy.reduce((max, home) => {
+          const currentEquity = home.getCurrentEquity(month);
+          const maxEquity = max.getCurrentEquity(month);
+          return currentEquity > maxEquity ? home : max;
+        }, homesCopy[0]);
+
+        annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+        monthlyIncome = annualPayout / 12;
+      }
+
+      withdrawalData.cumulativeIncome += monthlyIncome;
+      withdrawalData.graphingData.push({ month, monthlyIncome, equity });
+    } else {
+      const rentMetrics = homesCopy.reduce(
+        (acc, home) => ({
+          rentIncome: acc.rentIncome + home.calculateNetRentalIncome(month),
+          grossRentIncome: acc.grossRentIncome + home.calculateMonthlyRent(month),
+        }),
+        { rentIncome: 0, grossRentIncome: 0 }
+      );
+
+      withdrawalData.cumulativeIncome += rentMetrics.rentIncome;
+      withdrawalData.graphingData.push({
+        month,
+        monthlyIncome: rentMetrics.rentIncome,
+        grossRentIncome: rentMetrics.grossRentIncome,
+      });
+    }
+  }
+
+  // Calculate final legacy values
+  const lastMonth = legacyYears * 12;
+  for (const home of homesCopy) {
+    const homeValue = home.getCurrentHomeValue(lastMonth);
+    const homeDebt = home.getRemainingBalance(lastMonth);
+    withdrawalData.legacyEquity += homeValue - homeDebt;
+    withdrawalData.legacyPortfolio += homeValue;
+  }
+
+  return withdrawalData;
+};
+
+export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
+  if (startingHomes.length === 0) return null;
+
+  const totalLegacyYears = legacyYears + projectionYears;
+  const homes = [];
+  const graphingData = [];
+  const cashflows = createInitialCashflows(startingHomes);
+  let remainingStartingHomes = [...startingHomes];
+
+  // Growth Period Simulation
+  for (let month = 0; month <= projectionYears * 12; month++) {
+    // Process new home purchases and refinancing
+    const { newHomesThisMonth, remainingHomes } = processNewHomesPurchases(month, remainingStartingHomes);
+    remainingStartingHomes = remainingHomes;
+
+    const newHomesFromRefinancing = homes.length > 0 ? processRefinancing(month, homes) : [];
+    homes.push(...newHomesThisMonth, ...newHomesFromRefinancing);
+
+    // Calculate and store monthly metrics
+    const monthlyMetrics = calculateMonthlyMetrics(month, homes);
+    graphingData.push({ month, ...monthlyMetrics });
+  }
 
   // Calculate IRR
+  const finalEquity = graphingData[projectionYears * 12].equity;
+  cashflows.push({ month: projectionYears * 12, amount: finalEquity });
+
   let annualIRR = 0;
   if (cashflows.length >= 2) {
     try {
@@ -147,88 +197,18 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     }
   }
 
-  /////// WITHDRAWAL PERIOD
-  let withdrawalGraphingData = [];
-  let homesCopy = copyHomes(homes);
-  let legacyEquity = 0;
-  let legacyPortfolio = 0;
-  let cummulativeIncome = 0; // running total of recieved income, either equity or rent based on their growthStrategy
-
-  const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
-  let annualPayout = 0;
-  let monthlyIncome = 0;
-
-  const useEquityIncome = homesCopy[0].willReinvest;
-
-  for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
-    // Finding equity income if they chose reinvest growthStrategy and rent income if they did not
-    if (useEquityIncome) {
-      const equity = homesCopy.reduce((sum, home) => {
-        return sum + home.getCurrentEquity(month);
-      }, 0);
-      if (month % 12 === 1) {
-        // Calculate total portfolio value and desired payout
-        const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
-        const desiredAnnualPayout =
-          totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
-
-        // Find home with highest equity for refinancing
-        const homeWithHighestEquity = homesCopy.reduce((max, home) => {
-          const currentHomeValue = home.getCurrentHomeValue(month);
-          let currentEquity = currentHomeValue - home.getRemainingBalance(month);
-          let maxEquity = max.getCurrentHomeValue(month) - max.getRemainingBalance(month);
-
-          return currentEquity > maxEquity ? home : max;
-        }, homesCopy[0]);
-
-        // Attempt to get the desired payout through refinancing
-        annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
-        monthlyIncome = annualPayout / 12;
-      }
-
-      cummulativeIncome += monthlyIncome;
-
-      withdrawalGraphingData.push({
-        month: month,
-        monthlyIncome: monthlyIncome,
-        equity,
-      });
-    } else {
-      let rentIncome = 0;
-      let grossRentIncome = 0;
-      for (let home of homesCopy) {
-        rentIncome += home.calculateNetRentalIncome(month);
-        grossRentIncome += home.calculateMonthlyRent(month);
-      }
-
-      cummulativeIncome += rentIncome;
-
-      withdrawalGraphingData.push({
-        month: month,
-        monthlyIncome: rentIncome,
-        grossRentIncome: grossRentIncome,
-      });
-    }
-  }
-
-  // Calculate final legacy equity
-  for (let home of homesCopy) {
-    const lastMonth = legacyYears * 12;
-    const homeValue = home.getCurrentHomeValue(lastMonth);
-    const homeDebt = home.getRemainingBalance(lastMonth);
-    legacyEquity += homeValue - homeDebt;
-    legacyPortfolio += homeValue;
-  }
+  // Simulate Withdrawal Period
+  const withdrawalPeriod = simulateWithdrawalPeriod(homes, projectionYears, totalLegacyYears, homes[0].willReinvest);
 
   return {
-    homes: homes,
-    graphingData: graphingData,
-    withdrawalGraphingData: withdrawalGraphingData,
-    totalOutOfPocket: totalOutOfPocket,
+    homes,
+    graphingData,
+    withdrawalGraphingData: withdrawalPeriod.graphingData,
+    totalOutOfPocket: calculateTotalOutOfPocket(startingHomes),
     annualPercentReturnFromEquity: annualIRR,
-    legacyEquity: legacyEquity,
-    legacyPortfolio: legacyPortfolio,
-    cummulativeIncome: cummulativeIncome,
+    legacyEquity: withdrawalPeriod.legacyEquity,
+    legacyPortfolio: withdrawalPeriod.legacyPortfolio,
+    cumulativeIncome: withdrawalPeriod.cumulativeIncome,
   };
 };
 

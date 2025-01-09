@@ -93,7 +93,7 @@ const MetricsGrid = ({
          <MetricCard
           icon={Banknote}
           title={growthStrategy === "reinvestment" ? `Total tax free equity income over ${legacyYears} years.` : `Total Positive Cash Flow over ${legacyYears} years.`}
-          value={formatCurrency(results.cummulativeIncome)}
+          value={formatCurrency(results.cumulativeIncome)}
           description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life.` : `The sum of all rent income over ${legacyYears} years after expense have been removed.`}
         />
       </Section>

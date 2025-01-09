@@ -1,6 +1,6 @@
 import { AlertCircle, Calculator, TrendingUp } from 'lucide-react';
 
-const EquityCalculationPanel = () => {
+const EquityCalculationExplainer = () => {
   return (
     <div className="w-full">
       {/* Header */}
@@ -53,4 +53,4 @@ const EquityCalculationPanel = () => {
   );
 };
 
-export default EquityCalculationPanel;
+export default EquityCalculationExplainer;

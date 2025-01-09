@@ -225,7 +225,7 @@ class House {
       management: 99 * Math.pow(1.025, currentMonth / 12), // $99 per month * inflation adjustment for property management
       propertyTax: grossRent * 0.14, // 14% for property tax
       insurance: grossRent * 0.05, // 5% for insurance
-      misc: grossRent * 0.05, // 5% for maintenance and vancancies
+      misc: grossRent * 0.05, // 5% for maintenance and vacancies
     };
 
     totalExpenses += Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
