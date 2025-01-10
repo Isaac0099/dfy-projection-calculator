@@ -23,7 +23,7 @@ const GrowthPhaseExplainer = ({ growthStrategy }) => {
               jumps in portfolio value <span className="italic">(as you use that money to purchase additional properties)</span>. 
             </span>
           </div>
-          <p>This strategy maximizes your portfolio's growth potential by leveraging your equity to acquire more properties over time.</p>
+          <p>This strategy maximizes your portfolio&apos;s growth potential by leveraging your equity to acquire more properties over time.</p>
 
         </div>
       ) : (
