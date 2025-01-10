@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, ArrowUpRight } from 'lucide-react';
 
 const GrowthPhaseExplainer = ({ growthStrategy }) => {
   const isReinvestment = growthStrategy === "reinvestment";
@@ -11,12 +11,12 @@ const GrowthPhaseExplainer = ({ growthStrategy }) => {
         <div className="space-y-2">
           <p className="font-semibold">Notice the pattern in the chart below:</p>
           <div className="flex items-center gap-2">
-            <ArrowDownRight className="h-4 w-4 text-orange-500 flex-shrink-0" />
+            <TrendingUp className="h-4 w-4 text-orange-500 flex-shrink-0" />
             <span>
               periodic dips in equity <span className="italic">(as you take money out through refinancing)</span>
             </span>
           </div>
-          <p className="italic pl-6">followed by</p>
+          <p className="italic pl-6">followed by:</p>
           <div className="flex items-center gap-2">
             <ArrowUpRight className="h-4 w-4 text-[#338c1f] flex-shrink-0" />
             <span>
