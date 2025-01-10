@@ -442,9 +442,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         </div>
                                         <div className="text-sm text-gray-600">
                                             {`
-                                            Purchase: ${home.monthOfPurchase} months from now • 
-                                            ${home.percentDownPayment !== 100 ? `${home.percentDownPayment}% down •` : "cash purchase •"} 
-                                            ${home.percentDownPayment !== 100 ? `${home.loanTermYears} yr term •` : ""} 
+                                            Purchase: ${home.monthOfPurchase} months from now •  
+                                            ${home.percentDownPayment !== 100 ? `${home.percentDownPayment}% down • ` : "cash purchase • "} 
+                                            ${home.percentDownPayment !== 100 ? `${home.loanTermYears} year term • ` : ""} 
                                             ${home.percentAnnualHomeAppreciation}% appreciation
                                             `}
                                         </div>

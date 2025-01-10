@@ -10,6 +10,7 @@ import { LogoBanner } from './components/LogoBanner';
 import SettingsSummary from './components/SettingsSummary';
 import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
 import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
+import GrowthPhaseExplainer from './components/GrowthPhaseExplainer';
 import GrowthPhaseChart from './components/charts/GrowthPhaseChart';
 import PropertiesChart from './components/charts/PropertiesChart';
 import ComparisonChart from './components/charts/ComparisonChart';
@@ -129,7 +130,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             description="You can see how using refinances to buy more properties during this period puts you in a much better spot for retirement"
           >
             <div className="space-y-4">
-              {/* <IncomePotentialExplainer />  */}
+              <GrowthPhaseExplainer growthStrategy={growthStrategy} />
               <GrowthPhaseChart results={results} />
             </div>
           </ChartSection>
