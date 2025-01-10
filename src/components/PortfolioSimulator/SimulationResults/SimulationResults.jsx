@@ -9,7 +9,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
 import SettingsSummary from './components/SettingsSummary';
 import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
-import OverviewChart from './components/charts/OverviewChart';
+import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
+import GrowthPhaseChart from './components/charts/GrowthPhaseChart';
 import PropertiesChart from './components/charts/PropertiesChart';
 import ComparisonChart from './components/charts/ComparisonChart';
 import MetricCard from './components/MetricCard';
@@ -69,13 +70,22 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
         </button>
         
         {showDetails && (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <MetricCard
               icon={Percent}
-              title="Leverage Ratio"
+              title="Leverage Ratio at Retirement"
               value={`${((results.graphingData[projectionYears*12].portfolioValue - 
                 results.graphingData[projectionYears*12].equity) / 
                 results.graphingData[projectionYears*12].portfolioValue * 100).toFixed(1)}%`}
+              description="Debt to asset ratio"
+              small={true}
+            />
+            <MetricCard
+              icon={Percent}
+              title="Leverage Ratio at End of Life"
+              value={`${((results.withdrawalGraphingData[legacyYears*12-1].portfolioValue - 
+                results.withdrawalGraphingData[legacyYears*12-1].equity) / 
+                results.withdrawalGraphingData[legacyYears*12-1].portfolioValue * 100).toFixed(1)}%`}
               description="Debt to asset ratio"
               small={true}
             />
@@ -87,14 +97,14 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5 lg:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="income">Income Potential</TabsTrigger>
+          <TabsTrigger value="growthPhase">Growth Phase</TabsTrigger>
+          <TabsTrigger value="retirement income">Retirement Income</TabsTrigger>
           <TabsTrigger value="properties">Properties</TabsTrigger>
           <TabsTrigger value="comparison">
             <span className="hidden lg:inline">Compare Other Investments</span>
             <span className="hidden md:inline lg:hidden">Compare Investments</span>
             <span className="md:hidden">Compare</span>
           </TabsTrigger>
-          <TabsTrigger value="retirement income">Retirement Income</TabsTrigger>
           {/* <TabsTrigger value="rent v mortgage">Rent v Mortgage</TabsTrigger> */}
         </TabsList>
 
@@ -103,55 +113,24 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Portfolio Growth"
             description="Track your portfolio value and equity growth over time"
           >
-            <OverviewChart
+            {/* <OverviewChart
               results={results}
+            /> */}
+            <CombinedOverviewChart
+              results={results}
+              projectionYears={projectionYears}
             />
           </ChartSection>
         </TabsContent>
 
-        <TabsContent value="income">
+        <TabsContent value="growthPhase">
           <ChartSection 
-            title="Income Potential"
-            description="Projected possible monthly income through equity access"
+            title="Your Portfolio During the Growth Phase"
+            description="You can see how using refinances to buy more properties during this period puts you in a much better spot for retirement"
           >
             <div className="space-y-4">
-              <IncomePotentialExplainer /> 
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart 
-                    data={results.graphingData}
-                    margin={{ top: 0, right: 10, left: 0, bottom: 15 }} 
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="month"
-                      tickFormatter={(month) => `${Math.floor(month / 12)}`}
-                      interval={11}
-                      label={{
-                        value:"Years",
-                        position: "bottom",
-                        offset: 0
-                      }}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => formatYAxisTick(value)} 
-                      width={projectionYears > 10 ? 66 : 60}
-                    />
-                    <Tooltip 
-                      formatter={(value) => formatTooltipValue(value)}
-                      labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="equityIncome" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                      name="Equity Income Potential"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              {/* <IncomePotentialExplainer />  */}
+              <GrowthPhaseChart results={results} />
             </div>
           </ChartSection>
         </TabsContent>
@@ -169,8 +148,8 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
 
         <TabsContent value="retirement income">
           <ChartSection 
-            title="Withdrawal Period Income Simulation"
-            description="This chart shows your potential monthly income during retirement. Calculated from annual refinancing of your highest-equity property or by showing your income from rent, depending on your chosen growth strategy."
+            title="Retirement Income"
+            description="This chart shows your potential monthly income during retirement. Calculated from annual partial refinancing of your highest-equity property or by showing your income from rent, depending on your chosen growth strategy."
           >
             <div className="space-y-5">
               { growthStrategy === "reinvestment" &&

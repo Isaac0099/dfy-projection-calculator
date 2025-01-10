@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Settings, Clock, Home as HomeIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings, Clock, Percent, Home as HomeIcon } from 'lucide-react';
+import { getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
 const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
   const [expanded, setExpanded] = useState(false);
@@ -12,7 +13,7 @@ const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Settings className="h-4 w-4 text-orange-600" />
-            <CardTitle className="text-base">Settings Summary</CardTitle>
+            <CardTitle className="text-base">Plan Summary</CardTitle>
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
@@ -40,11 +41,15 @@ const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
             </div>
             <div className="flex items-center space-x-2">
               <HomeIcon className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{homes.length} {homes.length > 1 ? "properties" : "property"}</span>
+              <span className="text-sm">{homes.length} {homes.length > 1 ? "Properties" : "Property"}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Settings className="h-4 w-4 text-orange-600" />
               <span className="text-sm">{strategy}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Percent className="h-4 w-4 text-orange-600" />
+              <span className="text-sm">{(getWeightedAverageAppreciation(homes)*100).toFixed(1)}% Avg. Appreciation</span>
             </div>
           </div>
 

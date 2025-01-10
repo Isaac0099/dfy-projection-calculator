@@ -1,8 +1,10 @@
 import { AlertCircle, Calculator, TrendingUp } from 'lucide-react';
+import {Card } from "@/components/ui/card";
 
 const EquityCalculationExplainer = () => {
   return (
     <div className="w-full">
+      <Card className="p-3">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle className="text-gray-900 w-4 h-4" />
@@ -52,6 +54,7 @@ const EquityCalculationExplainer = () => {
           </p>
         </div>
       </div>
+      </Card>
     </div>
   );
 };

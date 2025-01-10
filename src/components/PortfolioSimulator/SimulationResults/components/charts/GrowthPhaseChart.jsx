@@ -1,7 +1,7 @@
 import { formatTooltipValue, formatYAxisTick } from "@/lib/utils/utils";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-export const OverviewChart = ({results}) => {
+export const GrowthPhaseChart = ({results}) => {
 
     return(
         <div className="h-64">
@@ -49,4 +49,4 @@ export const OverviewChart = ({results}) => {
     );
 }
 
-export default OverviewChart;
+export default GrowthPhaseChart;

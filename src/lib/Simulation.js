@@ -106,9 +106,9 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   let monthlyIncome = 0;
 
   for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
+    const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
+    const portfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
     if (useEquityIncome) {
-      const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
-
       if (month % 12 === 1) {
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
         const desiredAnnualPayout =
@@ -129,7 +129,7 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
       }
 
       withdrawalData.cumulativeIncome += monthlyIncome;
-      withdrawalData.graphingData.push({ month, monthlyIncome, equity });
+      withdrawalData.graphingData.push({ month, monthlyIncome, equity, portfolioValue });
     } else {
       const rentMetrics = homesCopy.reduce(
         (acc, home) => ({
@@ -144,6 +144,8 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         month,
         monthlyIncome: rentMetrics.rentIncome,
         grossRentIncome: rentMetrics.grossRentIncome,
+        equity: equity,
+        portfolioValue: portfolioValue,
       });
     }
   }

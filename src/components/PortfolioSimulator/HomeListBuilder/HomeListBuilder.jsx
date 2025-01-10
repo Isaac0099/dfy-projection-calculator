@@ -29,11 +29,11 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     // Property-specific form state
     const [currentForm, setCurrentForm] = useState({
         monthOfPurchase: 0,
-        percentDownPayment: 25,
+        percentDownPayment: initialData?.results?.homes[initialData.results.homes.length-1]?.percentDownPayment || 25,
         percentAnnualInterestRate: 6.5,
         loanTermYears: 30,
-        homePrice: initialData?.results?.homes[0]?.initialHomePrice || 280000,
-        percentAnnualHomeAppreciation: initialData?.results?.homes[0]?.percentAnnualHomeAppreciation || 5
+        homePrice: initialData?.results?.homes[initialData.results.homes.length-1]?.initialHomePrice || 280000,
+        percentAnnualHomeAppreciation: initialData?.results?.homes[initialData.results.homes.length-1]?.percentAnnualHomeAppreciation || 5
     });
     
     const [homes, setHomes] = useState(() => {
@@ -86,7 +86,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             currentForm.monthOfPurchase
         );
         const downPaymentAmount = adjustedPrice * (currentForm.percentDownPayment / 100);
-        const closingCosts = currentForm.percentDownPayment !== 100 ? (adjustedPrice * 0.07) : (adjustedPrice * 0.045);
+        const closingCosts = currentForm.percentDownPayment !== 100 ? (adjustedPrice * 0.07) : (adjustedPrice * 0.05);
         return downPaymentAmount + closingCosts;
     }, [currentForm.homePrice, currentForm.percentDownPayment, 
         currentForm.percentAnnualHomeAppreciation, currentForm.monthOfPurchase]);
@@ -319,6 +319,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <SelectItem value="20">20%</SelectItem>
                                         <SelectItem value="25">25%</SelectItem>
                                         <SelectItem value="30">30%</SelectItem>
+                                        <SelectItem value="35">35%</SelectItem>
+                                        <SelectItem value="40">30%</SelectItem>
+                                        <SelectItem value="45">45%</SelectItem>
+                                        <SelectItem value="50">50%</SelectItem>
                                         {growthStrategy === "payOffPrincipal" && (
                                             <SelectItem value = "100">Cash Purchase</SelectItem>
                                         )}
@@ -378,7 +382,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             <InputGroup 
                                 icon={DollarSign} 
                                 label="Total Out of Pocket"
-                                hint= {currentForm.percentDownPayment !== 100 ? "Down payment + closing costs (7%)" : "Down payment + closing costs (4.5% for cash purhcases)"}
+                                hint= {currentForm.percentDownPayment !== 100 ? "Down payment + closing costs (7%)" : "Down payment + closing costs (5.0% for cash purhcases)"}
                                 
                             >
                                 <div className="h-9 px-3 py-2 rounded-md border bg-gray-100 border-gray-950 text-sm font-medium">
@@ -437,10 +441,12 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                             ${Math.round(home.initialHomePrice).toLocaleString()}
                                         </div>
                                         <div className="text-sm text-gray-600">
-                                            Purchase: {home.monthOfPurchase} months from now • 
-                                            {home.percentDownPayment}% down • 
-                                            {home.loanTermYears} yr term • 
-                                            {home.percentAnnualHomeAppreciation}% appreciation
+                                            {`
+                                            Purchase: ${home.monthOfPurchase} months from now • 
+                                            ${home.percentDownPayment !== 100 ? `${home.percentDownPayment}% down •` : "cash purchase •"} 
+                                            ${home.percentDownPayment !== 100 ? `${home.loanTermYears} yr term •` : ""} 
+                                            ${home.percentAnnualHomeAppreciation}% appreciation
+                                            `}
                                         </div>
                                     </div>
                                     <Button
