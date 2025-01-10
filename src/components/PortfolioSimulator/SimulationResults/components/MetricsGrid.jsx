@@ -96,6 +96,12 @@ const MetricsGrid = ({
           value={formatCurrency(results.cumulativeIncome)}
           description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life` : `The sum of all rent income over ${legacyYears} years after expense have been removed`}
         />
+        <MetricCard
+          icon={Banknote}
+          title={growthStrategy === "reinvestment" ? `Average monthly tax-free income` : `Average monthly cash flow during retirement`}
+          value={formatCurrency(results.cumulativeIncome / (legacyYears*12-1))}
+          description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life` : `The sum of all rent income over ${legacyYears} years after expense have been removed`}
+        />
       </Section>
     </div>
   );

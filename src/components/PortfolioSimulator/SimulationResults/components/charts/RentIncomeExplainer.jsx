@@ -26,7 +26,9 @@ const RentIncomeExplainer = () => {
               <div className="flex items-center gap-2 px-2 mb-2">
                 <span className="text-gray-900 font-medium">Appreciated Rent</span>
                 <span className="text-gray-500">=</span>
-                <span className="text-orange-500 font-medium">Initial Rent × Growth Rate</span>
+                <span className="text-orange-500 font-medium">Initial Rent</span>
+                <span className="text-gray-500">x</span>
+                <span className="text-orange-500">Growth Rate</span>
               </div>
               
               <div className="bg-gray-50 rounded border border-gray-200 p-2">

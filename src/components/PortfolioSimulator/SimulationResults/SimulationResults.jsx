@@ -127,7 +127,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
         <TabsContent value="growthPhase">
           <ChartSection 
             title="Your Portfolio During the Growth Phase"
-            description="You can see how using refinances to buy more properties during this period puts you in a much better spot for retirement"
+            description="See your potential portfolio in more detail here"
           >
             <div className="space-y-4">
               <GrowthPhaseExplainer growthStrategy={growthStrategy} />
