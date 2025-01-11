@@ -321,7 +321,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                                         <SelectItem value="25">25%</SelectItem>
                                         <SelectItem value="30">30%</SelectItem>
                                         <SelectItem value="35">35%</SelectItem>
-                                        <SelectItem value="40">30%</SelectItem>
+                                        <SelectItem value="40">40%</SelectItem>
                                         <SelectItem value="45">45%</SelectItem>
                                         <SelectItem value="50">50%</SelectItem>
                                         {growthStrategy === "payOffPrincipal" && (
