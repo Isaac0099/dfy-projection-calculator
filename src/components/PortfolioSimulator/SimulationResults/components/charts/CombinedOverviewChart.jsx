@@ -72,13 +72,13 @@ const CombinedPortfolioChart = ({ results, projectionYears, legacyYears }) => {
             <ReferenceLine 
               x={retirementMonth} 
               stroke="#666"
+              strokeWidth={2}
             //   strokeDasharray="3 3"
               label={{ 
-                value: "Retirement",
-                position: "top",
+                value: "Retirement or Other Goal",
+                position: "insideTopRight",
                 fill: "#666",
                 width: "6",
-                strokeWidth: "2"
 
               }}
             />

@@ -152,18 +152,28 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Retirement Income"
             description="This chart shows your potential monthly income during retirement. Calculated from annual partial refinancing of your highest-equity property or by showing your income from rent, depending on your chosen growth strategy."
           >
-            <div className="space-y-5">
-              { growthStrategy === "reinvestment" &&
-                <EquityCalculationExplainer />
-              }
-              { growthStrategy === "payOffPrincipal" &&
-                <RentIncomeExplainer />
-              }
-              <RetirementIncomeChart 
-                growthStrategy={growthStrategy}
-                results={results}
-              />
-            </div>
+            {legacyYears !== 0 &&
+              <div className="space-y-5">
+                { growthStrategy === "reinvestment" &&
+                  <EquityCalculationExplainer />
+                }
+                { growthStrategy === "payOffPrincipal" &&
+                  <RentIncomeExplainer />
+                }
+                <RetirementIncomeChart 
+                  growthStrategy={growthStrategy}
+                  results={results}
+                />
+              </div>
+            }
+            {legacyYears === 0 &&
+            <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+              <AlertDescription>
+                Not applicable with years in withdrawal period set to 0.
+              </AlertDescription>
+
+            </Alert>
+            }
           </ChartSection>
         </TabsContent>
         

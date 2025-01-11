@@ -144,8 +144,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             setError("Please enter a number of years to retirement between 1 and 60 years");
             return;
         }
-        if (!legacyYears || legacyYears < 1 ) {
-            setError("Please enter a number of years in retirement between 1 and 60");
+        if (legacyYears === undefined || legacyYears === null || legacyYears < 0  || legacyYears > 60) {
+            setError("Please enter a number of years in retirement from 0 to 60");
             return;
         }
         onCalculate({ homes, growthStrategy, projectionYears, legacyYears });
@@ -169,8 +169,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                     <CardContent className="space-y-4">
                         <InputGroup 
                             icon={Calendar} 
-                            label="Years to Retirement (Building Phase)"
+                            label="Years to Retirement or Other Goal (Building Phase) "
                             hint="Period of active investment: 1-60"
+                            description={"This can be how many years until you start taking out money to live on or if you are only concerned with leaving a legacy this can be years you spend building up your wealth for other purposes."}
                         >
                             <Input
                                 type="number"
@@ -204,7 +205,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             label="Growth Strategy"
                             hint="Choose how to utilize property equity"
                             warning="Changing this clears your portfolio"
-                            description="This field determines wheter our simulation focusses on equity based income or rent based income."
+                            description="This field determines whether our simulation focusses on equity based income or rent based income."
                         >
                             <Select
                                 defaultValue={growthStrategy}
