@@ -1,3 +1,5 @@
+// Simulation.js
+
 import House from "@/lib/House";
 import { calculateAnnualIRR } from "./utils/IRRCalculator";
 import { getWeightedAverageAppreciation, copyHomes, formatCurrency } from "./utils/utils";

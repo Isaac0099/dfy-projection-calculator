@@ -3,12 +3,10 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
 import SettingsSummary from './components/SettingsSummary';
-import { formatYAxisTick, formatTooltipValue, formatCurrency } from '@/lib/utils/utils';
 import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
 import GrowthPhaseExplainer from './components/GrowthPhaseExplainer';
 import GrowthPhaseChart from './components/charts/GrowthPhaseChart';
