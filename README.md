@@ -109,4 +109,4 @@ isaac.ch.dev@gmail.com
 
 ## Contact
 
-For questions or inquiries about using this simulator for real estate investment planning, please contact [DFY Contact Information].
+For questions or inquiries about using this simulator for real estate investment planning, please contact Done For You Real Estate in Orem Utah.
