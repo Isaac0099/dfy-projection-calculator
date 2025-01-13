@@ -29,14 +29,6 @@ const SimulationPDFLayout = React.forwardRef(({
     return ((end - start) / start * 100).toFixed(1);
   };
 
-  // Page break style for chart containers
-  const pageBreakStyle = {
-    pageBreakAfter: 'always',
-    pageBreakInside: 'avoid',
-    marginBottom: '30px',
-    minHeight: '800px'  // Ensure consistent page height
-  };
-
   return (
     <div 
       ref={ref} 
@@ -170,7 +162,7 @@ const SimulationPDFLayout = React.forwardRef(({
       </div>
 
       {/* Chart */}
-      <div className="p-8 pt-80">
+      <div className="p-8 pt-96">
         <Card className="border-orange-500 border-t-4">
           <CardHeader className="bg-gray-50">
             <CardTitle className="text-2xl text-gray-900">Portfolio Growth Overview</CardTitle>
