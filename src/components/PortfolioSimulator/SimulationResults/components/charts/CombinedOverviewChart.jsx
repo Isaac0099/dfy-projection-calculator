@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { formatTooltipValue, formatYAxisTick } from '@/lib/utils/utils';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const CombinedPortfolioChart = ({ results, projectionYears, legacyYears }) => {
+const CombinedOverviewChart = ({ results, projectionYears, legacyYears }) => {
   // Combine growth and withdrawal period data
   const combinedData = [
     ...results.graphingData,
@@ -67,7 +67,11 @@ const CombinedPortfolioChart = ({ results, projectionYears, legacyYears }) => {
                 formatter={(value) => formatTooltipValue(value)}
                 labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
             />
-            <Legend verticalAlign="bottom" align="right"/>            
+            <Legend 
+              verticalAlign="top" 
+              align="right"
+              height={28}
+            />            
             {/* Vertical line marking retirement */}
             <ReferenceLine 
               x={retirementMonth} 
@@ -106,4 +110,4 @@ const CombinedPortfolioChart = ({ results, projectionYears, legacyYears }) => {
   );
 };
 
-export default CombinedPortfolioChart;
+export default CombinedOverviewChart;

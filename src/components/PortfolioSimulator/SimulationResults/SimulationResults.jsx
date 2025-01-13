@@ -1,11 +1,13 @@
 // SimulationResults.jsx
 
 import React, { useState } from 'react';
+import { usePDF, Resolution, Margin } from 'react-to-pdf';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
+import SimulationPDFLayout from './components/SimulationPDFLayout';
 import SettingsSummary from './components/SettingsSummary';
 import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
 import GrowthPhaseExplainer from './components/GrowthPhaseExplainer';
@@ -22,19 +24,39 @@ import IncomePotentialExplainer from './components/charts/IncomePotentialExplain
 import RentVMortgageChart from './components/charts/RentVMortgageChart';
 import ChartSection from './components/ChartSection';
 
-
 export const SimulationResults = ({ homes, projectionYears, legacyYears, growthStrategy, results, onReset, onEdit }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const { toPDF, targetRef } = usePDF({
+    method: 'save',
+    resolution: Resolution.HIGH,
+    quality: 1,
+    overrides: {
+      pdf: {
+        compress: false
+      },
+      canvas: {
+        scale: 2,
+        useCORS: true,
+      }
+    },
+    filename: `real-estate-portfolio-simulation-${new Date().toISOString().split('T')[0]}.pdf`,
+    page: {
+      margin: Margin.MEDIUM,
+      format: 'letter',
+      orientation: 'portrait'
+    },
+    resolution: Resolution.MEDIUM,
+  });
 
   // Calculate the changes
   const calculateEquityChange = () => {
-    const start = results.graphingData[results.homes[0].monthOfPurchase].equity; // looking at the first home in our list and seeing when it was purchased so that we know when to check for the first equity value
+    const start = results.graphingData[results.homes[0].monthOfPurchase].equity;
     const end = results.graphingData[projectionYears*12].equity;
     return ((end - start) / start * 100).toFixed(1);
   };
 
   const calculatePortfolioChange = () => {
-    const start = results.graphingData[results.homes[0].monthOfPurchase].portfolioValue; // looking at the first home in our list and seeing when it was purchased so that we know when to check for the first equity value
+    const start = results.graphingData[results.homes[0].monthOfPurchase].portfolioValue;
     const end = results.graphingData[projectionYears*12].portfolioValue;
     return ((end - start) / start * 100).toFixed(1);
   };
@@ -44,10 +66,10 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
       {/* DFY Logo across the top */}
       <LogoBanner />
       
-      {/* Summary of Input Settings Used to Genertate These Results*/}
+      {/* Summary of Input Settings Used to Generate These Results*/}
       <SettingsSummary homes={homes} projectionYears={projectionYears} legacyYears={legacyYears}/>
 
-     {/* All Metrics in Timeline Layout */}
+      {/* All Metrics in Timeline Layout */}
       <MetricsGrid 
         results={results}
         homes={homes}
@@ -104,7 +126,6 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             <span className="hidden md:inline lg:hidden">Compare Investments</span>
             <span className="md:hidden">Compare</span>
           </TabsTrigger>
-          {/* <TabsTrigger value="rent v mortgage">Rent v Mortgage</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="overview">
@@ -112,9 +133,6 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Portfolio Growth"
             description="Track your portfolio value and equity growth over time"
           >
-            {/* <OverviewChart
-              results={results}
-            /> */}
             <CombinedOverviewChart
               results={results}
               projectionYears={projectionYears}
@@ -134,7 +152,6 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
           </ChartSection>
         </TabsContent>
 
-
         <TabsContent value="properties">
           <ChartSection 
             title="Property Growth"
@@ -143,7 +160,6 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             <PropertiesChart results={results} />
           </ChartSection>
         </TabsContent>
-
 
         <TabsContent value="retirement income">
           <ChartSection 
@@ -165,12 +181,11 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
               </div>
             }
             {legacyYears === 0 &&
-            <Alert className="bg-blue-50 border-blue-200 text-blue-800">
-              <AlertDescription>
-                Not applicable with years in withdrawal period set to 0.
-              </AlertDescription>
-
-            </Alert>
+              <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+                <AlertDescription>
+                  Not applicable with years in withdrawal period set to 0.
+                </AlertDescription>
+              </Alert>
             }
           </ChartSection>
         </TabsContent>
@@ -233,16 +248,17 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             </div>
           </ChartSection>
         </TabsContent>
-
-        <TabsContent value="rent v mortgage">
-          <ChartSection 
-            title="Rents Vs Mortages"
-            description=""
-          >
-            <RentVMortgageChart results={results} />
-          </ChartSection>
-        </TabsContent>
       </Tabs>
+
+      {/* PDF Layout - positioned off-screen but fully rendered */}
+      <SimulationPDFLayout
+        ref={targetRef}
+        homes={homes}
+        projectionYears={projectionYears}
+        legacyYears={legacyYears}
+        growthStrategy={growthStrategy}
+        results={results}
+      />
 
       {/* Action Buttons */}
       <div className="flex justify-end space-x-3">
@@ -251,6 +267,12 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
           className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
         >
           Edit Simulation
+        </button>
+        <button
+          onClick={() => toPDF()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+        >
+          Export PDF
         </button>
         <button
           onClick={onReset}

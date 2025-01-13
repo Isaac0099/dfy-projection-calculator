@@ -64,7 +64,7 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
             formatter={(value) => formatTooltipValue(value)}
             labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
           />
-          <Legend verticalAlign='top' height={30}/>
+          <Legend verticalAlign='top' height={36}/>
           {reinvesting && 
             <Line 
               type="monotone" 

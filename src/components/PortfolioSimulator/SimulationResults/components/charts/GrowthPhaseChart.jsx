@@ -42,7 +42,11 @@ export const GrowthPhaseChart = ({results}) => {
                     strokeWidth={2}
                     dot={false}
                   />
-                  <Legend verticalAlign="top" align="right"/>
+                  <Legend 
+                    verticalAlign="top" 
+                    align="right"
+                    height={28}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
