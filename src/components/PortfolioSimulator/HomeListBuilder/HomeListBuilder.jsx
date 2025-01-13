@@ -51,18 +51,38 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   });
 
   const [homes, setHomes] = useState(() => {
-    // If we already have homes in initialData, convert them to actual House instances
     if (!initialData?.homes) return [];
-    return initialData.homes.map(home => new House(
-      home.monthOfPurchase,
-      home.initialHomePrice,
-      home.percentAnnualHomeAppreciation,
-      home.percentDownPayment,
-      home.percentAnnualInterestRate,
-      home.loanTermYears,
-      home.willReinvest,
-      generateId()
-    ));
+    
+    return initialData.homes.map(home => {
+      // Create base configuration that works for both new and existing properties
+      const baseConfig = {
+        id: generateId(),
+        percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
+        percentAnnualInterestRate: home.percentAnnualInterestRate,
+        willReinvest: home.willReinvest,
+        isExistingProperty: home.isExistingProperty,
+      };
+  
+      // Add specific fields based on whether it's an existing or new property
+      const homeConfig = home.isExistingProperty
+        ? {
+            ...baseConfig,
+            datePurchased: home.datePurchased,
+            originalLoanAmount: home.originalLoanAmount,
+            originalLoanTermYears: home.originalLoanTermYears,
+            monthsPaidSoFar: home.monthsPaidSoFar,
+            currentHomeValue: home.initialHomePrice, // For existing properties, initialHomePrice represents current value
+          }
+        : {
+            ...baseConfig,
+            monthOfPurchase: home.monthOfPurchase,
+            homePrice: home.initialHomePrice,
+            percentDownPayment: home.percentDownPayment,
+            loanTermYears: home.loanTermYears,
+          };
+  
+      return new House(homeConfig);
+    });
   });
 
   const [error, setError] = useState("");

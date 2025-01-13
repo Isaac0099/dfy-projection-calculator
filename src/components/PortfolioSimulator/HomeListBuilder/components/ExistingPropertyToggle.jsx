@@ -12,7 +12,7 @@ const ExistingPropertyToggle = ({ isChecked, onToggle }) => {
       />
       <Label
         htmlFor="property-ownership"
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className="text-sm font-medium text-gray-800 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         This is a Previously Owned Investment Property
       </Label>
