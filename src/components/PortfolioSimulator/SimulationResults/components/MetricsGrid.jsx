@@ -27,17 +27,26 @@ const MetricsGrid = ({
       <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
+  
+  let thereIsAHomeFromBeforeTheSimulation = false;
+  for (let home of homes) {
+    if (home.isExistingProperty) {
+      thereIsAHomeFromBeforeTheSimulation = true;
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {/* Initial Investment Section */}
       <Section title="Initial Investment" icon={Wallet}>
+        {!thereIsAHomeFromBeforeTheSimulation &&
         <MetricCard
           icon={DollarSign}
           title="Total Cash Investment"
           value={formatCurrency(results.totalOutOfPocket)}
           description="Total cash you put towards down payments, closing costs and getting DFY's help"
         />
+        }
         <MetricCard
           icon={Home}
           title="Initial Property Count"
@@ -68,12 +77,14 @@ const MetricsGrid = ({
           value={results.homes.length}
           description={`Starting with ${homes.length} ${homes.length === 1 ? 'property' : 'properties'}`}
         />
+        {!thereIsAHomeFromBeforeTheSimulation &&
         <MetricCard
           icon={TrendingUp}
           title="Annual ROI Based on Equity"
           value={`${results.annualPercentReturnFromEquity.toFixed(1)}%`}
           description="Return on investment during your building phase based on an IRR calculation reflecting equity value"
         />
+        }
       </Section>
 
       {/* Legacy Section */}

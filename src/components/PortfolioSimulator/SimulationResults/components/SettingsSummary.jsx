@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChevronDown, ChevronUp, Settings, Clock, Percent, Home as HomeIcon } from 'lucide-react';
-import { getWeightedAverageAppreciation } from '@/lib/utils/utils';
+import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
 const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
   const [expanded, setExpanded] = useState(false);
@@ -65,7 +65,7 @@ const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
                     Property {index + 1}: ${home.initialHomePrice.toLocaleString()}
                   </div>
                   <div className="text-gray-600">
-                    Month {home.monthOfPurchase} • {home.percentDownPayment}% down • {home.percentAnnualHomeAppreciation}% apr
+                    {home.isExistingProperty ? `${home.monthsPaidSoFar} months ago • Original Loan Amount ${formatCurrency(home.originalLoanAmount)} • ${home.percentAnnualHomeAppreciation}% apr` : `Month ${home.monthOfPurchase} • ${home.percentDownPayment}% down • ${home.percentAnnualHomeAppreciation}% apr`}
                   </div>
                 </div>
               ))}

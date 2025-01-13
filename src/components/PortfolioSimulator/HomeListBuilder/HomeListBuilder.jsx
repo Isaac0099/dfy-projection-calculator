@@ -12,6 +12,7 @@ import WelcomeBanner from "./components/WelcomeBanner";
 import { Trash2, Plus, Home, DollarSign, Calendar, Percent, TrendingUp } from 'lucide-react';
 import House from '@/lib/House';
 import { generateId } from '@/lib/utils/utils.js';
+import ExistingPropertyToggle from './components/ExistingPropertyToggle';
 
 export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // =====================
@@ -321,15 +322,15 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
           <CardContent className="space-y-6">
 
             {/* Toggle for existing property */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                name="isExistingProperty"
-                checked={currentForm.isExistingProperty}
-                onChange={toggleExistingProperty}
-              />
-              <span>Already Own This Property?</span>
-            </div>
+            <ExistingPropertyToggle
+                isChecked={currentForm.isExistingProperty}
+                onToggle={(checked) => {
+                    setCurrentForm(prev => ({
+                    ...prev,
+                    isExistingProperty: checked
+                    }));
+                }}
+            />
 
             {/* NEW PURCHASE: 2 rows x 3 columns */}
             {!currentForm.isExistingProperty && (
