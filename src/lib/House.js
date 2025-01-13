@@ -3,236 +3,297 @@
 import AmortizationCalculator from "./AmortizationCalculator.js";
 
 class House {
-  constructor(
-    monthOfPurchase,
-    homePrice,
-    percentAnnualHomeAppreciation,
-    percentDownPayment,
-    percentAnnualInterestRate,
-    loanTermYears,
-    willReinvest,
-    id
-  ) {
-    this.monthOfPurchase = monthOfPurchase;
-    this.monthOfLatestMortgageOrRefinance = monthOfPurchase;
-    this.initialHomePrice = homePrice;
+  constructor({
+    // Common fields
+    id,
+    percentAnnualHomeAppreciation = 5,
+    percentDownPayment = 25,
+    percentAnnualInterestRate = 6.5,
+    loanTermYears = 30,
+    willReinvest = false,
+
+    // Distinguish new vs. existing property
+    isExistingProperty = false,
+
+    // For NEW properties
+    monthOfPurchase = 0, // e.g., 12 (purchase in month 12)
+    homePrice = 0, // the “initial” price for a new purchase
+
+    // For EXISTING properties
+    datePurchased = null, // user’s input date (not strictly required in the sim)
+    originalLoanAmount = 0,
+    originalLoanTermYears = 30,
+    monthsPaidSoFar = 0, // how many payments have already been made
+    currentHomeValue = 0, // what the user says it’s worth “today”
+  }) {
+    this.id = id;
+    this.isExistingProperty = isExistingProperty;
+
+    // Shared fields
     this.percentAnnualHomeAppreciation = percentAnnualHomeAppreciation;
-    this.percentDownPayment = percentDownPayment;
     this.percentAnnualInterestRate = percentAnnualInterestRate;
+    this.loanTermYears = loanTermYears;
+    this.percentDownPayment = percentDownPayment;
+    this.willReinvest = willReinvest;
+
+    // We always have an instance of our amortization calculator
     this.amoCalc = new AmortizationCalculator();
-    if (this.percentDownPayment < 100) {
-      this.loanTermYears = loanTermYears;
-      this.loanAmount = (homePrice * (100 - percentDownPayment)) / 100;
+
+    // IMPORTANT: always define refinanceSchedule as an array
+    this.refinanceSchedule = [];
+
+    if (isExistingProperty) {
+      // -----------------------------
+      // Existing property logic
+      // -----------------------------
+      // We treat "monthOfPurchase" as 0 since it's already owned at the start.
+      this.monthOfPurchase = 0;
+
+      // The user provides "currentHomeValue" as the property value at month 0 of the sim
+      this.initialHomePrice = currentHomeValue;
+
+      // This is the original loan amount from when they first purchased
+      // We’ll create a full schedule for the entire originalLoanTermYears
+      this.loanAmount = originalLoanAmount;
+
+      // Adding this guard clause because I've been having bugs with 0 as a loan ammount
+      if (!this.loanAmount || this.loanAmount <= 0) {
+        throw new Error("Original loan amount must be provided for existing properties");
+      }
+
+      // Generate the full mortgage schedule
       this.schedule = this.amoCalc.generateAmortizationSchedule(
         this.loanAmount,
         this.percentAnnualInterestRate,
-        this.loanTermYears
+        originalLoanTermYears
       );
-    } else if (this.percentDownPayment === 100) {
-      this.loanTermYears = 0;
-      this.loanAmount = 0;
-      this.schedule = [];
+
+      // Then slice off the payments they’ve already made
+      if (monthsPaidSoFar < this.schedule.length) {
+        this.schedule = this.schedule.slice(monthsPaidSoFar);
+      } else {
+        // They might have fully paid off or nearly so
+        this.schedule = [];
+      }
+
+      // Mark the latest refinance as happening at month 0
+      this.monthOfLatestMortgageOrRefinance = 0;
+
+      // For rent calculations, we base it on the “current” home value
+      this.initialMonthlyRent = this.initialHomePrice * 0.0067;
+
+      // (Optional) store these if we want them for reference (may delete later)
+      this.datePurchased = datePurchased;
+      this.originalLoanAmount = originalLoanAmount;
+      this.originalLoanTermYears = originalLoanTermYears;
+      this.monthsPaidSoFar = monthsPaidSoFar;
+      this.currentHomeValue = currentHomeValue;
+    } else {
+      // -----------------------------
+      // New purchase logic
+      // -----------------------------
+      this.monthOfPurchase = monthOfPurchase;
+      this.initialHomePrice = homePrice;
+      this.monthOfLatestMortgageOrRefinance = monthOfPurchase;
+
+      if (this.percentDownPayment < 100) {
+        // Typical financed purchase
+        this.loanAmount = (homePrice * (100 - this.percentDownPayment)) / 100;
+        console.log("loanAmount:", this.loanAmount);
+        this.schedule = this.amoCalc.generateAmortizationSchedule(
+          this.loanAmount,
+          this.percentAnnualInterestRate,
+          this.loanTermYears
+        );
+      } else {
+        // Cash purchase (100% down)
+        this.loanTermYears = 0;
+        this.loanAmount = 0;
+        this.schedule = [];
+      }
+
+      // Base initial monthly rent on the initial home price
+      this.initialMonthlyRent = this.initialHomePrice * 0.0067;
     }
-    this.refinanceSchedule = [];
-    this.willReinvest = willReinvest;
-    this.initialMonthlyRent = this.initialHomePrice * 0.0067; // assuming initial rent value is about 0.67% of the inital price
-    this.id = id;
   }
 
+  // ====================
+  // Methods
+  // ====================
+
+  // 1) Home Value
   getCurrentHomeValue(currentMonth) {
+    // For both new and existing:
+    // “initialHomePrice” is the value at the moment of the house’s “start” in the sim
     const monthsSincePurchase = currentMonth - this.monthOfPurchase;
     return this.initialHomePrice * Math.pow(1 + this.percentAnnualHomeAppreciation / 100, monthsSincePurchase / 12);
   }
 
+  // 2) Equity
   getCurrentEquity(currentMonth) {
     const homeValue = this.getCurrentHomeValue(currentMonth);
     const remainingBalance = this.getRemainingBalance(currentMonth);
     return homeValue - remainingBalance;
   }
 
+  // 3) Refinance Costs
   getCurrentRefiCost(currentMonth) {
+    // Example logic: grows slightly each year
     return 7000 * Math.pow(1.025, currentMonth / 12);
   }
 
+  // 4) Mortgage Payment
   getCurrentMortgagePayment(currentMonth) {
     const monthsSinceMortgageOrRefinance = currentMonth - this.monthOfLatestMortgageOrRefinance;
     if (monthsSinceMortgageOrRefinance < 0) {
       return 0;
     }
-    if (monthsSinceMortgageOrRefinance > this.schedule.length) {
+    // If the user has fully paid off or we’re beyond the schedule length
+    if (monthsSinceMortgageOrRefinance >= this.schedule.length) {
       return 0;
     }
-    if (monthsSinceMortgageOrRefinance < this.schedule.length) {
-      return this.schedule[1].paymentAmount;
-    }
+    return this.schedule[1]?.paymentAmount || 0;
   }
 
+  // 5) total out-of-pocket if purchased new (not typically used for existing)
   getTOPValue() {
     const fractionOfHomePriceForTOP = (this.percentDownPayment + 7) / 100;
     return this.initialHomePrice * fractionOfHomePriceForTOP;
   }
 
+  // 6) Remaining Balance
   getRemainingBalance(currentMonth) {
-    let remainingBalance = 0;
     if (this.percentDownPayment === 100) {
-      return 0;
+      return 0; // paid in cash
     }
-    const monthsIntoAmoSchedule = currentMonth - this.monthOfLatestMortgageOrRefinance;
-    if (monthsIntoAmoSchedule < this.schedule.length) {
-      remainingBalance = this.schedule[monthsIntoAmoSchedule].remainingBalance;
+    const monthsIntoAmo = currentMonth - this.monthOfLatestMortgageOrRefinance;
+    if (monthsIntoAmo < 0) {
+      return this.schedule.length > 0 ? this.schedule[0].remainingBalance : 0;
     }
-    return remainingBalance;
+    if (monthsIntoAmo < this.schedule.length) {
+      return this.schedule[monthsIntoAmo].remainingBalance;
+    }
+    // fully paid
+    return 0;
   }
 
+  // 7) isPaidOff
   isCurrentlyPaidOff(currentMonth) {
-    if (currentMonth - this.monthOfLatestMortgageOrRefinance > this.schedule.length) {
-      return true;
-    }
-    return false;
+    return currentMonth - this.monthOfLatestMortgageOrRefinance > this.schedule.length;
   }
-  /**
-   * Calculates refinance potential payout
-   * @param {number} percentAnnualHomeAppreciationRate - Annual home appreciation rate as a percentage
-   * @param {number} monthsSinceMortgageOrRefinance - Number of months since original mortgage or last refinance
-   * @returns {number} payout {number} - The potential cash payout from refinancing (after costs)
-   **/
+
+  // 8) Potential Refinance Payout
   getPossibleRefinancePayout(currentMonth) {
     if (currentMonth === this.monthOfLatestMortgageOrRefinance) {
-      throw new Error("can't get possible refinance details for the month you do a refinance");
+      throw new Error("Cannot check refinance potential in the same month you refinanced");
     }
-    ///// returning 0 if home is not a refinancing home.
-    if (this.willReinvest === false) {
-      return 0;
+    if (!this.willReinvest) {
+      return 0; // If user doesn’t intend to reinvest, we skip
     }
-    const currentHomeValue =
-      this.initialHomePrice *
-      Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
-    const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
-    const payout = grossPayout - remainingPrincipalOnMortgage; // we are working under the assumption that the refinance is done immediately after the mortgage payment for this month
 
-    return payout;
+    const currentHomeValue = this.getCurrentHomeValue(currentMonth);
+    const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);
+    const remainingPrincipal = this.getRemainingBalance(currentMonth);
+    const netPayout = grossPayout - remainingPrincipal;
+    return netPayout;
   }
 
-  /**
-   * Does a max refinance, dropping the homes equity to 25% of the home's value and putting it on a 30 year mortgage It assumes same interest rate as currrent one
-   * @param {Number} currentMonth
-   * @returns {Number} payment
-   */
+  // 9) Do a Refinance (max 75% LTV)
   doARefinance(currentMonth) {
-    // Payout information
-    const currentHomeValue =
-      this.initialHomePrice *
-      Math.pow(1 + this.percentAnnualHomeAppreciation / 100, (currentMonth - this.monthOfPurchase) / 12);
+    // Calculate how much we can pull out
+    const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);
-    const remainingPrincipalOnMortgage = this.getRemainingBalance(currentMonth);
-    const payoutAfterPayingOffCurrentMortgage = grossPayout - remainingPrincipalOnMortgage;
+    const remainingPrincipal = this.getRemainingBalance(currentMonth);
+    const payoutAfterPayoff = grossPayout - remainingPrincipal;
 
-    // New loan info (updating class fields)
+    // Update loan info: new 30-year mortgage
     this.monthOfLatestMortgageOrRefinance = currentMonth;
     this.loanAmount = currentHomeValue * 0.75;
     this.loanTermYears = 30;
-    this.percentDownPayment = 25;
+    this.percentDownPayment = 25; // effectively 25% equity
     this.schedule = this.amoCalc.generateAmortizationSchedule(
       this.loanAmount,
-      Number(this.percentAnnualInterestRate),
-      Number(this.loanTermYears)
+      this.percentAnnualInterestRate,
+      this.loanTermYears
     );
-    this.refinanceSchedule.push({ month: currentMonth, amount: payoutAfterPayingOffCurrentMortgage });
 
-    return payoutAfterPayingOffCurrentMortgage;
+    // Log it
+    this.refinanceSchedule.push({ month: currentMonth, amount: payoutAfterPayoff });
+
+    return payoutAfterPayoff;
   }
 
-  /* Attempts to refinance the house to get a specific dollar amount out.
-   * @param {number} currentMonth - The current month in the simulation
-   * @param {number} desiredAmount - The amount we want to get from the refinance
-   * @returns {number} The actual amount we can get from the refinance (0 if not possible)
-   */
+  // 10) Refinance for a Desired Amount
   refinanceForAmount(currentMonth, desiredAmount) {
     if (currentMonth === this.monthOfLatestMortgageOrRefinance) {
-      throw new Error("can't get possible refinance details for the month you do a refinance");
+      throw new Error("Can't do multiple refinances in the same month");
     }
-    // First check if we have enough equity to do any refinance
+    // If user doesn't want reinvest, skip
+    if (!this.willReinvest) return 0;
+
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const currentBalance = this.getRemainingBalance(currentMonth);
     const refiCost = this.getCurrentRefiCost(currentMonth);
 
-    // We need the refinance to:
-    // 1. Pay off current mortgage (currentBalance)
-    // 2. Cover refinance costs (refiCost)
-    // 3. Provide the desired amount (desiredAmount)
-    // 4. Leave at least 25% equity in the home
-
-    const maxNewLoanAmount = currentHomeValue * 0.75; // Can't borrow more than 75% of value
+    const maxNewLoan = currentHomeValue * 0.75;
     const totalNeeded = currentBalance + desiredAmount + refiCost;
 
-    // Check if this is possible
-    // if not we'll do a refiance for as much as we can
-    if (totalNeeded > maxNewLoanAmount) {
-      // Can't get desired amount - calculate max we could get
-      const maxPossiblePayout = Math.max(0, maxNewLoanAmount - currentBalance - refiCost);
-      // if the payout would be negative after costs we don't do a refinance and return 0;
+    // If we cannot get the desired amount, see if partial is possible
+    if (totalNeeded > maxNewLoan) {
+      const maxPossiblePayout = Math.max(0, maxNewLoan - currentBalance - refiCost);
       if (maxPossiblePayout <= 0) {
-        return 0;
+        return 0; // no refinance
       }
+      // proceed with partial
       this.monthOfLatestMortgageOrRefinance = currentMonth;
-      this.loanAmount = maxNewLoanAmount;
-      this.schedule = this.amoCalc.generateAmortizationSchedule(
-        this.loanAmount,
-        Number(this.percentAnnualInterestRate),
-        30
-      );
+      this.loanAmount = maxNewLoan;
+      this.schedule = this.amoCalc.generateAmortizationSchedule(this.loanAmount, this.percentAnnualInterestRate, 30);
+      this.refinanceSchedule.push({
+        month: currentMonth,
+        amount: maxPossiblePayout,
+      });
       return maxPossiblePayout;
     }
 
-    // If we get here, we can do the refinance for the desired amount
-    // Update the house's state
+    // Otherwise, we can get the desired amount
     this.monthOfLatestMortgageOrRefinance = currentMonth;
-    this.loanTermYears = 30;
     this.loanAmount = totalNeeded;
-    this.schedule = this.amoCalc.generateAmortizationSchedule(
-      this.loanAmount,
-      Number(this.percentAnnualInterestRate),
-      30 // Reset to 30 year term for refinance
-    );
-
-    // Record the refinance
+    this.loanTermYears = 30;
+    this.schedule = this.amoCalc.generateAmortizationSchedule(this.loanAmount, this.percentAnnualInterestRate, 30);
     this.refinanceSchedule.push({
       month: currentMonth,
       amount: desiredAmount,
     });
-
     return desiredAmount;
   }
 
+  // 11) Rent
   calculateMonthlyRent(currentMonth) {
-    // Calculate rent appreciation
+    // simple assumption: rent grows at 3%/year
     const rentAppreciationRate = 1.03;
     const monthsSincePurchase = currentMonth - this.monthOfPurchase;
-    const appreciatedRent = this.initialMonthlyRent * Math.pow(rentAppreciationRate, monthsSincePurchase / 12);
-
-    return appreciatedRent;
+    return this.initialMonthlyRent * Math.pow(rentAppreciationRate, monthsSincePurchase / 12);
   }
 
+  // 12) Net Rental Income
   calculateNetRentalIncome(currentMonth) {
     let totalExpenses = 0;
-    // Only calculate for paid off homes
     const remainingBalance = this.getRemainingBalance(currentMonth);
-    if (remainingBalance > 0) {
+    // If not paid off, mortgage payment is an expense
+    if (remainingBalance > 0 && this.schedule.length > 1) {
       totalExpenses += this.schedule[1].paymentAmount;
     }
 
     const grossRent = this.calculateMonthlyRent(currentMonth);
 
-    // Operating expenses breakdown
+    // Operating expenses (property mgmt, taxes, etc.)
     const expenses = {
-      management: 99 * Math.pow(1.025, currentMonth / 12), // $99 per month * inflation adjustment for property management
-      propertyTax: grossRent * 0.14, // 14% for property tax
-      insurance: grossRent * 0.05, // 5% for insurance
-      misc: grossRent * 0.05, // 5% for maintenance and vacancies
+      management: 99 * Math.pow(1.025, currentMonth / 12), // example inflation
+      propertyTax: grossRent * 0.14,
+      insurance: grossRent * 0.05,
+      misc: grossRent * 0.05,
     };
-
-    totalExpenses += Object.values(expenses).reduce((sum, expense) => sum + expense, 0);
+    totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
 
     return grossRent - totalExpenses;
   }

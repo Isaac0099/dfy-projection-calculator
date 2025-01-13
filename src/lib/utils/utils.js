@@ -102,16 +102,34 @@ export function getWeightedAverageAppreciation(homes) {
 export const copyHomes = (homes) => {
   let homesCopy = [];
   for (let home of homes) {
-    const newHome = new House(
-      home.monthOfPurchase,
-      home.initialHomePrice,
-      home.percentAnnualHomeAppreciation,
-      home.percentDownPayment,
-      home.percentAnnualInterestRate,
-      home.loanTermYears,
-      home.willReinvest,
-      home.id
-    );
+    // Create base configuration that works for both new and existing properties
+    const baseConfig = {
+      id: home.id,
+      percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
+      percentAnnualInterestRate: home.percentAnnualInterestRate,
+      willReinvest: home.willReinvest,
+      isExistingProperty: home.isExistingProperty,
+    };
+
+    // Add specific fields based on whether it's an existing or new property
+    const homeConfig = home.isExistingProperty
+      ? {
+          ...baseConfig,
+          datePurchased: home.datePurchased,
+          originalLoanAmount: home.originalLoanAmount,
+          originalLoanTermYears: home.originalLoanTermYears,
+          monthsPaidSoFar: home.monthsPaidSoFar,
+          currentHomeValue: home.initialHomePrice, // For existing properties, initialHomePrice is their current value
+        }
+      : {
+          ...baseConfig,
+          monthOfPurchase: home.monthOfPurchase,
+          homePrice: home.initialHomePrice,
+          percentDownPayment: home.percentDownPayment,
+          loanTermYears: home.loanTermYears,
+        };
+
+    const newHome = new House(homeConfig);
 
     // Copy over current mortgage state
     newHome.monthOfLatestMortgageOrRefinance = home.monthOfLatestMortgageOrRefinance;

@@ -12,10 +12,12 @@ const calculateTotalOutOfPocket = (homes) => {
 };
 
 const createInitialCashflows = (homes) => {
-  return homes.map((home) => ({
-    month: home.monthOfPurchase,
-    amount: -(home.initialHomePrice * (home.percentDownPayment + 7)) / 100,
-  }));
+  return homes
+    .filter((home) => !home.isExistingProperty) // only brand-new purchases
+    .map((home) => ({
+      month: home.monthOfPurchase,
+      amount: -(home.initialHomePrice * (home.percentDownPayment + 7)) / 100,
+    }));
 };
 
 const processNewHomesPurchases = (month, startingHomes) => {
@@ -39,23 +41,23 @@ const processRefinancing = (month, existingHomes) => {
     if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
       const payout = home.doARefinance(month);
       newHomesFromRefinancing.push(
-        new House(
-          month,
-          home.getCurrentHomeValue(month),
-          home.percentAnnualHomeAppreciation,
-          home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
-          home.percentAnnualInterestRate,
-          home.loanTermYears,
-          home.willReinvest,
-          Date.now()
-        )
+        new House({
+          id: Date.now(),
+          isExistingProperty: false,
+          monthOfPurchase: month,
+          homePrice: home.getCurrentHomeValue(month),
+          percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
+          percentDownPayment: home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
+          percentAnnualInterestRate: home.percentAnnualInterestRate,
+          loanTermYears: home.loanTermYears,
+          willReinvest: home.willReinvest,
+        })
       );
     }
   }
 
   return newHomesFromRefinancing;
 };
-
 const calculateMonthlyMetrics = (month, homes) => {
   const metrics = {
     propertyCount: homes.length,

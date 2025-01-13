@@ -33,7 +33,6 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
         totalRentAddition += results.graphingData[month].rentIncome
         realEstateValue += totalRentAddition;
       }
-      console.log(`totalRentAddition: ${totalRentAddition}`)
       data.push({
         month,
         'Real Estate': realEstateValue,
@@ -43,7 +42,6 @@ const ComparisonChart = ({ projectionYears, equityData, initialHomes, results}) 
         'Savings Account': savingsValue
       });
     }
-    console.log(results.graphingData)
     return data;
   };
 

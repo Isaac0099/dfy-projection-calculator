@@ -12,11 +12,7 @@ class AmortizationCalculator {
    * @returns {number} Monthly payment amount
    */
   calculateMonthlyPayment(principal, annualInterestRate, loanTermYears) {
-    if (
-      typeof principal !== "number" ||
-      typeof annualInterestRate !== "number" ||
-      typeof loanTermYears !== "number"
-    ) {
+    if (typeof principal !== "number" || typeof annualInterestRate !== "number" || typeof loanTermYears !== "number") {
       throw new Error("All parameters must be numbers");
     }
     if (principal <= 0 || annualInterestRate <= 0 || loanTermYears <= 0) {
@@ -26,8 +22,7 @@ class AmortizationCalculator {
     const numberOfPayments = loanTermYears * 12;
     // Calculate without rounding for internal use
     const monthlyPayment =
-      (principal *
-        (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
+      (principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
     // Round only for display
     return this.roundDisplay(monthlyPayment);
@@ -51,26 +46,28 @@ class AmortizationCalculator {
    *  }
    */
   generateAmortizationSchedule(principal, annualInterestRate, loanTermYears) {
-    if (
-      typeof principal !== "number" ||
-      typeof annualInterestRate !== "number" ||
-      typeof loanTermYears !== "number"
-    ) {
+    principal = Number(principal);
+    annualInterestRate = Number(annualInterestRate);
+    loanTermYears = Number(loanTermYears);
+
+    if (typeof principal !== "number" || typeof annualInterestRate !== "number" || typeof loanTermYears !== "number") {
       throw new Error(`All amo calcl parameters must be numbers \n 
-                      principal: ${typeof(principal)} \n
-                      interest rate: ${typeof(annualInterestRate)} \n
-                      loan term; ${typeof(loanTermYears)}`);
+                      principal: ${typeof principal} \n
+                      interest rate: ${typeof annualInterestRate} \n
+                      loan term; ${typeof loanTermYears}`);
     }
 
     if (principal <= 0 || annualInterestRate <= 0 || loanTermYears <= 0) {
-      throw new Error("All amo calc parameters must be positive numbers");
+      throw new Error(`All amo calc parameters must be positive numbers \n
+                      principal: ${principal} \n
+                      interest rate: ${annualInterestRate} \n
+                      loan term; ${loanTermYears}`);
     }
 
     const monthlyRate = annualInterestRate / 100 / 12;
     const numberOfPayments = loanTermYears * 12;
     const exactMonthlyPayment =
-      (principal *
-        (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
+      (principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
 
     let schedule = [];
@@ -85,8 +82,8 @@ class AmortizationCalculator {
       principalPayment: 0,
       interestPayment: 0,
       totalInterest: 0,
-      remainingBalance: this.roundDisplay(remainingBalance)});
-
+      remainingBalance: this.roundDisplay(remainingBalance),
+    });
 
     for (let month = 1; month <= numberOfPayments; month++) {
       const isLastPayment = month === numberOfPayments;
@@ -136,11 +133,7 @@ class AmortizationCalculator {
    * @returns {Object} Total cost breakdown {monthlyPayment, totalPayments, totalPrincipal, totalInterest, totalCost}
    */
   calculateLoanCosts(principal, annualInterestRate, loanTermYears) {
-    if (
-      typeof principal !== "number" ||
-      typeof annualInterestRate !== "number" ||
-      typeof loanTermYears !== "number"
-    ) {
+    if (typeof principal !== "number" || typeof annualInterestRate !== "number" || typeof loanTermYears !== "number") {
       throw new Error("All parameters must be numbers");
     }
 
@@ -148,21 +141,12 @@ class AmortizationCalculator {
       throw new Error("All parameters must be positive numbers");
     }
 
-    const schedule = this.generateAmortizationSchedule(
-      principal,
-      annualInterestRate,
-      loanTermYears
-    );
+    const schedule = this.generateAmortizationSchedule(principal, annualInterestRate, loanTermYears);
     const lastPayment = schedule[schedule.length - 1];
-    const baseMonthlyPayment = this.calculateMonthlyPayment(
-      principal,
-      annualInterestRate,
-      loanTermYears
-    );
+    const baseMonthlyPayment = this.calculateMonthlyPayment(principal, annualInterestRate, loanTermYears);
 
     // Calculate exact total cost
-    const exactTotalCost =
-      baseMonthlyPayment * (loanTermYears * 12 - 1) + lastPayment.paymentAmount;
+    const exactTotalCost = baseMonthlyPayment * (loanTermYears * 12 - 1) + lastPayment.paymentAmount;
 
     return {
       monthlyPayment: baseMonthlyPayment,
@@ -179,11 +163,7 @@ class AmortizationCalculator {
     if (value === undefined || value === null || isNaN(value)) {
       throw new Error("Invalid value provided for rounding");
     }
-    return Number(
-      Math.round(value + "e" + this.displayDecimals) +
-        "e-" +
-        this.displayDecimals
-    );
+    return Number(Math.round(value + "e" + this.displayDecimals) + "e-" + this.displayDecimals);
   }
 }
 
