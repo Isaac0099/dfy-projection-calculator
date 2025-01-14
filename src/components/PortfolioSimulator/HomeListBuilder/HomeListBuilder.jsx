@@ -570,7 +570,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                     <Input
                       type="text"
                       name="percentAnnualInterestRate"
-                      value={formatNumberWithCommas(currentForm.percentAnnualInterestRate)}
+                      value={currentForm.percentAnnualInterestRate}
                       onChange={handleInputChange}
                     />
                   </InputGroup>
@@ -583,7 +583,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                     <Input
                       type="text"
                       name="percentAnnualHomeAppreciation"
-                      value={formatNumberWithCommas(currentForm.percentAnnualHomeAppreciation)}
+                      value={currentForm.percentAnnualHomeAppreciation}
                       onChange={handleInputChange}
                     />
                   </InputGroup>
@@ -682,7 +682,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                       </div>
                       <div className="text-sm text-gray-600">
                         {home.isExistingProperty
-                          ? `Purchased ~${monthsAgo} months ago • Rate: ${home.percentAnnualInterestRate}%`
+                          ? `Purchased ~${monthsAgo} months ago • ${home.percentAnnualHomeAppreciation}% Future Appreciation •  ${home.percentAnnualInterestRate}% Interest Rate`
                           : `Purchase in ${home.monthOfPurchase} months • ${
                               home.percentDownPayment !== 100
                                 ? `${home.percentDownPayment}% down • ${home.loanTermYears}y term •`
