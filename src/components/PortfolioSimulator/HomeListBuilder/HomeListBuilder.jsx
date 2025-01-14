@@ -38,8 +38,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     loanTermYears: 30,
     
     // Common to both:
-    percentAnnualInterestRate: 6.5,
-    percentAnnualHomeAppreciation: 5,
+    percentAnnualInterestRate: "6.5",
+    percentAnnualHomeAppreciation: "5.0",
 
     // Fields for existing property:
     isExistingProperty: false,
@@ -92,24 +92,56 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // =====================
 
   // a) Convert input to numeric with commas
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   // Remove commas:
+  //   const rawValue = value.replace(/,/g, '');
+  //   // If it's empty or just '.', let it be so user can type
+  //   if (rawValue === '' || rawValue === '.') {
+  //     setCurrentForm(prev => ({ ...prev, [name]: rawValue }));
+  //     return;
+  //   }
+  //   // Attempt parse:
+  //   const numValue = parseFloat(rawValue);
+  //   if (!isNaN(numValue)) {
+  //     setCurrentForm((prev) => ({ ...prev, [name]: numValue }));
+  //   } else {
+  //     // fallback to empty or do nothing
+  //     setCurrentForm(prev => ({ ...prev, [name]: '' }));
+  //   }
+  // };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Remove commas:
-    const rawValue = value.replace(/,/g, '');
-    // If it's empty or just '.', let it be so user can type
-    if (rawValue === '' || rawValue === '.') {
-      setCurrentForm(prev => ({ ...prev, [name]: rawValue }));
+    
+    // Special handling for interest and appreciation rates
+    if (name === 'percentAnnualInterestRate' || name === 'percentAnnualHomeAppreciation') {
+      // Allow empty, single dot, or valid decimal input
+      if (value === '' || value === '.' || /^\d*\.?\d*$/.test(value)) {
+        setCurrentForm(prev => ({ ...prev, [name]: value }));
+      }
       return;
     }
-    // Attempt parse:
-    const numValue = parseFloat(rawValue);
-    if (!isNaN(numValue)) {
-      setCurrentForm((prev) => ({ ...prev, [name]: numValue }));
-    } else {
-      // fallback to empty or do nothing
-      setCurrentForm(prev => ({ ...prev, [name]: '' }));
+
+    // For other numeric fields that need comma formatting
+    if (name === 'homePrice' || name === 'originalLoanAmount' || name === 'currentHomeValue') {
+      const rawValue = value.replace(/,/g, '');
+      if (rawValue === '' || rawValue === '.') {
+        setCurrentForm(prev => ({ ...prev, [name]: rawValue }));
+        return;
+      }
+      const numValue = parseFloat(rawValue);
+      if (!isNaN(numValue)) {
+        setCurrentForm((prev) => ({ ...prev, [name]: numValue }));
+      }
+      return;
     }
+
+    // For all other fields, just set the value directly
+    setCurrentForm(prev => ({ ...prev, [name]: value }));
   };
+
 
   // b) Toggle existing property
   const toggleExistingProperty = (e) => {
@@ -132,6 +164,14 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       const purchaseDt = new Date(currentForm.purchaseDate);
       if (purchaseDt > now) {
         setError("Purchase date cannot be in the future.");
+        return;
+      }
+      if (!currentForm.percentAnnualHomeAppreciation || currentForm.percentAnnualHomeAppreciation < 3.5 || currentForm.percentAnnualHomeAppreciation > 6.5) {
+        setError("Please enter a home value appreciation rate in the range of 3.5% to 6.5%");
+        return;
+      }      
+      if (!currentForm.percentAnnualInterestRate || currentForm.percentAnnualInterestRate < 1 || currentForm.percentAnnualInterestRate > 10) {
+        setError("Please enter an interest rate between 1% to 10%");
         return;
       }
       // Compute monthsPaidSoFar
@@ -176,6 +216,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       }
       if (currentForm.monthOfPurchase === "" || currentForm.monthOfPurchase < 0 || currentForm.monthOfPurchase > projectionYears * 12) {
         setError("Please enter a purchase month from 0 to the month the simulation ends");
+        return;
+      }
+      if (!currentForm.percentAnnualInterestRate || currentForm.percentAnnualInterestRate < 1 || currentForm.percentAnnualInterestRate > 10) {
+        setError("Please enter an interest rate between 1% to 10%");
         return;
       }
   
@@ -433,7 +477,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                     <Input
                       type="text"
                       name="percentAnnualInterestRate"
-                      value={formatNumberWithCommas(currentForm.percentAnnualInterestRate)}
+                      value={currentForm.percentAnnualInterestRate}
                       onChange={handleInputChange}
                     />
                   </InputGroup>
@@ -446,7 +490,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                     <Input
                       type="text"
                       name="percentAnnualHomeAppreciation"
-                      value={formatNumberWithCommas(currentForm.percentAnnualHomeAppreciation)}
+                      value={currentForm.percentAnnualHomeAppreciation}
                       onChange={handleInputChange}
                     />
                   </InputGroup>
