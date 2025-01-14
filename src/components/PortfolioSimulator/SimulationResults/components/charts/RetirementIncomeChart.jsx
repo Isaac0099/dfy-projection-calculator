@@ -1,5 +1,5 @@
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { formatTooltipValue, formatYAxisTick } from "@/lib/utils/utils";
 
 const RetirementIncomeChart = ({growthStrategy, results}) => {
@@ -20,6 +20,12 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                         position: "bottom",
                         offset: 0
                       }}
+                    />
+                    <ReferenceLine
+                      y={0}
+                      strokeDasharray="4 4"
+                      stroke="#000000"
+                      strokeWidth={2}
                     />
                     <YAxis 
                       tickFormatter={(value) => formatYAxisTick(value)}
@@ -58,21 +64,23 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       name="Gross Tax-free Equity Income"
                     />
                     }
+                    {growthStrategy === "reinvestment" &&
                     <Line 
                       type="monotone" 
                       dataKey="rentIncome" 
                       stroke="#c10000" 
                       strokeWidth={2}
                       dot={false}
-                      name="rent minus mortgages"
+                      name="Rents Minus Expenses and Mortgages"
                     />
+                    }
                      <Line 
                       type="monotone" 
                       dataKey="monthlyIncome" 
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
-                      name="Net Real Income"
+                      name="Net Income"
                     />
                     
                     {/* <Line 
