@@ -38,14 +38,43 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       dot={false}
                       />
                     }
+                    {growthStrategy === "payOffPrincipal" &&
                     <Line 
+                      type="monotone" 
+                      dataKey="rentIncome" 
+                      stroke="#f97316" 
+                      strokeWidth={2}
+                      dot={false}
+                      name="Monthly Net Rent Income"
+                    />
+                    }
+                    {growthStrategy === "reinvestment" &&
+                    <Line 
+                      type="monotone" 
+                      dataKey="equityIncome" 
+                      stroke="#005909" 
+                      strokeWidth={2}
+                      dot={false}
+                      name="Gross Tax-free Equity Income"
+                    />
+                    }
+                    <Line 
+                      type="monotone" 
+                      dataKey="rentIncome" 
+                      stroke="#c10000" 
+                      strokeWidth={2}
+                      dot={false}
+                      name="rent minus mortgages"
+                    />
+                     <Line 
                       type="monotone" 
                       dataKey="monthlyIncome" 
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
-                      name = {growthStrategy ==="reinvestment" ? "Tax-free Monthly Income" : "Monthly Income"}
+                      name="Net Real Income"
                     />
+                    
                     {/* <Line 
                       type="monotone" 
                       dataKey="equity" 
@@ -53,10 +82,8 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       strokeWidth={2}
                       dot={false}
                       name = "equity"
-                    /> */}
-                    {growthStrategy === "payOffPrincipal" &&
+                    /> */} 
                     <Legend verticalAlign="top" align="right" />
-                    }
                   </LineChart>
                 </ResponsiveContainer>
               </div>
