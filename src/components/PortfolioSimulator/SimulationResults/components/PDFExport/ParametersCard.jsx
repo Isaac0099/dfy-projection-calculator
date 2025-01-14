@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Clock, Home, TrendingUp, Building, Users, Wallet } from 'lucide-react';
+import { Clock, Home, TrendingUp, PercentCircle, Building, Wrench, Wallet } from 'lucide-react';
+import { getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
 const ParametersCard = ({ projectionYears, legacyYears, growthStrategy, homes, results }) => {
   const formatCurrency = (amount) =>
@@ -36,7 +37,7 @@ const ParametersCard = ({ projectionYears, legacyYears, growthStrategy, homes, r
             </h3>
             <div className="grid gap-4">
               <Parameter 
-                icon={Building}
+                icon={Wrench}
                 label="Building Phase"
                 value={`${projectionYears} Years`}
               />
@@ -59,14 +60,19 @@ const ParametersCard = ({ projectionYears, legacyYears, growthStrategy, homes, r
               Properties
             </h3>
             <div className="grid gap-4">
+            <Parameter 
+                icon={PercentCircle}
+                label="Average Appreciation Rate"
+                value={`${(getWeightedAverageAppreciation(homes)*100).toFixed(1)}%`}
+              />
               <Parameter 
-                icon={Users}
-                label="Starting Properties"
+                icon={Home}
+                label="Starting Property Count"
                 value={homes.length}
               />
               <Parameter 
                 icon={Building}
-                label="Final Properties"
+                label="Ending Property Count"
                 value={results.homes.length}
               />
               <Parameter 
