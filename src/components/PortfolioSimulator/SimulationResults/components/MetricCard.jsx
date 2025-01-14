@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Info } from 'lucide-react';
 
-export const MetricCard = ({ icon: Icon, title, value, change, description, small = false }) => {
+export const MetricCard = ({ 
+  icon: Icon, 
+  title, 
+  value, 
+  multilines, 
+  change, 
+  description, 
+  small = false 
+}) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -20,8 +28,22 @@ export const MetricCard = ({ icon: Icon, title, value, change, description, smal
                 <Icon className="h-4 w-4 text-orange-500 shrink-0" />
                 <p className="text-sm font-medium text-gray-500 truncate">{title}</p>
               </div>
-              <div className="flex items-baseline gap-2">
-                <p className={`${small ? 'text-base' : 'text-lg'} font-semibold pl-2`}>{value}</p>
+              <div className="flex flex-col gap-0.5 pl-2">
+                {/* Show either value or multilines */}
+                {value && !multilines && (
+                  <p className={`${small ? 'text-base' : 'text-lg'} font-semibold`}>
+                    {value}
+                  </p>
+                )}
+                {multilines && (
+                  <div className="flex flex-col gap-0.5">
+                    {multilines.map((text, index) => (
+                      <p key={index} className="text-sm font-semibold">
+                        {text}
+                      </p>
+                    ))}
+                  </div>
+                )}
                 {change && (
                   <p className={`text-xs ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {change >= 0 ? '↑' : '↓'} {Math.abs(change)}%
@@ -35,14 +57,12 @@ export const MetricCard = ({ icon: Icon, title, value, change, description, smal
           </div>
         </CardContent>
       </Card>
-
       {showTooltip && description && (
         <div 
           className="absolute z-50 w-64 p-2 text-sm bg-white border border-gray-200 rounded-lg shadow-lg -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full"
         >
           <div className="font-medium mb-1">{title}</div>
           <div className="text-gray-600">{description}</div>
-          {/* Arrow */}
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-white border-r border-b border-gray-200"></div>
         </div>
       )}

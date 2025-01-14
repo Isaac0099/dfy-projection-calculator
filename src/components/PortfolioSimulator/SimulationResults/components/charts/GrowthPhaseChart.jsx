@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export const GrowthPhaseChart = ({results}) => {
 
     return(
-        <div className="h-64">
+        <div className="w-full h-96">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
                   data={results.graphingData}

@@ -56,7 +56,7 @@ const MetricsGrid = ({
       </Section>
 
       {/* At Retirement Section */}
-      <Section title={`At Retirement - ${projectionYears} years from now`} icon={Calendar}>
+      <Section title={`At Retirement-Other: ${projectionYears} years from now`} icon={Calendar}>
         <MetricCard
           icon={DollarSign}
           title="Portfolio Value"
@@ -88,12 +88,12 @@ const MetricsGrid = ({
       </Section>
 
       {/* Legacy Section */}
-      <Section title={`Legacy - ${projectionYears + legacyYears} years from now`} icon={ScrollText}>
+      <Section title={`Legacy: ${projectionYears + legacyYears} years from now`} icon={ScrollText}>
       <MetricCard
           icon={ScrollText}
           title="Legacy Portfolio Value"
           value={formatCurrency(results.legacyPortfolio)}
-          description={`The total value of your portfolio at end of your retirement.`}
+          description={`The total value of your portfolio at end of your retirement`}
         />
         <MetricCard
           icon={ScrollText}
@@ -103,14 +103,14 @@ const MetricsGrid = ({
         />
          <MetricCard
           icon={Banknote}
-          title={growthStrategy === "reinvestment" ? `Total tax-free equity income over ${legacyYears} years` : `Total Positive Cash Flow over ${legacyYears} years`}
+          title={growthStrategy === "reinvestment" ? `Total tax-free equity income over ${legacyYears} years`: `Total Positive Cash Flow over ${legacyYears} years`}
           value={formatCurrency(results.cumulativeIncome)}
           description={growthStrategy === "reinvestment" ? `The sum of all tax free equity income over this simulation expects you will take out over ${legacyYears} years while still having these amounts left as a legacy at the end of your life` : `The sum of all rent income over ${legacyYears} years after expense have been removed`}
         />
         <MetricCard
           icon={Banknote}
-          title={growthStrategy === "reinvestment" ? `Average monthly tax-free income` : `Average monthly cash flow during retirement`}
-          value={formatCurrency(results.cumulativeIncome / (legacyYears*12-1))}
+          title={growthStrategy === "reinvestment" ? `Monthly tax-free income` : `Average monthly cash flow during retirement`}
+          multilines={[`First month: ${formatCurrency(results.withdrawalGraphingData[0].monthlyIncome)}`, `Middle: ${formatCurrency(results.withdrawalGraphingData[Math.floor(results.withdrawalGraphingData.length/ 2)].monthlyIncome)}`, `Last month: ${formatCurrency(results.withdrawalGraphingData[results.withdrawalGraphingData.length-1].monthlyIncome)}`]}
           description={growthStrategy === "reinvestment" ? `The number we get when averaging out your monthly income shown throughout all ${legacyYears} of retirement` : `The average monthly rent income over ${legacyYears} years of retirement after regular expenses have been removed`}
         />
       </Section>

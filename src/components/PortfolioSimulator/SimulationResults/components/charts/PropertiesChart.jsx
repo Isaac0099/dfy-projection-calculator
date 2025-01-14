@@ -5,11 +5,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 export const PropertiesChart = ({results}) => {
     return(
-        <div className="h-64">
+        <div className="w-full h-96">
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
                     data={results.graphingData}
-                    margin={{ top: 10, right: 10, left: 0, bottom: 15 }} 
+                    margin={{ top: 20, right: 10, left: 0, bottom: 15 }} 
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 

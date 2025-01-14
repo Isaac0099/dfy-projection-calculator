@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
-import SimulationPDFLayout from './components/SimulationPDFLayout';
+import SimulationPDFLayout from './components/PDFExport/SimulationPDFLayout';
 import SettingsSummary from './components/SettingsSummary';
 import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
 import GrowthPhaseExplainer from './components/GrowthPhaseExplainer';
@@ -41,7 +41,7 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
     },
     filename: `real-estate-portfolio-simulation-${new Date().toISOString().split('T')[0]}.pdf`,
     page: {
-      margin: Margin.MEDIUM,
+      margin: Margin.NONE,
       format: 'letter',
       orientation: 'portrait'
     },
@@ -133,6 +133,13 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
             title="Portfolio Growth"
             description="Track your portfolio value and equity growth over time"
           >
+            <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+              <AlertDescription>
+                {`This chart shows your complete investment journey, from initial purchase through retirement. 
+                The vertical line marks your transition to retirement${results.homes[0].willReinvest ? ", where you begin accessing equity through refinancing" : 
+                  ""}.`}
+              </AlertDescription>
+            </Alert>
             <CombinedOverviewChart
               results={results}
               projectionYears={projectionYears}

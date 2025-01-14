@@ -13,14 +13,7 @@ const CombinedOverviewChart = ({ results, projectionYears, legacyYears }) => {
   const retirementMonth = projectionYears * 12;
 
   return (
-    <div className="space-y-4">
-      <Alert className="bg-blue-50 border-blue-200 text-blue-800">
-        <AlertDescription>
-          {`This chart shows your complete investment journey, from initial purchase through retirement. 
-          The vertical line marks your transition to retirement${results.homes[0].willReinvest ? ", where you begin accessing equity through refinancing" : 
-            ""}.`}
-        </AlertDescription>
-      </Alert>
+    <div className="space-y-4">   
       <div className="w-full h-96">
         <ResponsiveContainer>
           <LineChart
