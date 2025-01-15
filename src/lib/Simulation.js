@@ -141,7 +141,7 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         { rentIncome: 0, grossRentIncome: 0 }
       );
 
-      monthlyIncome = equityIncome + rentMetrics.rentIncome;
+      monthlyIncome = equityIncome; //+ rentMetrics.rentIncome;
 
       withdrawalData.cumulativeIncome += monthlyIncome;
       withdrawalData.graphingData.push({
