@@ -40,19 +40,22 @@ const processRefinancing = (month, existingHomes) => {
 
     if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
       const payout = home.doARefinance(month);
-      newHomesFromRefinancing.push(
-        new House({
-          id: Date.now(),
-          isExistingProperty: false,
-          monthOfPurchase: month,
-          homePrice: home.getCurrentHomeValue(month),
-          percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
-          percentDownPayment: home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
-          percentAnnualInterestRate: 6,
-          loanTermYears: home.loanTermYears,
-          willReinvest: home.willReinvest,
-        })
-      );
+      const additionalHomeCount = Math.floor(payout / costForNewHome);
+      for (let i = 0; i < additionalHomeCount; i++) {
+        newHomesFromRefinancing.push(
+          new House({
+            id: Date.now(),
+            isExistingProperty: false,
+            monthOfPurchase: month,
+            homePrice: home.getCurrentHomeValue(month),
+            percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
+            percentDownPayment: home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
+            percentAnnualInterestRate: 6,
+            loanTermYears: home.loanTermYears,
+            willReinvest: home.willReinvest,
+          })
+        );
+      }
     }
   }
 
