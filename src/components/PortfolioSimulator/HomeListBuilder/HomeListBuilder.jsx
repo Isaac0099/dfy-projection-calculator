@@ -208,8 +208,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         setError("Please enter loan term that is either 15, 20, or 30 years");
         return;
       }
-      if (!currentForm.percentAnnualHomeAppreciation || currentForm.percentAnnualHomeAppreciation < 3 || currentForm.percentAnnualHomeAppreciation > 7) {
-        setError("Please enter a home value appreciation rate in the range of 3% to 7%");
+      if (!currentForm.percentAnnualHomeAppreciation || currentForm.percentAnnualHomeAppreciation < 3.5 || currentForm.percentAnnualHomeAppreciation > 6.5) {
+        setError("Please enter a home value appreciation rate in the range of 3.5% to 6.5%");
         return;
       }
       if (currentForm.monthOfPurchase === "" || currentForm.monthOfPurchase < 0 || currentForm.monthOfPurchase > projectionYears * 12) {
@@ -490,7 +490,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   <InputGroup 
                     icon={TrendingUp} 
                     label="Annual Appreciation (%)"
-                    hint="3 - 7"
+                    hint="3.5 - 6.5"
                   >
                     <Input
                       type="text"
@@ -583,7 +583,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   <InputGroup 
                     icon={TrendingUp} 
                     label="Annual Appreciation (%)"
-                    hint="3 - 7"
+                    hint="3.5 - 6.5"
                   >
                     <Input
                       type="text"

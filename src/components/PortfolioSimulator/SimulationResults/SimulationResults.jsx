@@ -116,16 +116,18 @@ export const SimulationResults = ({ homes, projectionYears, legacyYears, growthS
 
       {/* Charts Section */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="growthPhase">Growth Phase</TabsTrigger>
           <TabsTrigger value="retirement income">Retirement Income</TabsTrigger>
           <TabsTrigger value="properties">Properties</TabsTrigger>
+          {/*
           <TabsTrigger value="comparison">
             <span className="hidden lg:inline">Compare Other Investments</span>
             <span className="hidden md:inline lg:hidden">Compare Investments</span>
             <span className="md:hidden">Compare</span>
           </TabsTrigger>
+          */}
         </TabsList>
 
         <TabsContent value="overview">
