@@ -222,12 +222,19 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         setError("Please enter an interest rate between 1% to 10%");
         return;
       }
+
+      // Grabbing this appreciation adjusted price so that we can add a home that's been adjusted for appreciation
+      const adjustedHomePrice = getAdjustedPurchasePrice(
+        Number(currentForm.homePrice),
+        Number(currentForm.percentAnnualHomeAppreciation),
+        Number(currentForm.monthOfPurchase)
+      );
   
       const newHouse = new House({
         id: generateId(),
         isExistingProperty: false,
         monthOfPurchase: Number(currentForm.monthOfPurchase),
-        homePrice: Number(currentForm.homePrice),
+        homePrice: Number(adjustedHomePrice),
         percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
         percentDownPayment: Number(currentForm.percentDownPayment),
         percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
