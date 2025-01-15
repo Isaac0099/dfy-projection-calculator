@@ -91,27 +91,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // 3. Handlers
   // =====================
 
-  // a) Convert input to numeric with commas
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   // Remove commas:
-  //   const rawValue = value.replace(/,/g, '');
-  //   // If it's empty or just '.', let it be so user can type
-  //   if (rawValue === '' || rawValue === '.') {
-  //     setCurrentForm(prev => ({ ...prev, [name]: rawValue }));
-  //     return;
-  //   }
-  //   // Attempt parse:
-  //   const numValue = parseFloat(rawValue);
-  //   if (!isNaN(numValue)) {
-  //     setCurrentForm((prev) => ({ ...prev, [name]: numValue }));
-  //   } else {
-  //     // fallback to empty or do nothing
-  //     setCurrentForm(prev => ({ ...prev, [name]: '' }));
-  //   }
-  // };
-
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
