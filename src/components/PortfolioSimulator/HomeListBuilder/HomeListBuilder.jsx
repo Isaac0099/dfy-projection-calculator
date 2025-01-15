@@ -33,8 +33,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   const [currentForm, setCurrentForm] = useState({
     // Fields for brand-new purchase:
     monthOfPurchase: 0,
-    homePrice: initialData?.results?.homes[initialData?.results?.homes?.length - 1]?.initialHomePrice || 280000,
-    percentDownPayment: initialData?.results?.homes[initialData?.results?.homes?.length - 1]?.percentDownPayment || 25,
+    homePrice: initialData?.results?.homes[0]?.initialHomePrice || 280000,
+    percentDownPayment: initialData?.results?.homes[0]?.percentDownPayment || 25,
     loanTermYears: 30,
     
     // Common to both:
