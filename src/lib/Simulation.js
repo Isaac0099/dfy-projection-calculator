@@ -46,9 +46,9 @@ const processRefinancing = (month, existingHomes) => {
           isExistingProperty: false,
           monthOfPurchase: month,
           homePrice: home.getCurrentHomeValue(month),
-          percentAnnualHomeAppreciation: 6,
+          percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
           percentDownPayment: home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
-          percentAnnualInterestRate: home.percentAnnualInterestRate,
+          percentAnnualInterestRate: 6,
           loanTermYears: home.loanTermYears,
           willReinvest: home.willReinvest,
         })
@@ -108,6 +108,7 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
   let annualPayout = 0;
   let monthlyIncome = 0;
+  let equityIncome = 0;
 
   for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
     const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
@@ -118,14 +119,6 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         const desiredAnnualPayout =
           totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
 
-        console.log(
-          `PortfolioValue: ${formatCurrency(
-            totalPortfolioValue
-          )}, AppreciationRate: ${weightedAverageAppreciation}%, RefiCost: ${formatCurrency(
-            homesCopy[0].getCurrentRefiCost(month)
-          )}`
-        );
-        console.log("desired annual payout = ", formatCurrency(desiredAnnualPayout));
         // Find home with highest equity for refinancing
         const homeWithHighestEquity = homesCopy.reduce((max, home) => {
           const currentEquity = home.getCurrentEquity(month);
@@ -137,12 +130,9 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         if (desiredAnnualPayout > 0) {
           annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
         }
-        monthlyIncome = annualPayout / 12;
+        equityIncome = annualPayout / 12;
       }
 
-      withdrawalData.cumulativeIncome += monthlyIncome;
-      withdrawalData.graphingData.push({ month, monthlyIncome, equity, portfolioValue });
-    } else {
       const rentMetrics = homesCopy.reduce(
         (acc, home) => ({
           rentIncome: acc.rentIncome + home.calculateNetRentalIncome(month),
@@ -151,6 +141,25 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         { rentIncome: 0, grossRentIncome: 0 }
       );
 
+      monthlyIncome = equityIncome + rentMetrics.rentIncome;
+
+      withdrawalData.cumulativeIncome += monthlyIncome;
+      withdrawalData.graphingData.push({
+        month,
+        monthlyIncome,
+        equityIncome,
+        rentIncome: rentMetrics.rentIncome,
+        equity,
+        portfolioValue,
+      });
+    } else {
+      const rentMetrics = homesCopy.reduce(
+        (acc, home) => ({
+          rentIncome: acc.rentIncome + home.calculateNetRentalIncome(month),
+          grossRentIncome: acc.grossRentIncome + home.calculateMonthlyRent(month),
+        }),
+        { rentIncome: 0, grossRentIncome: 0 }
+      );
       withdrawalData.cumulativeIncome += rentMetrics.rentIncome;
       withdrawalData.graphingData.push({
         month,
