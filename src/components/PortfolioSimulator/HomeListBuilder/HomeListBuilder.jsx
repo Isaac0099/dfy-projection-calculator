@@ -151,9 +151,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
   // c) Add a new property to the list
   const addHome = () => {
-    setError("");
-    console.log("currentForm:",currentForm)
-  
+    setError("");  
     if (currentForm.isExistingProperty) {
       // Validate for existing property
       if (!currentForm.purchaseDate || !currentForm.originalLoanAmount || !currentForm.currentHomeValue) {

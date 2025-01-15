@@ -73,9 +73,9 @@ const CombinedOverviewChart = ({ results, projectionYears, legacyYears }) => {
             //   strokeDasharray="3 3"
               label={{ 
                 value: "Retirement or Other Goal",
-                position: "insideTopRight",
+                position: "insideTopLeft",
                 fill: "#666",
-                width: "6",
+                width: "8",
 
               }}
             />

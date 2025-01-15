@@ -46,7 +46,7 @@ const processRefinancing = (month, existingHomes) => {
           isExistingProperty: false,
           monthOfPurchase: month,
           homePrice: home.getCurrentHomeValue(month),
-          percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
+          percentAnnualHomeAppreciation: 6,
           percentDownPayment: home.percentDownPayment !== 100 ? home.percentDownPayment : 25,
           percentAnnualInterestRate: home.percentAnnualInterestRate,
           loanTermYears: home.loanTermYears,
@@ -118,6 +118,14 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         const desiredAnnualPayout =
           totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
 
+        console.log(
+          `PortfolioValue: ${formatCurrency(
+            totalPortfolioValue
+          )}, AppreciationRate: ${weightedAverageAppreciation}%, RefiCost: ${formatCurrency(
+            homesCopy[0].getCurrentRefiCost(month)
+          )}`
+        );
+        console.log("desired annual payout = ", formatCurrency(desiredAnnualPayout));
         // Find home with highest equity for refinancing
         const homeWithHighestEquity = homesCopy.reduce((max, home) => {
           const currentEquity = home.getCurrentEquity(month);

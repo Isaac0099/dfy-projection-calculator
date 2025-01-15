@@ -99,7 +99,6 @@ class House {
       if (this.percentDownPayment < 100) {
         // Typical financed purchase
         this.loanAmount = (homePrice * (100 - this.percentDownPayment)) / 100;
-        console.log("loanAmount:", this.loanAmount);
         this.schedule = this.amoCalc.generateAmortizationSchedule(
           this.loanAmount,
           this.percentAnnualInterestRate,

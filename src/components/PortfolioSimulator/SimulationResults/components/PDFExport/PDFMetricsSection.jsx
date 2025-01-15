@@ -119,7 +119,8 @@ const PDFMetricsSection = ({
           <MetricBlock
             title={`Legacy (${projectionYears + legacyYears} years)`}
             icon={ScrollText}
-            metrics={[
+            metrics={legacyYears !== 0 ? 
+              [
               {
                 label: "Portfolio Value",
                 value: formatCurrency(results.legacyPortfolio)
@@ -155,7 +156,24 @@ const PDFMetricsSection = ({
                   results.withdrawalGraphingData[legacyYears*12-1].portfolioValue * 100).toFixed(1)}%`,
                 description: "Final debt to asset ratio"
               }
-            ]}
+            ]
+            :
+            [
+              {
+                label: "Portfolio Value",
+                value: formatCurrency(results.legacyPortfolio)
+              },
+              {
+                label: "Legacy Equity",
+                value: formatCurrency(results.legacyEquity),
+                description: `After ${legacyYears} years of retirement withdrawals`
+              },
+              {
+                label: growthStrategy === "reinvestment" ? "Total Tax-Free Income" : "Total Cash Flow",
+                value: formatCurrency(results.cumulativeIncome)
+              }
+            ]
+            }
           />
         </div>
       </CardContent>
