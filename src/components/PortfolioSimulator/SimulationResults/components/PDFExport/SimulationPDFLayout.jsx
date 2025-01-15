@@ -113,7 +113,7 @@ const SimulationPDFLayout = React.forwardRef(({
         </Card>
       </div>
 
-      <div className="px-8 mb-8 pt-16 pb-48">
+      <div className="px-8 mb-8 pt-16 pb-0">
         <Card className="border-orange-500 border-t-8">
           <CardHeader className="bg-gray-50">
             <CardTitle className="text-4xl text-gray-900">Retirement Monthly Income Projection</CardTitle>
@@ -130,8 +130,8 @@ const SimulationPDFLayout = React.forwardRef(({
         </Card>
       </div>
 
-      <div className="p-8 mb-8 pt-48">
-        <Card className="border-orange-500 border-t-8">
+      <div className="p-8 mb-8 pt-0">
+        {/* <Card className="border-orange-500 border-t-8">
           <CardHeader className="bg-gray-50">
             <CardTitle className="text-4xl text-gray-900">Investment Comparison</CardTitle>
           </CardHeader>
@@ -146,15 +146,15 @@ const SimulationPDFLayout = React.forwardRef(({
             </div>
             <ChartExplanation chartType="comparison" growthStrategy={growthStrategy} />
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <div className="py-96">
-          <p className="pt-40 pb-32">&nbsp;</p>
+        {/* <div className="py-96">
+          <p className="py-72">&nbsp;</p>
 
-        </div>
+        </div> */}
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t text-center text-gray-100 text-2xl">
+        <div className="mt-12 pt-0 border-t text-center text-gray-100 text-2xl">
           <p>This simulation is for educational purposes only and should not be considered financial advice.</p>
         </div>
       </div>
