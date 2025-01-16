@@ -28,32 +28,36 @@ const processNewHomesPurchases = (month, startingHomes) => {
 };
 
 const processRefinancing = (month, existingHomes) => {
-  console.log("processRefinancing called for month=", month);
-
   const newHomesFromRefinancing = [];
 
   for (const home of existingHomes) {
-    // For cash purchases (100% down), we still use 25% down for future purchases
-    // This maintains consistency with the reinvestment strategy
-    let fractionForNewHome = (home.percentDownPayment + 7) / 100;
+    const newHomeRecommendationValues = {
+      cost: 280_000 * Math.pow((100 + home.percentAnnualHomeAppreciation) / 100, month / 12),
+      percentDownPayment: 25,
+      percentAnnualHomeAppreciation: 5,
+      percentAnnualInterestRate: 6,
+      loanTermYears: 30,
+    };
+    let fractionForNewHome = 0.25 + 0.07; // Used to use (home.percentDownPayment + 7) / 100; but now
     if (home.percentDownPayment === 100) {
-      fractionForNewHome = 0.25; // 25% down payment for reinvestment after cash purchase
+      fractionForNewHome = 0.25 + 0.07; // 25% down payment + 7% closing costs for reinvestment after cash purchase
     }
-    const costForNewHome = home.getCurrentHomeValue(month) * fractionForNewHome;
 
+    // If our homes are set to reinvest and if we can afford to buy a new home from doing a refinance on our current one we do that.
     if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
       const payout = home.doARefinance(month);
       const additionalHomeCount = Math.floor(payout / costForNewHome);
       for (let i = 0; i < additionalHomeCount; i++) {
         newHomesFromRefinancing.push(
+          // This home can either be a default recommandation for what homes to buy or it could be buying another home with its own properties
           new House({
             id: Date.now(),
             isExistingProperty: false,
             monthOfPurchase: month,
-            homePrice: 280_000 * Math.pow((100 + home.percentAnnualHomeAppreciation) / 100, month / 12),
+            homePrice: home.getCurrentHomeValue(month),
             percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
-            percentDownPayment: 25,
-            percentAnnualInterestRate: 6,
+            percentDownPayment: home.percentDownPayment,
+            percentAnnualInterestRate: home.percentAnnualInterestRate,
             loanTermYears: home.loanTermYears,
             willReinvest: home.willReinvest,
           })
