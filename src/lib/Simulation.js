@@ -7,7 +7,8 @@ import { getWeightedAverageAppreciation, copyHomes, formatCurrency } from "./uti
 // Helper functions for cleaner code
 const calculateTotalOutOfPocket = (homes) => {
   return homes.reduce((total, home) => {
-    return total + (home.initialHomePrice * (home.percentDownPayment + 7)) / 100;
+    const closingCostPercentage = home.percentDownPayment === 100 ? 5 : 7;
+    return total + (home.initialHomePrice * (home.percentDownPayment + closingCostPercentage)) / 100;
   }, 0);
 };
 
@@ -27,6 +28,8 @@ const processNewHomesPurchases = (month, startingHomes) => {
 };
 
 const processRefinancing = (month, existingHomes) => {
+  console.log("processRefinancing called for month=", month);
+
   const newHomesFromRefinancing = [];
 
   for (const home of existingHomes) {
@@ -193,6 +196,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   const homes = [];
   const graphingData = [];
   const cashflows = createInitialCashflows(startingHomes);
+  const totalOutOfPocket = calculateTotalOutOfPocket(startingHomes);
   let remainingStartingHomes = [...startingHomes];
 
   // Growth Period Simulation
@@ -233,7 +237,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
     homes,
     graphingData,
     withdrawalGraphingData: withdrawalPeriod.graphingData,
-    totalOutOfPocket: calculateTotalOutOfPocket(startingHomes),
+    totalOutOfPocket: totalOutOfPocket,
     annualPercentReturnFromEquity: annualIRR,
     legacyEquity: withdrawalPeriod.legacyEquity,
     legacyPortfolio: withdrawalPeriod.legacyPortfolio,

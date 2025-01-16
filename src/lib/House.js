@@ -199,6 +199,8 @@ class House {
 
   // 9) Do a Refinance (max 75% LTV)
   doARefinance(currentMonth) {
+    console.log("REFINANCE at month:", currentMonth, "old DP:", this.percentDownPayment);
+
     // Calculate how much we can pull out
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const grossPayout = currentHomeValue * 0.75 - this.getCurrentRefiCost(currentMonth);

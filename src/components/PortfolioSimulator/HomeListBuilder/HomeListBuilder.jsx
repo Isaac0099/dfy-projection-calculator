@@ -33,8 +33,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   const [currentForm, setCurrentForm] = useState({
     // Fields for brand-new purchase:
     monthOfPurchase: 0,
-    homePrice: initialData?.results?.homes[0]?.initialHomePrice || 280000,
-    percentDownPayment: initialData?.results?.homes[0]?.percentDownPayment || 25,
+    homePrice: initialData ? initialData?.results?.homes[0]?.initialHomePrice : 280000,
+    percentDownPayment: initialData ? initialData?.results?.homes[0]?.percentDownPayment : 25,
     loanTermYears: 30,
     
     // Common to both:
@@ -669,7 +669,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                           ? `Purchased ~${monthsAgo} months ago • ${home.percentAnnualHomeAppreciation}% Future Appreciation •  ${home.percentAnnualInterestRate}% Interest Rate`
                           : `Purchase in ${home.monthOfPurchase} months • ${
                               home.percentDownPayment !== 100
-                                ? `${home.percentDownPayment}% down • ${home.loanTermYears}y term •`
+                                ? `${home.percentDownPayment}% down • ${home.loanTermYears} yr term •`
                                 : "cash purchase •"
                             } ${home.percentAnnualHomeAppreciation}% appreciation`
                         }

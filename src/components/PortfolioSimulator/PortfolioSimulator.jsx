@@ -12,6 +12,7 @@ const PortfolioSimulator = () => {
 
     const handleCalculate = (data) => {
         const results = runSimulation(data.homes, data.projectionYears, data.legacyYears);
+        console.log("data.homes", data.homes);
         setSimulationData({
             homes: data.homes,
             projectionYears: data.projectionYears,
