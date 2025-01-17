@@ -32,7 +32,7 @@ const processRefinancing = (month, existingHomes) => {
 
   for (const home of existingHomes) {
     const newHomeRecommendationValues = {
-      cost: 280_000 * Math.pow((100 + home.percentAnnualHomeAppreciation) / 100, month / 12),
+      cost: 280_000 * Math.pow(105 / 100, month / 12),
       percentDownPayment: 25,
       percentAnnualHomeAppreciation: 5,
       percentAnnualInterestRate: 6,
@@ -42,6 +42,7 @@ const processRefinancing = (month, existingHomes) => {
     if (home.percentDownPayment === 100) {
       fractionForNewHome = 0.25 + 0.07; // 25% down payment + 7% closing costs for reinvestment after cash purchase
     }
+    const costForNewHome = newHomeRecommendationValues.cost * fractionForNewHome;
 
     // If our homes are set to reinvest and if we can afford to buy a new home from doing a refinance on our current one we do that.
     if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
@@ -54,12 +55,12 @@ const processRefinancing = (month, existingHomes) => {
             id: Date.now(),
             isExistingProperty: false,
             monthOfPurchase: month,
-            homePrice: home.getCurrentHomeValue(month),
-            percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
-            percentDownPayment: home.percentDownPayment,
-            percentAnnualInterestRate: home.percentAnnualInterestRate,
-            loanTermYears: home.loanTermYears,
-            willReinvest: home.willReinvest,
+            homePrice: newHomeRecommendationValues.cost, // home.getCurrentHomeValue(month),
+            percentAnnualHomeAppreciation: newHomeRecommendationValues.percentAnnualHomeAppreciation, // home.percentAnnualHomeAppreciation,
+            percentDownPayment: newHomeRecommendationValues.percentDownPayment, // home.percentDownPayment,
+            percentAnnualInterestRate: newHomeRecommendationValues.percentAnnualInterestRate, // home.percentAnnualInterestRate,
+            loanTermYears: newHomeRecommendationValues.loanTermYears, // home.loanTermYears,
+            willReinvest: true, //home.willReinvest,
           })
         );
       }
