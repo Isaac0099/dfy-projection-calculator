@@ -3,8 +3,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChevronDown, ChevronUp, Settings, Clock, Percent, Home as HomeIcon } from 'lucide-react';
 import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
-const SettingsSummary = ({ homes, projectionYears, legacyYears }) => {
+const SettingsSummary = ({ projectionYears, legacyYears, results }) => {
   const [expanded, setExpanded] = useState(false);
+  const homes = results.inputHomes
   const strategy = homes[0].willReinvest ? "Equity Reinvestment" : "Paying Off Principal";
   
   return (

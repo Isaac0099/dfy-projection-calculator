@@ -237,6 +237,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
   // f) Run the Simulation
   const handleCalculate = () => {
+    console.log("Homes from homelistbuilder:", homes);
     setError("");
     if (projectionYears < 1 || projectionYears > 60) {
       setError("Please enter a number of years to retirement between 1 and 60 years");

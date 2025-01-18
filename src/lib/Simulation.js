@@ -197,8 +197,9 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
 export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   if (startingHomes.length === 0) return null;
 
+  const copyOfInputHomes = copyHomes(startingHomes); // This is an unmodified list of original homes.
   const totalLegacyYears = legacyYears + projectionYears;
-  const homes = [];
+  const homes = []; // This will contain homes modified in the growth period simulation
   const graphingData = [];
   const cashflows = createInitialCashflows(startingHomes);
   const totalOutOfPocket = calculateTotalOutOfPocket(startingHomes);
@@ -239,6 +240,7 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   const withdrawalPeriod = simulateWithdrawalPeriod(homes, projectionYears, totalLegacyYears, homes[0].willReinvest);
 
   return {
+    inputHomes: copyOfInputHomes,
     homes,
     graphingData,
     withdrawalGraphingData: withdrawalPeriod.graphingData,
