@@ -44,8 +44,9 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       stroke="#f97316" 
                       strokeWidth={2}
                       dot={false}
-                      name = {growthStrategy ==="reinvestment" ? "Tax-free Monthly Income" : "Monthly Income"}
+                      name = {growthStrategy ==="reinvestment" ? "Net Tax-free Income" : "Net Monthly Income"}
                     />
+
                     {/* <Line 
                       type="monotone" 
                       dataKey="equity" 

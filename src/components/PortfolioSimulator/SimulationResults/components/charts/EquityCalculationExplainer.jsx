@@ -31,7 +31,7 @@ const EquityCalculationExplainer = () => {
           <div className="space-y-2">
             <div className="bg-white rounded-lg p-2 border border-gray-200">
               <code className="text-orange-500 text-xs font-mono">
-                (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ 12
+                (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ 12 - future higher mortgages payments not fully covered by rent
               </code>
             </div>
             <p className="text-xs text-gray-600 italic py-0 my-0">
