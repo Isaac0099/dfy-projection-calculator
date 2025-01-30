@@ -13,6 +13,7 @@ import { Trash2, Plus, Home, DollarSign, Calendar, Percent, TrendingUp } from 'l
 import House from '@/lib/House';
 import { generateId } from '@/lib/utils/utils.js';
 import ExistingPropertyToggle from './components/ExistingPropertyToggle';
+import AdvancedSettings from './components/AdvancedSettings';
 
 export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // =====================
@@ -26,6 +27,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     }
     return "reinvestment";
   });
+  
+  // Advanced Settings
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 3);
 
   // =====================
   // 2. Form State
@@ -47,14 +52,13 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     originalLoanAmount: "",
     originalLoanTermYears: 30,
     currentHomeValue: "",
-    monthsPaidSoFar: 0 // We'll store this if we like, or just compute on the fly
+    monthsPaidSoFar: 0
   });
 
   const [homes, setHomes] = useState(() => {
     if (!initialData?.homes) return [];
     
     return initialData.homes.map(home => {
-      // Create base configuration that works for both new and existing properties
       const baseConfig = {
         id: generateId(),
         percentAnnualHomeAppreciation: home.percentAnnualHomeAppreciation,
@@ -63,7 +67,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         isExistingProperty: home.isExistingProperty,
       };
   
-      // Add specific fields based on whether it's an existing or new property
       const homeConfig = home.isExistingProperty
         ? {
             ...baseConfig,
@@ -71,7 +74,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             originalLoanAmount: home.originalLoanAmount,
             originalLoanTermYears: home.originalLoanTermYears,
             monthsPaidSoFar: home.monthsPaidSoFar,
-            currentHomeValue: home.initialHomePrice, // For existing properties, initialHomePrice represents current value
+            currentHomeValue: home.initialHomePrice,
           }
         : {
             ...baseConfig,
@@ -94,16 +97,13 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Special handling for interest and appreciation rates
     if (name === 'percentAnnualInterestRate' || name === 'percentAnnualHomeAppreciation') {
-      // Allow empty, single dot, or valid decimal input
       if (value === '' || value === '.' || /^\d*\.?\d*$/.test(value)) {
         setCurrentForm(prev => ({ ...prev, [name]: value }));
       }
       return;
     }
 
-    // For other numeric fields that need comma formatting
     if (name === 'homePrice' || name === 'originalLoanAmount' || name === 'currentHomeValue') {
       const rawValue = value.replace(/,/g, '');
       if (rawValue === '' || rawValue === '.') {
@@ -117,22 +117,17 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       return;
     }
 
-    // For all other fields, just set the value directly
     setCurrentForm(prev => ({ ...prev, [name]: value }));
   };
 
-
-  // b) Toggle existing property
   const toggleExistingProperty = (e) => {
     const isExisting = e.target.checked;
     setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
   };
 
-  // c) Add a new property to the list
   const addHome = () => {
     setError("");  
     if (currentForm.isExistingProperty) {
-      // Validate for existing property
       if (!currentForm.purchaseDate || !currentForm.originalLoanAmount || !currentForm.currentHomeValue) {
         setError("Please fill out the purchase date, original loan amount, and current home value for an existing property.");
         return;
@@ -151,7 +146,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         setError("Please enter an interest rate between 1% to 10%");
         return;
       }
-      // Compute monthsPaidSoFar
       const monthsPaidSoFar = Math.max(
         0,
         Math.floor((now - purchaseDt) / (1000 * 60 * 60 * 24 * 30.43))
@@ -163,8 +157,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
         percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
         willReinvest: growthStrategy === "reinvestment",
-        
-        // Existing property specific fields
         datePurchased: currentForm.purchaseDate,
         originalLoanAmount: Number(currentForm.originalLoanAmount),
         originalLoanTermYears: Number(currentForm.originalLoanTermYears),
@@ -174,7 +166,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   
       setHomes(prev => [...prev, newHouse]);
     } else {
-      // New purchase validations
       if (!currentForm.percentDownPayment || currentForm.percentDownPayment < 1 || currentForm.percentDownPayment > 100) {
         setError("Please enter a down payment percent between 1 and 100");
         return;
@@ -200,7 +191,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         return;
       }
 
-      // Grabbing this appreciation adjusted price so that we can add a home that's been adjusted for appreciation
       const adjustedHomePrice = getAdjustedPurchasePrice(
         Number(currentForm.homePrice),
         Number(currentForm.percentAnnualHomeAppreciation),
@@ -223,21 +213,17 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     }
   };
 
-  // d) Helper to compute future purchase price
   const getAdjustedPurchasePrice = (initialPrice, appreciationRate, months) => {
     return Math.round(
       initialPrice * Math.pow(1 + appreciationRate / 100, months / 12)
     );
   };
 
-  // e) Remove a property
   const removeHome = (id) => {
     setHomes(homes.filter((home) => home.id !== id));
   };
 
-  // f) Run the Simulation
   const handleCalculate = () => {
-    console.log("Homes from homelistbuilder:", homes);
     setError("");
     if (projectionYears < 1 || projectionYears > 60) {
       setError("Please enter a number of years to retirement between 1 and 60 years");
@@ -247,14 +233,17 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       setError("Please enter a number of years in retirement from 0 to 60");
       return;
     }
-    onCalculate({ homes, growthStrategy, projectionYears, legacyYears });
+    onCalculate({ 
+      homes, 
+      growthStrategy, 
+      projectionYears, 
+      legacyYears,
+      yearsBetweenRefinances 
+    });
   };
 
-  // =====================
-  // 4. Derived / Memo Values
-  // =====================
   const totalOutOfPocket = useMemo(() => {
-    if (currentForm.isExistingProperty) return 0; // existing property => no new DP
+    if (currentForm.isExistingProperty) return 0;
     if (!currentForm.homePrice || !currentForm.percentDownPayment) return 0;
 
     const adjustedPrice = getAdjustedPurchasePrice(
@@ -276,7 +265,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     currentForm.isExistingProperty
   ]);
 
-  // Format a numeric value with commas for the input display
   const formatNumberWithCommas = (val) => {
     if (val === "" || isNaN(val)) return "";
     return Number(val).toLocaleString();
@@ -352,13 +340,25 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   </SelectItem>
                   <SelectItem value="payOffPrincipal">
                     <div>
-                      <div className="font-medium">Pay off principal</div>
+                    <div className="font-medium">Pay off principal</div>
                       <div className="text-xs text-gray-500">Build equity without refinancing</div>
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
             </InputGroup>
+
+            <AdvancedSettings
+              isOpen={showAdvancedSettings}
+              onToggle={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              yearsBetweenRefinances={yearsBetweenRefinances}
+              onYearsBetweenRefinancesChange={(value) => {
+                if (value >= 1 && value <= 6) {
+                  setYearsBetweenRefinances(value);
+                }
+              }}
+              isReinvestmentStrategy={growthStrategy === "reinvestment"}
+            />
           </CardContent>
         </Card>
 
@@ -369,23 +369,14 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             <CardDescription>Define property details and financing</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-
-            {/* Toggle for existing property */}
             <ExistingPropertyToggle
-                isChecked={currentForm.isExistingProperty}
-                onToggle={(checked) => {
-                    setCurrentForm(prev => ({
-                    ...prev,
-                    isExistingProperty: checked
-                    }));
-                }}
+              isChecked={currentForm.isExistingProperty}
+              onToggle={toggleExistingProperty}
             />
 
-            {/* NEW PURCHASE: 2 rows x 3 columns */}
             {!currentForm.isExistingProperty && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* 1st row of 3 inputs */}
                   <InputGroup 
                     icon={Home} 
                     label="Home Value Today ($)"
@@ -434,7 +425,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   </InputGroup>
                 </div>
 
-                {/* 2nd row of 3 inputs */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <InputGroup 
                     icon={Calendar} 
@@ -483,11 +473,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
               </>
             )}
 
-            {/* EXISTING PROPERTY: 2 rows x 3 columns */}
             {currentForm.isExistingProperty && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* 1st row of 3 inputs */}
                   <InputGroup 
                     icon={Calendar}
                     label="Original Purchase Date"
@@ -532,7 +520,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   </InputGroup>
                 </div>
 
-                {/* 2nd row of 3 inputs */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <InputGroup 
                     icon={Home} 
@@ -578,7 +565,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
 
             <Separator className="py-[0.5px] h-1 rounded-sm bg-gray-300 dark:bg-gray-700" />
 
-            {/* Calculated Values (only for new purchase) */}
             {!currentForm.isExistingProperty && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-lg">
                 <InputGroup 
@@ -653,8 +639,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
           ) : (
             <div className="space-y-2">
               {homes.map((home) => {
-                // If it's an existing property, let's show how many months ago it was purchased
-                // We'll assume the House instance has a .monthsPaidSoFar if we passed it in.
                 const monthsAgo = home.monthsPaidSoFar || 0;
                 return (
                   <div

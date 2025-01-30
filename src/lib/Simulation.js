@@ -107,7 +107,7 @@ const calculateMonthlyMetrics = (month, homes) => {
   return metrics;
 };
 
-const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquityIncome) => {
+const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquityIncome, yearsBetweenRefinances) => {
   const homesCopy = copyHomes(homes);
   const withdrawalData = {
     graphingData: [],
@@ -117,20 +117,19 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   };
 
   const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
-  let annualPayout = 0;
+  let refiPayout = 0;
   let monthlyIncome = 0;
   let equityIncome = 0;
   let mortgageNotCoveredByRent = 0;
 
   for (let month = projectionYears * 12; month <= legacyYears * 12; month++) {
-    const yearsBetweenRefinances = 1;
     const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
     const portfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
     if (useEquityIncome) {
       if (month % (12 * yearsBetweenRefinances) === 0) {
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
         const desiredPayout =
-          totalPortfolioValue * weightedAverageAppreciation * yearsBetweenRefinances * 0.75 -
+          totalPortfolioValue * (Math.pow(1 + weightedAverageAppreciation, yearsBetweenRefinances) - 1) * 0.75 -
           homesCopy[0].getCurrentRefiCost(month);
 
         // Find home with highest equity for refinancing
@@ -142,9 +141,9 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
 
         // If our desired payout is greater than 0 including refinance cost then we will go ahead and do the refinance
         if (desiredPayout > 0) {
-          annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredPayout);
+          refiPayout = homeWithHighestEquity.refinanceForAmount(month, desiredPayout);
         }
-        equityIncome = annualPayout / (12 * yearsBetweenRefinances);
+        equityIncome = refiPayout / (12 * yearsBetweenRefinances);
       }
 
       const rentMetrics = homesCopy.reduce(
@@ -203,7 +202,7 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   return withdrawalData;
 };
 
-export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
+export const runSimulation = (startingHomes, projectionYears, legacyYears, yearsBetweenRefinances) => {
   if (startingHomes.length === 0) return null;
 
   const copyOfInputHomes = copyHomes(startingHomes); // This is an unmodified list of original homes.
@@ -246,7 +245,13 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears) => {
   }
 
   // Simulate Withdrawal Period
-  const withdrawalPeriod = simulateWithdrawalPeriod(homes, projectionYears, totalLegacyYears, homes[0].willReinvest);
+  const withdrawalPeriod = simulateWithdrawalPeriod(
+    homes,
+    projectionYears,
+    totalLegacyYears,
+    homes[0].willReinvest,
+    yearsBetweenRefinances
+  );
 
   return {
     inputHomes: copyOfInputHomes,

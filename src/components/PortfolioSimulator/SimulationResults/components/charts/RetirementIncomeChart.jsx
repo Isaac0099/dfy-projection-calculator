@@ -28,6 +28,15 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       formatter={(value) => formatTooltipValue(value)}
                       labelFormatter={(month) => `Year ${Math.floor(month / 12)} - Month ${month % 12}`}
                     />
+                     <Line 
+                      type="monotone" 
+                      dataKey="monthlyIncome" 
+                      stroke="#f97316" 
+                      strokeWidth={4}
+                      dot={false}
+                      name = {growthStrategy ==="reinvestment" ? "Net Tax-free Income" : "Net Monthly Income"}
+                    />
+                    {/* payoff principle specific line*/}
                     {growthStrategy === "payOffPrincipal" &&
                       <Line 
                       type="monotone"
@@ -38,23 +47,28 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       dot={false}
                       />
                     }
-                    <Line 
-                      type="monotone" 
-                      dataKey="monthlyIncome" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                      name = {growthStrategy ==="reinvestment" ? "Net Tax-free Income" : "Net Monthly Income"}
-                    />
 
-                    {/* <Line 
-                      type="monotone" 
-                      dataKey="equity" 
-                      stroke="#f97316" 
-                      strokeWidth={2}
-                      dot={false}
-                      name = "equity"
-                    /> */}
+                    {/* buy borrow beyond specific lines */}
+                    {growthStrategy === "reinvestment" &&
+                      <Line 
+                        type="monotone" 
+                        dataKey="equityIncome" 
+                        stroke="#008412" 
+                        strokeWidth={1}
+                        dot={false}
+                        name = "Gross Income From Refinancing"
+                      /> 
+                    }
+                     {growthStrategy === "reinvestment" &&
+                      <Line 
+                        type="monotone" 
+                        dataKey="mortgageNotCoveredByRent" 
+                        stroke="#b91800" 
+                        strokeWidth={1}
+                        dot={false}
+                        name = "Mortgage Not Covered by Rent"
+                      /> 
+                    }
                     <Legend verticalAlign="top" align="right" />
                   </LineChart>
                 </ResponsiveContainer>
