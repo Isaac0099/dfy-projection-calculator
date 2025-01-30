@@ -122,11 +122,11 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   let equityIncome = 0;
   let mortgageNotCoveredByRent = 0;
 
-  for (let month = projectionYears * 12 + 1; month <= legacyYears * 12; month++) {
+  for (let month = projectionYears * 12; month <= legacyYears * 12; month++) {
     const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
     const portfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
     if (useEquityIncome) {
-      if (month % 12 === 1) {
+      if (month % 12 === 0) {
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
         const desiredAnnualPayout =
           totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);

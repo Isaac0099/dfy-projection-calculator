@@ -270,8 +270,8 @@ class House {
   calculateMonthlyRent(currentMonth) {
     // simple assumption: rent grows at 3%/year
     const rentAppreciationRate = 1.03;
-    const monthsSincePurchase = currentMonth - this.monthOfPurchase;
-    return this.initialMonthlyRent * Math.pow(rentAppreciationRate, monthsSincePurchase / 12);
+    const yearsSincePurchase = Math.floor((currentMonth - this.monthOfPurchase) / 12);
+    return this.initialMonthlyRent * Math.pow(rentAppreciationRate, yearsSincePurchase);
   }
 
   // 12) Net Rental Income
