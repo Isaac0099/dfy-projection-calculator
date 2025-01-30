@@ -123,13 +123,15 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   let mortgageNotCoveredByRent = 0;
 
   for (let month = projectionYears * 12; month <= legacyYears * 12; month++) {
+    const yearsBetweenRefinances = 1;
     const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
     const portfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
     if (useEquityIncome) {
-      if (month % 12 === 0) {
+      if (month % (12 * yearsBetweenRefinances) === 0) {
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
-        const desiredAnnualPayout =
-          totalPortfolioValue * weightedAverageAppreciation * 0.75 - homesCopy[0].getCurrentRefiCost(month);
+        const desiredPayout =
+          totalPortfolioValue * weightedAverageAppreciation * yearsBetweenRefinances * 0.75 -
+          homesCopy[0].getCurrentRefiCost(month);
 
         // Find home with highest equity for refinancing
         const homeWithHighestEquity = homesCopy.reduce((max, home) => {
@@ -139,10 +141,10 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
         }, homesCopy[0]);
 
         // If our desired payout is greater than 0 including refinance cost then we will go ahead and do the refinance
-        if (desiredAnnualPayout > 0) {
-          annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredAnnualPayout);
+        if (desiredPayout > 0) {
+          annualPayout = homeWithHighestEquity.refinanceForAmount(month, desiredPayout);
         }
-        equityIncome = annualPayout / 12;
+        equityIncome = annualPayout / (12 * yearsBetweenRefinances);
       }
 
       const rentMetrics = homesCopy.reduce(

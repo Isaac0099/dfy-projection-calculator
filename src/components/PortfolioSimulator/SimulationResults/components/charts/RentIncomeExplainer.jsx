@@ -44,7 +44,7 @@ const RentIncomeExplainer = () => {
                     <div className="text-orange-500 bg-white px-2 py-0.5 rounded text-sm border border-orange-100">
                       (1.03)^years
                     </div>
-                    <div className="text-sm text-gray-400">3% annually adjusted once a year</div>
+                    <div className="text-sm text-gray-400">3% annually adjusted annually at the start of the year</div>
                   </div>
                 </div>
               </div>

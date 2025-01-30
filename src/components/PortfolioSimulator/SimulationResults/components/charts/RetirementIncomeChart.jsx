@@ -55,9 +55,7 @@ const RetirementIncomeChart = ({growthStrategy, results}) => {
                       dot={false}
                       name = "equity"
                     /> */}
-                    {growthStrategy === "payOffPrincipal" &&
                     <Legend verticalAlign="top" align="right" />
-                    }
                   </LineChart>
                 </ResponsiveContainer>
               </div>
