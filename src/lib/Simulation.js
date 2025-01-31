@@ -107,7 +107,14 @@ const calculateMonthlyMetrics = (month, homes) => {
   return metrics;
 };
 
-const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquityIncome, yearsBetweenRefinances) => {
+const simulateWithdrawalPeriod = (
+  homes,
+  projectionYears,
+  legacyYears,
+  useEquityIncome,
+  yearsBetweenRefinances,
+  percentAppreciationToWithdraw
+) => {
   const homesCopy = copyHomes(homes);
   const withdrawalData = {
     graphingData: [],
@@ -115,6 +122,8 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
     legacyPortfolio: 0,
     cumulativeIncome: 0,
   };
+
+  console.log(`percent appreciation to withdraw: ${percentAppreciationToWithdraw}`);
 
   const weightedAverageAppreciation = getWeightedAverageAppreciation(homesCopy);
   let refiPayout = 0;
@@ -126,10 +135,13 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
     const equity = homesCopy.reduce((sum, home) => sum + home.getCurrentEquity(month), 0);
     const portfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
     if (useEquityIncome) {
-      if (month % (12 * yearsBetweenRefinances) === 0) {
+      // if it is the first month of our years between refinances period we should refinance
+      if ((month - 12 * projectionYears) % (12 * yearsBetweenRefinances) === 0) {
         const totalPortfolioValue = homesCopy.reduce((sum, home) => sum + home.getCurrentHomeValue(month), 0);
         const desiredPayout =
-          totalPortfolioValue * (Math.pow(1 + weightedAverageAppreciation, yearsBetweenRefinances) - 1) * 0.75 -
+          totalPortfolioValue *
+            (Math.pow(1 + weightedAverageAppreciation, yearsBetweenRefinances) - 1) *
+            percentAppreciationToWithdraw -
           homesCopy[0].getCurrentRefiCost(month);
 
         // Find home with highest equity for refinancing
@@ -202,7 +214,13 @@ const simulateWithdrawalPeriod = (homes, projectionYears, legacyYears, useEquity
   return withdrawalData;
 };
 
-export const runSimulation = (startingHomes, projectionYears, legacyYears, yearsBetweenRefinances) => {
+export const runSimulation = (
+  startingHomes,
+  projectionYears,
+  legacyYears,
+  yearsBetweenRefinances,
+  percentAppreciationToWithdraw
+) => {
   if (startingHomes.length === 0) return null;
 
   const copyOfInputHomes = copyHomes(startingHomes); // This is an unmodified list of original homes.
@@ -250,7 +268,8 @@ export const runSimulation = (startingHomes, projectionYears, legacyYears, years
     projectionYears,
     totalLegacyYears,
     homes[0].willReinvest,
-    yearsBetweenRefinances
+    yearsBetweenRefinances,
+    percentAppreciationToWithdraw
   );
 
   return {

@@ -11,7 +11,7 @@ const PortfolioSimulator = () => {
     const [showResults, setShowResults] = useState(false);
 
     const handleCalculate = (data) => {
-        const results = runSimulation(data.homes, data.projectionYears, data.legacyYears, data.yearsBetweenRefinances);
+        const results = runSimulation(data.homes, data.projectionYears, data.legacyYears, data.yearsBetweenRefinances, data.percentAppreciationToWithdraw/100);
         setSimulationData({
             homes: data.homes,
             projectionYears: data.projectionYears,

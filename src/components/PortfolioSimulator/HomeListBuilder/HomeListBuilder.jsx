@@ -30,7 +30,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   
   // Advanced Settings
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 3);
+  const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 2);
+  const [percentAppreciationToWithdraw, setPercentAppreciationToWithdraw] = useState(initialData?.percentAppreciationToWithdraw || 75);
 
   // =====================
   // 2. Form State
@@ -238,7 +239,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       growthStrategy, 
       projectionYears, 
       legacyYears,
-      yearsBetweenRefinances 
+      yearsBetweenRefinances,
+      percentAppreciationToWithdraw
     });
   };
 
@@ -334,14 +336,14 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                 <SelectContent>
                   <SelectItem value="reinvestment">
                     <div>
-                      <div className="font-medium">Equity Reinvestment</div>
-                      <div className="text-xs text-gray-500">Use refinancing to buy more properties</div>
+                      <div className="font-medium">Buy Borrow Beyond</div>
+                      <div className="text-xs text-gray-500">Use refinancing to buy more properties during the growth phase and have your retirement income in the form of tax free refinancing money</div>
                     </div>
                   </SelectItem>
                   <SelectItem value="payOffPrincipal">
                     <div>
                     <div className="font-medium">Pay off principal</div>
-                      <div className="text-xs text-gray-500">Build equity without refinancing</div>
+                      <div className="text-xs text-gray-500">Build equity without refinancing. Retirment income will be from rent.</div>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -353,8 +355,14 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
               onToggle={() => setShowAdvancedSettings(!showAdvancedSettings)}
               yearsBetweenRefinances={yearsBetweenRefinances}
               onYearsBetweenRefinancesChange={(value) => {
-                if (value >= 1 && value <= 6) {
+                if (value >= 1 && value <= 5) {
                   setYearsBetweenRefinances(value);
+                }
+              }}
+              percentAppreciationToWithdraw={percentAppreciationToWithdraw}
+              onPercentAppreciationChange={(value) => {
+                if (value >= 25 && value <= 100) {
+                  setPercentAppreciationToWithdraw(value);
                 }
               }}
               isReinvestmentStrategy={growthStrategy === "reinvestment"}
