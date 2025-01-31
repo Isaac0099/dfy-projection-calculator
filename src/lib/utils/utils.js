@@ -141,3 +141,13 @@ export const copyHomes = (homes) => {
   }
   return homesCopy;
 };
+
+export const exponentialAdjustedAtTheStartOfTheYear = (startMonth, currentMonth, base, rate) => {
+  const currentYear = Math.floor(currentMonth / 12);
+  const firstMonthOfCurrentYear = currentYear * 12;
+  const monthsOfGrowthBetweenPurchaseAndFirstofThisYear = firstMonthOfCurrentYear - startMonth;
+  if (monthsOfGrowthBetweenPurchaseAndFirstofThisYear < 12) {
+    return base;
+  }
+  return base * Math.pow(rate, monthsOfGrowthBetweenPurchaseAndFirstofThisYear / 12);
+};

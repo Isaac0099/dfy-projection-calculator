@@ -1,6 +1,7 @@
 // House.js
 
 import AmortizationCalculator from "./AmortizationCalculator.js";
+import { exponentialAdjustedAtTheStartOfTheYear } from "./utils/utils.js";
 
 class House {
   constructor({
@@ -270,16 +271,13 @@ class House {
   calculateMonthlyRent(currentMonth) {
     // Rent jumps adjust to keep up with 3% appreciation at the start of each year
     const rentAppreciationRate = 1.03;
-    const currentYear = Math.floor(currentMonth / 12);
-    const firstMonthOfCurrentYear = currentYear * 12;
-    const monthsOfAppreciationBetweenPurchaseAndFirstofThisYear = firstMonthOfCurrentYear - this.monthOfPurchase;
-    if (monthsOfAppreciationBetweenPurchaseAndFirstofThisYear < 12) {
-      return this.initialMonthlyRent;
-    }
-    return (
-      this.initialMonthlyRent *
-      Math.pow(rentAppreciationRate, monthsOfAppreciationBetweenPurchaseAndFirstofThisYear / 12)
+    const currentRent = exponentialAdjustedAtTheStartOfTheYear(
+      this.monthOfPurchase,
+      currentMonth,
+      this.initialMonthlyRent,
+      rentAppreciationRate
     );
+    return currentRent;
   }
 
   // 12) Net Rental Income
@@ -295,7 +293,7 @@ class House {
 
     // Operating expenses (property mgmt, taxes, etc.)
     const expenses = {
-      management: 99 * Math.pow(1.025, currentMonth / 12), // example inflation
+      management: exponentialAdjustedAtTheStartOfTheYear(0, currentMonth, 99, 1.025),
       propertyTax: grossRent * 0.14,
       insurance: grossRent * 0.05,
       misc: grossRent * 0.05,
