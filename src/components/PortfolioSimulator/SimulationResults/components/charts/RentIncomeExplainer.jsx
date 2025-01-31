@@ -7,10 +7,10 @@ const RentIncomeExplainer = () => {
         {/* Header */}
         <div className="flex items-center gap-2 mb-3 border-b border-gray-200 pb-2">
           <AlertCircle className="text-gray-400 w-5 h-5" />
-          <h2 className="text-base font-bold text-gray-900">How is this calculated?</h2>
+          <h2 className="text-sm font-bold text-gray-900">How is this calculated?</h2>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 text-sm">
           {/* Main Formula */}
           <div className="flex items-center gap-2 font-semibold italic px-2">
             <span className="text-gray-900">Monthly Income</span>
@@ -20,7 +20,7 @@ const RentIncomeExplainer = () => {
             <span className="text-orange-500">Total Expenses</span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 text-sm">
             {/* Rent Section */}
             <div>
               <div className="flex items-center gap-2 px-2 mb-2">
@@ -82,7 +82,7 @@ const RentIncomeExplainer = () => {
                 <div className="border-t border-gray-200 p-2 bg-gray-100/50">
                   <div className="flex items-center gap-2">
                     <span className="text-gray-600">+ Mortgage Payment</span>
-                    <span className="text-gray-400 text-sm">(6.5% interest rate)</span>
+                    <span className="text-gray-400 text-sm">(assumed 6.5% interest rate)</span>
                   </div>
                 </div>
               </div>

@@ -343,7 +343,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   <SelectItem value="payOffPrincipal">
                     <div>
                     <div className="font-medium">Pay off principal</div>
-                      <div className="text-xs text-gray-500">Build equity without refinancing. Retirment income will be from rent.</div>
+                      <div className="text-xs text-gray-500">Build equity without refinancing. Retirment income will be from rent</div>
                     </div>
                   </SelectItem>
                 </SelectContent>

@@ -30,7 +30,7 @@ const AdvancedSettings = ({
             <InputGroup
               icon={Calendar}
               label="Years Between Refinances in Retirement"
-              hint="Longer periods minimize refinance costs but result in higher mortgage payments (default is 75%)"
+              hint="Longer periods minimize refinance costs but result in higher mortgage payments (default is 2 years)"
               disabled={!isReinvestmentStrategy}
             >
               <Select

@@ -6,7 +6,7 @@ import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/util
 const SettingsSummary = ({ projectionYears, legacyYears, results }) => {
   const [expanded, setExpanded] = useState(false);
   const homes = results.inputHomes
-  const strategy = homes[0].willReinvest ? "Equity Reinvestment" : "Paying Off Principal";
+  const strategy = homes[0].willReinvest ? "Buy Borrow Beyond" : "Paying Off Principal";
   
   return (
     <Card className="mb-4 bg-gray-100 rounded-md rounded-t-lg">
@@ -66,7 +66,7 @@ const SettingsSummary = ({ projectionYears, legacyYears, results }) => {
                     Property {index + 1}: ${home.initialHomePrice.toLocaleString()}
                   </div>
                   <div className="text-gray-600">
-                    {home.isExistingProperty ? `${home.monthsPaidSoFar} months ago • Original Loan Amount ${formatCurrency(home.originalLoanAmount)} • ${home.percentAnnualHomeAppreciation}% apr` : `Month ${home.monthOfPurchase} • ${home.percentDownPayment}% down • ${home.percentAnnualHomeAppreciation}% apr`}
+                    {home.isExistingProperty ? `${home.monthsPaidSoFar} months ago • Original Loan Amount ${formatCurrency(home.originalLoanAmount)} • ${home.percentAnnualHomeAppreciation}% apr` : `Month ${home.monthOfPurchase} • ${home.percentDownPayment}% down • ${home.percentAnnualHomeAppreciation}% apr • ${home.loanTermYears} yr mortgage`}
                   </div>
                 </div>
               ))}

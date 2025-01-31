@@ -10,10 +10,10 @@ const RetirementIncomeChart = ({ growthStrategy, results }) => {
     return (
         <div className="space-y-4">
             {growthStrategy === "reinvestment" && (
-                <div className="flex justify-end">
+                <div className="flex justify-end ">
                     <Button
                         variant="ghost"
-                        className="text-sm text-gray-500 hover:text-orange-500"
+                        className="text-sm text-gray-500 hover:text-orange-500 py-0"
                         onClick={() => {
                                         setShowDetails(!showDetails)
                                         console.log(showDetails)}}
@@ -32,7 +32,7 @@ const RetirementIncomeChart = ({ growthStrategy, results }) => {
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart 
                         data={results.withdrawalGraphingData}
-                        margin={{ top: 20, right: 10, left: 0, bottom: 15 }} 
+                        margin={{ top: 5, right: 10, left: 0, bottom: 15 }} 
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis 

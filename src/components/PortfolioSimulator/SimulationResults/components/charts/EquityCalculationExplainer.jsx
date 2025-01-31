@@ -1,4 +1,4 @@
-import { AlertCircle, Calculator, TrendingUp } from 'lucide-react';
+import { AlertCircle, Calculator, TrendingUp, Landmark } from 'lucide-react';
 import {Card } from "@/components/ui/card";
 
 const EquityCalculationExplainer = () => {
@@ -22,20 +22,38 @@ const EquityCalculationExplainer = () => {
           </p>
         </div>
 
-        {/* Calculation Formula */}
-        <div className="bg-gray-50 rounded-lg border border-gray-200 p-2.5">
+         {/* Refinance Amount Formula */}
+         <div className="bg-gray-50 rounded-lg border border-gray-200 p-2.5">
           <div className="flex items-center gap-2 mb-2">
-            <Calculator className="text-gray-900 w-3.5 h-3.5" />
-            <span className="text-xs font-medium text-gray-900">Target Monthly Income</span>
+            <Landmark className="text-gray-900 w-3.5 h-3.5" />
+            <span className="text-xs font-medium text-gray-900">Target Refinance Amount</span>
           </div>
           <div className="space-y-2">
             <div className="bg-white rounded-lg p-2 border border-gray-200">
               <code className="text-orange-500 text-xs font-mono">
-                (Portfolio Value × Appreciation Rate × 0.75 - Refinance Cost) ÷ Months Between Refinances  - any future higher mortgages payments not fully covered by rent
+                Portfolio Value × Appreciation Rate × Percent Used × Years Between Refinances
               </code>
             </div>
             <p className="text-xs text-gray-600 italic py-0 my-0">
-              We use 75% of the appreciation rate to be conservative and ensure sustainable withdrawals. 
+              We are trying to pull out only the equity built up behind the scenes due to appreciation. That way it shoud be sustainable indefinetly. (We use 75% of this appreciation as the default to be conservative)
+            </p>
+          </div>
+        </div>
+
+        {/* Calculation Formula */}
+        <div className="bg-gray-50 rounded-lg border border-gray-200 p-2.5">
+          <div className="flex items-center gap-2 mb-2">
+            <Calculator className="text-gray-900 w-3.5 h-3.5" />
+            <span className="text-xs font-medium text-gray-900">Monthly Income</span>
+          </div>
+          <div className="space-y-2">
+            <div className="bg-white rounded-lg p-2 border border-gray-200">
+              <code className="text-orange-500 text-xs font-mono">
+                (Refinance Payout - Refinance Cost) ÷ Months Between Refinances  - any future higher mortgages payments not fully covered by rent
+              </code>
+            </div>
+            <p className="text-xs text-gray-600 italic py-0 my-0">
+              Rent calculation details can be seen on the pay off principal simulation 
             </p>
           </div>
         </div>
@@ -47,7 +65,7 @@ const EquityCalculationExplainer = () => {
             <span className="text-xs font-medium text-gray-900">Additional Details</span>
           </div>
           <p className="text-xs text-gray-600">
-            If withdrawal income appears lower than income potential chart, your portfolio&apos;s target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.
+            If withdrawal income appears lower than what are target income equation suggests then, your portfolio&apos;s target equity access exceeds single-property refinancing. Multiple refinances could be executed if needed.
           </p>
           <p className="text-xs text-gray-600 py-0 my-0">
             (Refinance Cost is assumed to be $7,000 with 2.5% inflation adjustment)
