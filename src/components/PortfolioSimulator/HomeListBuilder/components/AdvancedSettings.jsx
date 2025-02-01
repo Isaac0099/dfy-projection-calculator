@@ -64,7 +64,7 @@ const AdvancedSettings = ({
             <InputGroup
               icon={Percent}
               label="Percent of Appreciation to Withdraw"
-              hint="What percentage of your property's appreciation you want to access through refinancing (default is 75%)"
+              hint="What percentage of your property's appreciation you want to access through refinancing (default is 50%)"
               disabled={!isReinvestmentStrategy}
             >
               <Select
@@ -84,9 +84,6 @@ const AdvancedSettings = ({
                   </SelectItem>
                   <SelectItem value="75">
                     <div className="font-medium">75%</div>
-                  </SelectItem>
-                  <SelectItem value="100">
-                    <div className="font-medium">100%</div>
                   </SelectItem>
                 </SelectContent>
               </Select>

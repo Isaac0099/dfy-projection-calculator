@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ChevronDown, ChevronUp, Settings, Clock, Percent, Home as HomeIcon } from 'lucide-react';
 import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
-const SettingsSummary = ({ projectionYears, legacyYears, results }) => {
+const SettingsSummary = ({ projectionYears, legacyYears, results, percentAppreciationUsed }) => {
   const [expanded, setExpanded] = useState(false);
   const homes = results.inputHomes
   const strategy = homes[0].willReinvest ? "Buy Borrow Beyond" : "Paying Off Principal";
@@ -52,6 +52,12 @@ const SettingsSummary = ({ projectionYears, legacyYears, results }) => {
               <Percent className="h-4 w-4 text-orange-600" />
               <span className="text-sm">{(getWeightedAverageAppreciation(homes)*100).toFixed(1)}% Avg. Appreciation</span>
             </div>
+            {strategy === "Buy Borrow Beyond" &&
+              <div className="flex items-center space-x-2">
+              <Percent className="h-4 w-4 text-orange-600" />
+              <span className="text-sm">{percentAppreciationUsed}% of appreciation used for income</span>
+            </div> 
+            }
           </div>
 
           {/* Expandable property details */}

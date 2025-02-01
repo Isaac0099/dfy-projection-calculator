@@ -24,7 +24,7 @@ import IncomePotentialExplainer from './components/charts/IncomePotentialExplain
 import RentVMortgageChart from './components/charts/RentVMortgageChart';
 import ChartSection from './components/ChartSection';
 
-export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYears, growthStrategy, results, onReset, onEdit }) => {
+export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYears, growthStrategy, results, percentAppreciationUsed, onReset, onEdit }) => {
   const [showDetails, setShowDetails] = useState(false);
   const { toPDF, targetRef } = usePDF({
     method: 'save',
@@ -71,6 +71,7 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
         projectionYears={projectionYears} 
         legacyYears={legacyYears}
         results={results}
+        percentAppreciationUsed={percentAppreciationUsed}
       />
 
       {/* All Metrics in Timeline Layout */}

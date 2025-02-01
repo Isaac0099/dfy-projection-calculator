@@ -17,7 +17,9 @@ const PortfolioSimulator = () => {
             projectionYears: data.projectionYears,
             legacyYears: data.legacyYears,
             growthStrategy: data.growthStrategy,
-            results: results
+            results: results,
+            yearsBetweenRefinances: data.yearsBetweenRefinances,
+            percentAppreciationToWithdraw: data.percentAppreciationToWithdraw,
         });
         setShowResults(true);
     };
@@ -46,6 +48,7 @@ const PortfolioSimulator = () => {
                     legacyYears={simulationData.legacyYears}
                     growthStrategy={simulationData.growthStrategy}
                     results={simulationData.results}
+                    percentAppreciationUsed={simulationData.percentAppreciationToWithdraw}
                     onReset={handleReset}
                     onEdit={handleEdit}
                 />

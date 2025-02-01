@@ -35,7 +35,7 @@ const EquityCalculationExplainer = () => {
               </code>
             </div>
             <p className="text-xs text-gray-600 italic py-0 my-0">
-              We are trying to pull out only the equity built up behind the scenes due to appreciation. That way it shoud be sustainable indefinetly. (We use 75% of this appreciation as the default to be conservative)
+              We are trying to pull out only the equity built up behind the scenes due to appreciation. That way it shoud be sustainable indefinetly. (We use 50% of this appreciation as the default to be conservative)
             </p>
           </div>
         </div>
