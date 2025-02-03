@@ -121,11 +121,18 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     setCurrentForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // const toggleExistingProperty = (e) => {
+  //   const isExisting = e.target.checked;
+  //   setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
+  // };
+
   const toggleExistingProperty = (e) => {
-    const isExisting = e.target.checked;
+    // Handle both direct event objects and custom change events
+    const isExisting = e?.target?.checked ?? e;
     setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
   };
 
+  
   const addHome = () => {
     setError("");  
     if (currentForm.isExistingProperty) {
