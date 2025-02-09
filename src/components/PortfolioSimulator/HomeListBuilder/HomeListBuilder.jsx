@@ -31,7 +31,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // Advanced Settings
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 2);
-  const [percentAppreciationToWithdraw, setPercentAppreciationToWithdraw] = useState(initialData?.percentAppreciationToWithdraw || 50);
+  const [percentAppreciationToWithdraw, setPercentAppreciationToWithdraw] = useState(initialData?.percentAppreciationToWithdraw || 75);
 
   // =====================
   // 2. Form State
@@ -39,7 +39,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   const [currentForm, setCurrentForm] = useState({
     // Fields for brand-new purchase:
     monthOfPurchase: 0,
-    homePrice: initialData ? initialData?.results?.homes[0]?.initialHomePrice : 280000,
+    homePrice: initialData ? initialData?.results?.homes[0]?.initialHomePrice : 275000,
     percentDownPayment: initialData ? initialData?.results?.homes[0]?.percentDownPayment : 25,
     loanTermYears: 30,
     
@@ -121,18 +121,13 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     setCurrentForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // const toggleExistingProperty = (e) => {
-  //   const isExisting = e.target.checked;
-  //   setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
-  // };
-
   const toggleExistingProperty = (e) => {
     // Handle both direct event objects and custom change events
     const isExisting = e?.target?.checked ?? e;
     setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
   };
 
-  
+
   const addHome = () => {
     setError("");  
     if (currentForm.isExistingProperty) {
