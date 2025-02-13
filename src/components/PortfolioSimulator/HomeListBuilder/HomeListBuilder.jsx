@@ -30,7 +30,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   
   // Advanced Settings
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 2);
+  const [yearsBetweenRefinances, setYearsBetweenRefinances] = useState(initialData?.yearsBetweenRefinances || 1);
   const [percentAppreciationToWithdraw, setPercentAppreciationToWithdraw] = useState(initialData?.percentAppreciationToWithdraw || 75);
 
   // =====================
