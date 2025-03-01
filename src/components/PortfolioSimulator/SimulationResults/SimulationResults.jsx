@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { usePDF, Resolution, Margin } from 'react-to-pdf';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DollarSign, Home, TrendingUp, Wallet, ChevronDown, ChevronUp, Calendar, Percent, ScrollText } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ChevronDown, ChevronUp, Percent } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoBanner } from './components/LogoBanner';
 import SimulationPDFLayout from './components/PDFExport/SimulationPDFLayout';
 import SettingsSummary from './components/SettingsSummary';
