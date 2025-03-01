@@ -116,6 +116,13 @@ const simulateWithdrawalPeriod = (
   percentAppreciationToWithdraw
 ) => {
   const homesCopy = copyHomes(homes);
+  // IMPORTANT FIX: If using equity income in retirement, override willReinvest
+  // This ensures homes can be refinanced during retirement regardless of growth strategy
+  if (useEquityIncome) {
+    homesCopy.forEach((home) => {
+      home.willReinvest = true;
+    });
+  }
   const withdrawalData = {
     graphingData: [],
     legacyEquity: 0,
@@ -219,7 +226,8 @@ export const runSimulation = (
   projectionYears,
   legacyYears,
   yearsBetweenRefinances,
-  percentAppreciationToWithdraw
+  percentAppreciationToWithdraw,
+  retirementIncomeStrategy
 ) => {
   if (startingHomes.length === 0) return null;
 
@@ -267,7 +275,7 @@ export const runSimulation = (
     homes,
     projectionYears,
     totalLegacyYears,
-    homes[0].willReinvest,
+    retirementIncomeStrategy === "refinancing",
     yearsBetweenRefinances,
     percentAppreciationToWithdraw
   );

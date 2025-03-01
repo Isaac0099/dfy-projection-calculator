@@ -27,6 +27,12 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     }
     return "reinvestment";
   });
+  const [retirementIncomeStrategy, setRetirementIncomeStrategy] = useState(() => {
+    if (initialData?.retirementIncomeStrategy) {
+      return initialData.retirementIncomeStrategy;
+    }
+    return "refinancing"; // Default to refinancing
+  });
   
   // Advanced Settings
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
@@ -239,6 +245,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     onCalculate({ 
       homes, 
       growthStrategy, 
+      retirementIncomeStrategy, 
       projectionYears, 
       legacyYears,
       yearsBetweenRefinances,
@@ -292,7 +299,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
               <p>Configure your investment timeline and strategy.</p>
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <InputGroup 
               icon={Calendar} 
               label="Years to Retirement (Building Phase)"
@@ -338,14 +345,52 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                 <SelectContent>
                   <SelectItem value="reinvestment">
                     <div>
-                      <div className="font-medium">Buy Borrow Beyond</div>
-                      <div className="text-xs text-gray-500">Use refinancing to buy more properties during the growth phase and have your retirement income in the form of tax free refinancing money</div>
+                      <div className="font-medium">Reinvesting</div>
+                      <div className="text-xs text-gray-500">Use refinancing to buy more properties during the growth phase</div>
                     </div>
                   </SelectItem>
                   <SelectItem value="payOffPrincipal">
                     <div>
                     <div className="font-medium">Pay off principal</div>
-                      <div className="text-xs text-gray-500">Build equity without refinancing. Retirment income will be from rent</div>
+                      <div className="text-xs text-gray-500">Build equity without refinancing</div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </InputGroup>
+
+            <InputGroup
+              icon={Percent}
+              label="Retirement Income Strategy"
+              description="How you'll generate income during your retirement phase."
+              // Only show this when legacyYears > 0
+              disabled={legacyYears === 0}
+            >
+              <Select
+                defaultValue={retirementIncomeStrategy}
+                onValueChange={(value) => {
+                  setRetirementIncomeStrategy(value);
+                }}
+                disabled={legacyYears === 0}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select strategy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="refinancing">
+                    <div>
+                      <div className="font-medium">Buy Borrow Beyond</div>
+                      <div className="text-xs text-gray-500">
+                        Use periodic refinancing to generate tax-free income during retirement
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="rental">
+                    <div>
+                      <div className="font-medium">Rental Income</div>
+                      <div className="text-xs text-gray-500">
+                        Generate income from rent without refinancing
+                      </div>
                     </div>
                   </SelectItem>
                 </SelectContent>

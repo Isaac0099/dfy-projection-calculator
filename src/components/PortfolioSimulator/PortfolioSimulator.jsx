@@ -11,12 +11,13 @@ const PortfolioSimulator = () => {
     const [showResults, setShowResults] = useState(false);
 
     const handleCalculate = (data) => {
-        const results = runSimulation(data.homes, data.projectionYears, data.legacyYears, data.yearsBetweenRefinances, data.percentAppreciationToWithdraw/100);
+        const results = runSimulation(data.homes, data.projectionYears, data.legacyYears, data.yearsBetweenRefinances, data.percentAppreciationToWithdraw/100, data.retirementIncomeStrategy);
         setSimulationData({
             homes: data.homes,
             projectionYears: data.projectionYears,
             legacyYears: data.legacyYears,
             growthStrategy: data.growthStrategy,
+            retirementIncomeStrategy: data.retirementIncomeStrategy,
             results: results,
             yearsBetweenRefinances: data.yearsBetweenRefinances,
             percentAppreciationToWithdraw: data.percentAppreciationToWithdraw,
@@ -47,6 +48,7 @@ const PortfolioSimulator = () => {
                     projectionYears={simulationData.projectionYears}
                     legacyYears={simulationData.legacyYears}
                     growthStrategy={simulationData.growthStrategy}
+                    retirementIncomeStrategy={simulationData.retirementIncomeStrategy}
                     results={simulationData.results}
                     percentAppreciationUsed={simulationData.percentAppreciationToWithdraw}
                     onReset={handleReset}

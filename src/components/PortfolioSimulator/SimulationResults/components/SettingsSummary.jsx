@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Settings, Clock, Percent, Home as HomeIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, DollarSign, Shield, Settings, Clock, Percent, TrendingUp, Home as HomeIcon } from 'lucide-react';
 import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/utils';
 
-const SettingsSummary = ({ projectionYears, legacyYears, results, percentAppreciationUsed }) => {
+const SettingsSummary = ({ projectionYears, legacyYears, growthStrategy, retirementIncomeStrategy, results, percentAppreciationUsed }) => {
   const [expanded, setExpanded] = useState(false);
   const homes = results.inputHomes
-  const strategy = homes[0].willReinvest ? "Buy Borrow Beyond" : "Paying Off Principal";
-  
+  const formatStrategy = (strategy) => {
+    switch(strategy) {
+      case 'reinvestment':
+        return 'Reinvesting';
+      case 'payOffPrincipal':
+        return 'Pay Off Principal';
+      case 'refinancing':
+        return 'Refinancing Income';
+      case 'rental':
+        return 'Rental Income';
+      default:
+        return strategy;
+    }
+  };  
+  const growthStrategyText = formatStrategy(growthStrategy);
+  const retirementIncomeStrategyText = formatStrategy(retirementIncomeStrategy);
   return (
     <Card className="mb-4 bg-gray-100 rounded-md rounded-t-lg">
       <CardHeader className="py-2 px-4">
@@ -29,9 +43,52 @@ const SettingsSummary = ({ projectionYears, legacyYears, results, percentAppreci
         </div>
       </CardHeader>
       <CardContent className="py-0 px-4 pb-3">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-orange-500" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">Simulation Timeline</div>
+              <div className="text-lg font-semibold">
+                {projectionYears} years building + {legacyYears} years retirement
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <TrendingUp className="h-5 w-5 text-orange-500" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">Growth Strategy</div>
+              <div className="text-lg font-semibold">
+                {formatStrategy(growthStrategy)}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <DollarSign className="h-5 w-5 text-orange-500" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">Retirement Income</div>
+              <div className="text-lg font-semibold">
+                {formatStrategy(retirementIncomeStrategy)}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Shield className="h-5 w-5 text-orange-500" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">Withdrawal Settings</div>
+              <div className="text-lg font-semibold">
+                {retirementIncomeStrategy === "refinancing" ? 
+                  `${percentAppreciationUsed}% of appreciation` : 
+                  "Based on rental income"}
+              </div>
+            </div>
+          </div>
+        </div> */}
         <div className="space-y-2">
           {/* Metrics row */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-orange-600" />
               <span className="text-sm">{projectionYears} year growth period</span>
@@ -46,13 +103,17 @@ const SettingsSummary = ({ projectionYears, legacyYears, results, percentAppreci
             </div>
             <div className="flex items-center space-x-2">
               <Settings className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{strategy}</span>
+              <span className="text-sm">{`Growth Strategy: ${growthStrategyText}`}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Settings className="h-4 w-4 text-orange-600" />
+              <span className="text-sm">{`Retirement Income Strategy: ${retirementIncomeStrategyText}`}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Percent className="h-4 w-4 text-orange-600" />
               <span className="text-sm">{(getWeightedAverageAppreciation(homes)*100).toFixed(1)}% Avg. Appreciation</span>
             </div>
-            {strategy === "Buy Borrow Beyond" &&
+            {retirementIncomeStrategy === "Buy Borrow Beyond" &&
               <div className="flex items-center space-x-2">
               <Percent className="h-4 w-4 text-orange-600" />
               <span className="text-sm">{percentAppreciationUsed}% of appreciation used for income</span>

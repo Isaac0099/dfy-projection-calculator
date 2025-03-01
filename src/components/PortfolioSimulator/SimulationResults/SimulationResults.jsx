@@ -24,7 +24,7 @@ import IncomePotentialExplainer from './components/charts/IncomePotentialExplain
 import RentVMortgageChart from './components/charts/RentVMortgageChart';
 import ChartSection from './components/ChartSection';
 
-export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYears, growthStrategy, results, percentAppreciationUsed, onReset, onEdit }) => {
+export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYears, growthStrategy, retirementIncomeStrategy, results, percentAppreciationUsed, onReset, onEdit }) => {
   const [showDetails, setShowDetails] = useState(false);
   const { toPDF, targetRef } = usePDF({
     method: 'save',
@@ -70,6 +70,8 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
       <SettingsSummary 
         projectionYears={projectionYears} 
         legacyYears={legacyYears}
+        growthStrategy={growthStrategy}
+        retirementIncomeStrategy={retirementIncomeStrategy}
         results={results}
         percentAppreciationUsed={percentAppreciationUsed}
       />
@@ -81,6 +83,7 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
         projectionYears={projectionYears}
         legacyYears={legacyYears}
         growthStrategy={growthStrategy}
+        retirementIncomeStrategy={retirementIncomeStrategy} 
         calculateEquityChange={calculateEquityChange}
         calculatePortfolioChange={calculatePortfolioChange}
       />
@@ -182,14 +185,14 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
           >
             {legacyYears !== 0 &&
               <div className="space-y-5">
-                { growthStrategy === "reinvestment" &&
+                { retirementIncomeStrategy === "refinancing" &&
                   <EquityCalculationExplainer />
                 }
-                { growthStrategy === "payOffPrincipal" &&
+                { retirementIncomeStrategy === "rental" &&
                   <RentIncomeExplainer />
                 }
                 <RetirementIncomeChart 
-                  growthStrategy={growthStrategy}
+                  retirementIncomeStrategy={retirementIncomeStrategy}
                   results={results}
                 />
               </div>

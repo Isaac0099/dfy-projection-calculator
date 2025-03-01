@@ -4,12 +4,12 @@ import { formatTooltipValue, formatYAxisTick } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-const RetirementIncomeChart = ({ growthStrategy, results }) => {
+const RetirementIncomeChart = ({ retirementIncomeStrategy, results }) => {
     const [showDetails, setShowDetails] = useState(false);
 
     return (
         <div className="space-y-4">
-            {growthStrategy === "reinvestment" && (
+            {retirementIncomeStrategy === "refinancing" && (
                 <div className="flex justify-end ">
                     <Button
                         variant="ghost"
@@ -59,10 +59,10 @@ const RetirementIncomeChart = ({ growthStrategy, results }) => {
                             stroke="#f97316" 
                             strokeWidth={4}
                             dot={false}
-                            name={growthStrategy === "reinvestment" ? "Net Tax-free Income" : "Net Monthly Income"}
+                            name={retirementIncomeStrategy === "refinancing" ? "Net Tax-free Income" : "Net Monthly Income"}
                         />
                         {/* Pay off principal specific line */}
-                        {growthStrategy === "payOffPrincipal" && (
+                        {retirementIncomeStrategy === "rental" && (
                             <Line 
                                 type="monotone"
                                 name="Gross Rent" 
@@ -73,7 +73,7 @@ const RetirementIncomeChart = ({ growthStrategy, results }) => {
                             />
                         )}
                         {/* Buy borrow beyond specific lines - only show when details are enabled */}
-                        {growthStrategy === "reinvestment" && showDetails && (
+                        {retirementIncomeStrategy === "refinancing" && showDetails && (
                               <Line 
                                   type="monotone" 
                                   dataKey="equityIncome" 
@@ -83,7 +83,7 @@ const RetirementIncomeChart = ({ growthStrategy, results }) => {
                                   name="Gross Income From Refinancing"
                               />
                         )}
-                        {growthStrategy === "reinvestment" && showDetails && (
+                        {retirementIncomeStrategy === "refinancing" && showDetails && (
                               <Line 
                                   type="monotone" 
                                   dataKey="mortgageNotCoveredByRent" 
