@@ -75,7 +75,7 @@ const RentIncomeExplainer = () => {
                   </div>
                   <div className="p-2">
                     <div className="text-gray-600">Misc.</div>
-                    <div className="text-orange-500 font-medium mt-0.5">6%</div>
+                    <div className="text-orange-500 font-medium mt-0.5">8%</div>
                   </div>
                 </div>
 

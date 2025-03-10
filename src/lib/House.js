@@ -296,7 +296,7 @@ class House {
       management: exponentialAdjustedAtTheStartOfTheYear(0, currentMonth, 99, 1.025),
       propertyTax: grossRent * 0.14,
       insurance: grossRent * 0.05,
-      misc: grossRent * 0.05,
+      misc: grossRent * 0.08,
     };
     totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
 
