@@ -12,6 +12,7 @@ class House {
     percentAnnualInterestRate = 6.5,
     loanTermYears = 30,
     willReinvest = false,
+    isMediumTerm = false,
 
     // Distinguish new vs. existing property
     isExistingProperty = false,
@@ -29,6 +30,7 @@ class House {
   }) {
     this.id = id;
     this.isExistingProperty = isExistingProperty;
+    this.isMediumTerm = isMediumTerm; // Store the property type
 
     // Shared fields
     this.percentAnnualHomeAppreciation = percentAnnualHomeAppreciation;
@@ -45,7 +47,7 @@ class House {
 
     if (isExistingProperty) {
       // -----------------------------
-      // Existing property logic
+      // Existing property logicinit
       // -----------------------------
       // We treat "monthOfPurchase" as 0 since it's already owned at the start.
       this.monthOfPurchase = 0;
@@ -80,8 +82,18 @@ class House {
       // Mark the latest refinance as happening at month 0
       this.monthOfLatestMortgageOrRefinance = 0;
 
-      // For rent calculations, we base it on the “current” home value
-      this.initialMonthlyRent = this.initialHomePrice * 0.0067;
+      // Adjust initial monthly rent based on property type
+      if (isExistingProperty) {
+        // For rent calculations, we base it on the "current" home value
+        this.initialMonthlyRent = this.isMediumTerm
+          ? this.initialHomePrice * 0.0135 // Medium-term rent factor (approx 2x long-term)
+          : this.initialHomePrice * 0.0067; // Original long-term rent factor
+      } else {
+        // Base initial monthly rent on the initial home price
+        this.initialMonthlyRent = this.isMediumTerm
+          ? this.initialHomePrice * 0.0135 // Medium-term rent factor
+          : this.initialHomePrice * 0.0067; // Original long-term rent factor
+      }
 
       // (Optional) store these if we want them for reference (may delete later)
       this.datePurchased = datePurchased;
@@ -157,8 +169,17 @@ class House {
 
   // 5) total out-of-pocket if purchased new (not typically used for existing)
   getTOPValue() {
+    // Base calculation
     const fractionOfHomePriceForTOP = (this.percentDownPayment + 7) / 100;
-    return this.initialHomePrice * fractionOfHomePriceForTOP;
+    let topValue = this.initialHomePrice * fractionOfHomePriceForTOP;
+
+    // Add furnishing costs for medium-term rentals
+    if (this.isMediumTerm) {
+      const furnishingCost = this.initialHomePrice * 0.05; // 5% of home value for furnishing
+      topValue += furnishingCost;
+    }
+
+    return topValue;
   }
 
   // 6) Remaining Balance
@@ -292,11 +313,15 @@ class House {
     const grossRent = this.calculateMonthlyRent(currentMonth);
 
     // Operating expenses (property mgmt, taxes, etc.)
+    // Medium-term rentals have higher management costs but similar other expenses
     const expenses = {
-      management: exponentialAdjustedAtTheStartOfTheYear(0, currentMonth, 99, 1.025),
+      management: this.isMediumTerm
+        ? grossRent * 0.2 // Higher management fee and different company so different pricing structure
+        : exponentialAdjustedAtTheStartOfTheYear(0, currentMonth, 99, 1.025), // Standard fee
       propertyTax: grossRent * 0.14,
       insurance: grossRent * 0.05,
-      misc: grossRent * 0.08,
+      // Additional expenses for medium-term rentals (cleaning, maintenance, etc.)
+      misc: this.isMediumTerm ? grossRent * 0.1 : grossRent * 0.08,
     };
     totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
 

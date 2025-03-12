@@ -14,6 +14,7 @@ import House from '@/lib/House';
 import { generateId } from '@/lib/utils/utils.js';
 import ExistingPropertyToggle from './components/ExistingPropertyToggle';
 import AdvancedSettings from './components/AdvancedSettings';
+import PropertyTypeToggle from './components/PropertyTypeToggle';
 
 export const HomeListBuilder = ({ onCalculate, initialData }) => {
   // =====================
@@ -52,6 +53,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     // Common to both:
     percentAnnualInterestRate: "6.5",
     percentAnnualHomeAppreciation: "5.0",
+    isMediumTerm: false,
 
     // Fields for existing property:
     isExistingProperty: false,
@@ -133,6 +135,17 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     setCurrentForm(prev => ({ ...prev, isExistingProperty: isExisting }));
   };
 
+  const togglePropertyType = (isMediumTerm) => {
+    setCurrentForm(prev => ({
+      ...prev,
+      isMediumTerm: isMediumTerm,
+      // Suggest a lower appreciation rate by lowering the setting
+      percentAnnualHomeAppreciation: isMediumTerm && prev.percentAnnualHomeAppreciation > 4 
+      ? "4" 
+      : prev.percentAnnualHomeAppreciation
+  }));
+  }
+
 
   const addHome = () => {
     setError("");  
@@ -166,6 +179,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
         percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
         willReinvest: growthStrategy === "reinvestment",
+        isMediumTerm: currentForm.isMediumTerm, 
         datePurchased: currentForm.purchaseDate,
         originalLoanAmount: Number(currentForm.originalLoanAmount),
         originalLoanTermYears: Number(currentForm.originalLoanTermYears),
@@ -215,7 +229,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         percentDownPayment: Number(currentForm.percentDownPayment),
         percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
         loanTermYears: Number(currentForm.loanTermYears),
-        willReinvest: growthStrategy === "reinvestment"
+        willReinvest: growthStrategy === "reinvestment",
+        isMediumTerm: currentForm.isMediumTerm, 
       });
   
       setHomes(prev => [...prev, newHouse]);
@@ -267,13 +282,19 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       Number(currentForm.percentDownPayment) !== 100 
         ? adjustedPrice * 0.07 
         : adjustedPrice * 0.05;
-    return downPaymentAmount + closingCosts;
+
+    // Add furnishing costs for medium-term rentals
+    const furnishingCosts = currentForm.isMediumTerm ? adjustedPrice * 0.05 : 0;
+
+
+    return downPaymentAmount + closingCosts + furnishingCosts;
   }, [
     currentForm.homePrice,
     currentForm.percentDownPayment,
     currentForm.percentAnnualHomeAppreciation,
     currentForm.monthOfPurchase,
-    currentForm.isExistingProperty
+    currentForm.isExistingProperty,
+    currentForm.isMediumTerm,
   ]);
 
   const formatNumberWithCommas = (val) => {
@@ -424,9 +445,15 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             <CardDescription>Define property details and financing</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+
             <ExistingPropertyToggle
               isChecked={currentForm.isExistingProperty}
               onToggle={toggleExistingProperty}
+            />
+
+            <PropertyTypeToggle
+              isMediumTerm={currentForm.isMediumTerm}
+              onToggle={togglePropertyType}
             />
 
             {!currentForm.isExistingProperty && (
@@ -693,39 +720,44 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             </div>
           ) : (
             <div className="space-y-2">
-              {homes.map((home) => {
-                const monthsAgo = home.monthsPaidSoFar || 0;
-                return (
-                  <div
-                    key={home.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                  >
-                    <div className="space-y-1">
-                      <div className="font-medium">
-                        ${Math.round(home.initialHomePrice).toLocaleString()}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {home.isExistingProperty
-                          ? `Purchased ~${monthsAgo} months ago • ${home.percentAnnualHomeAppreciation}% Future Appreciation •  ${home.percentAnnualInterestRate}% Interest Rate`
-                          : `Purchase in ${home.monthOfPurchase} months • ${
-                              home.percentDownPayment !== 100
-                                ? `${home.percentDownPayment}% down • ${home.loanTermYears} yr term •`
-                                : "cash purchase •"
-                            } ${home.percentAnnualHomeAppreciation}% appreciation`
-                        }
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeHome(home.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                );
-              })}
+{homes.map((home) => {
+  const monthsAgo = home.monthsPaidSoFar || 0;
+  return (
+    <div
+      key={home.id}
+      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+    >
+      <div className="space-y-1">
+        <div className="font-medium flex items-center gap-2">
+          ${Math.round(home.initialHomePrice).toLocaleString()}
+          {home.isMediumTerm && (
+            <span className="text-xs bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">
+              Medium-Term
+            </span>
+          )}
+        </div>
+        <div className="text-sm text-gray-600">
+          {home.isExistingProperty
+            ? `Purchased ~${monthsAgo} months ago • ${home.percentAnnualHomeAppreciation}% Future Appreciation • ${home.percentAnnualInterestRate}% Interest Rate`
+            : `Purchase in ${home.monthOfPurchase} months • ${
+                home.percentDownPayment !== 100
+                  ? `${home.percentDownPayment}% down • ${home.loanTermYears} yr term •`
+                  : "cash purchase •"
+              } ${home.percentAnnualHomeAppreciation}% appreciation`
+          }
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => removeHome(home.id)}
+        className="text-red-500 hover:text-red-700"
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+})}
             </div>
           )}
         </CardContent>
