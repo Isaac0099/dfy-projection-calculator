@@ -115,7 +115,7 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">8%</div>
+                      <div className="text-orange-500 font-medium mt-0.5">10%</div>
                     </div>
                   </div>
                 </div>
@@ -130,15 +130,15 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Management</div>
-                      <div className="text-orange-500 font-medium mt-0.5">20% of rent</div>
+                      <div className="text-orange-500 font-medium mt-0.5">22% of rent</div>
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Property Tax</div>
                       <div className="text-orange-500 font-medium mt-0.5">14%</div>
                     </div>
                     <div className="p-2 bg-white">
-                      <div className="text-gray-600">Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">10%</div>
+                      <div className="text-gray-600">Utilities and Misc.</div>
+                      <div className="text-orange-500 font-medium mt-0.5">12%</div>
                     </div>
                   </div>
                 </div>
@@ -157,9 +157,12 @@ const RentIncomeExplainer = () => {
             <div className="text-blue-800 font-medium">Key Differences:</div>
             <ul className="mt-1 text-gray-700 space-y-1 pl-5 list-disc">
               <li>Mid-term rentals generate approximately 2x the gross income</li>
-              <li>Mid-term rentals have higher management fees (20% vs. flat fee w/ inflation)</li>
+              <li>Mid-term rentals have higher management fees (20% vs. flat $99/mo w/ inflation)</li>
               <li>Mid-term rentals require initial furnishing investment (5% of purchase price)</li>
-              <li>Mid-term rentals have higher miscellaneous expenses (12% vs 10%)</li>
+              <li>
+                Mid-term rentals also have utilities for us to cover. Here we show that in our misc. percent (12% vs
+                10%)
+              </li>
             </ul>
           </div>
         </div>

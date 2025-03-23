@@ -316,15 +316,13 @@ class House {
     // Medium-term rentals have higher management costs but similar other expenses
     const expenses = {
       management: this.isMediumTerm
-        ? grossRent * 0.2 // Higher management fee and different company so different pricing structure
+        ? grossRent * 0.22 // Higher management fee and different company so different pricing structure
         : exponentialAdjustedAtTheStartOfTheYear(0, currentMonth, 99, 1.025), // Standard fee
       propertyTax: grossRent * 0.14,
       insurance: grossRent * 0.05,
       // Additional expenses for medium-term rentals (cleaning, maintenance, etc.)
       misc: this.isMediumTerm ? grossRent * 0.12 : grossRent * 0.1,
     };
-
-    console.log("expenses", expenses);
 
     totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
 

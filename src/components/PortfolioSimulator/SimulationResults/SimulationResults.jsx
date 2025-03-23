@@ -1,49 +1,60 @@
 // SimulationResults.jsx
 
-import React, { useState } from 'react';
-import { usePDF, Resolution, Margin } from 'react-to-pdf';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronDown, ChevronUp, Percent } from 'lucide-react';
+import React, { useState } from "react";
+import { usePDF, Resolution, Margin } from "react-to-pdf";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, ChevronUp, Percent } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LogoBanner } from './components/LogoBanner';
-import SimulationPDFLayout from './components/PDFExport/SimulationPDFLayout';
-import SettingsSummary from './components/SettingsSummary';
-import CombinedOverviewChart from './components/charts/CombinedOverviewChart';
-import GrowthPhaseExplainer from './components/GrowthPhaseExplainer';
-import GrowthPhaseChart from './components/charts/GrowthPhaseChart';
-import PropertiesChart from './components/charts/PropertiesChart';
-import ComparisonChart from './components/charts/ComparisonChart';
-import MetricCard from './components/MetricCard';
-import MetricsGrid from './components/MetricsGrid';
-import RentIncomeExplainer from './components/charts/RentIncomeExplainer';
-import EquityCalculationExplainer from './components/charts/EquityCalculationExplainer';
-import RetirementIncomeChart from './components/charts/RetirementIncomeChart';
-import ComparisonExplainer from './components/charts/ComparisonExplainer';
-import IncomePotentialExplainer from './components/charts/IncomePotentialExplainer';
-import RentVMortgageChart from './components/charts/RentVMortgageChart';
-import ChartSection from './components/ChartSection';
+import { LogoBanner } from "./components/LogoBanner";
+import SimulationPDFLayout from "./components/PDFExport/SimulationPDFLayout";
+import SettingsSummary from "./components/SettingsSummary";
+import CombinedOverviewChart from "./components/charts/CombinedOverviewChart";
+import GrowthPhaseExplainer from "./components/GrowthPhaseExplainer";
+import GrowthPhaseChart from "./components/charts/GrowthPhaseChart";
+import PropertiesChart from "./components/charts/PropertiesChart";
+import ComparisonChart from "./components/charts/ComparisonChart";
+import MetricCard from "./components/MetricCard";
+import MetricsGrid from "./components/MetricsGrid";
+import RentIncomeExplainer from "./components/charts/RentIncomeExplainer";
+import EquityCalculationExplainer from "./components/charts/EquityCalculationExplainer";
+import RetirementIncomeChart from "./components/charts/RetirementIncomeChart";
+import ComparisonExplainer from "./components/charts/ComparisonExplainer";
+import IncomePotentialExplainer from "./components/charts/IncomePotentialExplainer";
+import RentVMortgageChart from "./components/charts/RentVMortgageChart";
+import ChartSection from "./components/ChartSection";
 
-export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYears, growthStrategy, retirementIncomeStrategy, results, percentAppreciationUsed, onReset, onEdit }) => {
+export const SimulationResults = ({
+  inputHomes,
+  homes,
+  projectionYears,
+  legacyYears,
+  growthStrategy,
+  retirementIncomeStrategy,
+  results,
+  percentAppreciationUsed,
+  onReset,
+  onEdit,
+}) => {
   const [showDetails, setShowDetails] = useState(false);
   const { toPDF, targetRef } = usePDF({
-    method: 'save',
+    method: "save",
     resolution: Resolution.HIGH,
     quality: 1,
     overrides: {
       pdf: {
-        compress: false
+        compress: false,
       },
       canvas: {
         scale: 2,
         useCORS: true,
-      }
+      },
     },
-    filename: `real-estate-portfolio-simulation-${new Date().toISOString().split('T')[0]}.pdf`,
+    filename: `real-estate-portfolio-simulation-${new Date().toISOString().split("T")[0]}.pdf`,
     page: {
       margin: Margin.NONE,
-      format: 'letter',
-      orientation: 'portrait'
+      format: "letter",
+      orientation: "portrait",
     },
     resolution: Resolution.MEDIUM,
   });
@@ -51,24 +62,24 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
   // Calculate the changes
   const calculateEquityChange = () => {
     const start = results.graphingData[results.homes[0].monthOfPurchase].equity;
-    const end = results.graphingData[projectionYears*12].equity;
-    return ((end - start) / start * 100).toFixed(1);
+    const end = results.graphingData[projectionYears * 12].equity;
+    return (((end - start) / start) * 100).toFixed(1);
   };
 
   const calculatePortfolioChange = () => {
     const start = results.graphingData[results.homes[0].monthOfPurchase].portfolioValue;
-    const end = results.graphingData[projectionYears*12].portfolioValue;
-    return ((end - start) / start * 100).toFixed(1);
+    const end = results.graphingData[projectionYears * 12].portfolioValue;
+    return (((end - start) / start) * 100).toFixed(1);
   };
-  
+
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-4">
       {/* DFY Logo across the top */}
       <LogoBanner />
-      
+
       {/* Summary of Input Settings Used to Generate These Results*/}
-      <SettingsSummary 
-        projectionYears={projectionYears} 
+      <SettingsSummary
+        projectionYears={projectionYears}
         legacyYears={legacyYears}
         growthStrategy={growthStrategy}
         retirementIncomeStrategy={retirementIncomeStrategy}
@@ -77,13 +88,13 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
       />
 
       {/* All Metrics in Timeline Layout */}
-      <MetricsGrid 
+      <MetricsGrid
         results={results}
         homes={homes}
         projectionYears={projectionYears}
         legacyYears={legacyYears}
         growthStrategy={growthStrategy}
-        retirementIncomeStrategy={retirementIncomeStrategy} 
+        retirementIncomeStrategy={retirementIncomeStrategy}
         calculateEquityChange={calculateEquityChange}
         calculatePortfolioChange={calculatePortfolioChange}
       />
@@ -95,26 +106,32 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
           className="flex items-center space-x-2 text-sm text-gray-300 hover:text-orange-400"
         >
           {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          <span>{showDetails ? 'Hide' : 'Show'} detailed metrics</span>
+          <span>{showDetails ? "Hide" : "Show"} detailed metrics</span>
         </button>
-        
+
         {showDetails && (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <MetricCard
               icon={Percent}
               title="Leverage Ratio at Retirement"
-              value={`${((results.graphingData[projectionYears*12].portfolioValue - 
-                results.graphingData[projectionYears*12].equity) / 
-                results.graphingData[projectionYears*12].portfolioValue * 100).toFixed(1)}%`}
+              value={`${(
+                ((results.graphingData[projectionYears * 12].portfolioValue -
+                  results.graphingData[projectionYears * 12].equity) /
+                  results.graphingData[projectionYears * 12].portfolioValue) *
+                100
+              ).toFixed(1)}%`}
               description="Debt to asset ratio"
               small={true}
             />
             <MetricCard
               icon={Percent}
               title="Leverage Ratio at End of Life"
-              value={`${((results.withdrawalGraphingData[legacyYears*12-1].portfolioValue - 
-                results.withdrawalGraphingData[legacyYears*12-1].equity) / 
-                results.withdrawalGraphingData[legacyYears*12-1].portfolioValue * 100).toFixed(1)}%`}
+              value={`${(
+                ((results.withdrawalGraphingData[legacyYears * 12 - 1].portfolioValue -
+                  results.withdrawalGraphingData[legacyYears * 12 - 1].equity) /
+                  results.withdrawalGraphingData[legacyYears * 12 - 1].portfolioValue) *
+                100
+              ).toFixed(1)}%`}
               description="Debt to asset ratio"
               small={true}
             />
@@ -139,26 +156,21 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
         </TabsList>
 
         <TabsContent value="overview">
-          <ChartSection 
-            title="Portfolio Growth"
-            description="Track your portfolio value and equity growth over time"
-          >
+          <ChartSection title="Portfolio Growth" description="Track your portfolio value and equity growth over time">
             <Alert className="bg-blue-50 border-blue-200 text-blue-800">
               <AlertDescription>
                 {`This chart shows your complete investment journey, from initial purchase through retirement. 
-                The vertical line marks your transition to retirement${results.homes[0].willReinvest ? ", where you begin accessing equity through refinancing" : 
-                  ""}.`}
+                The vertical line marks your transition to retirement${
+                  results.homes[0].willReinvest ? ", where you begin accessing equity through refinancing" : ""
+                }.`}
               </AlertDescription>
             </Alert>
-            <CombinedOverviewChart
-              results={results}
-              projectionYears={projectionYears}
-            />
+            <CombinedOverviewChart results={results} projectionYears={projectionYears} />
           </ChartSection>
         </TabsContent>
 
         <TabsContent value="growthPhase">
-          <ChartSection 
+          <ChartSection
             title="Your Portfolio During the Growth Phase"
             description="See your potential portfolio in more detail here"
           >
@@ -170,58 +182,46 @@ export const SimulationResults = ({ inputHomes, homes, projectionYears, legacyYe
         </TabsContent>
 
         <TabsContent value="properties">
-          <ChartSection 
-            title="Property Growth"
-            description="Track your property acquisition over time"
-          >
+          <ChartSection title="Property Growth" description="Track your property acquisition over time">
             <PropertiesChart results={results} />
           </ChartSection>
         </TabsContent>
 
         <TabsContent value="retirement income">
-          <ChartSection 
+          <ChartSection
             title="Retirement Income"
-            description="This chart shows your potential monthly income during retirement. Calculated from annual partial refinancing of your highest-equity property or by showing your income from rent, depending on your chosen growth strategy."
+            description="This chart shows your potential monthly income during retirement. Calculated from annual partial refinancing of your highest-equity property or by showing your income from rent, depending on your chosen income strategy."
           >
-            {legacyYears !== 0 &&
+            {legacyYears !== 0 && (
               <div className="space-y-5">
-                { retirementIncomeStrategy === "refinancing" &&
-                  <EquityCalculationExplainer />
-                }
-                { retirementIncomeStrategy === "rental" &&
-                  <RentIncomeExplainer />
-                }
-                <RetirementIncomeChart 
-                  retirementIncomeStrategy={retirementIncomeStrategy}
-                  results={results}
-                />
+                {retirementIncomeStrategy === "refinancing" && <EquityCalculationExplainer />}
+                {retirementIncomeStrategy === "rental" && <RentIncomeExplainer />}
+                <RetirementIncomeChart retirementIncomeStrategy={retirementIncomeStrategy} results={results} />
               </div>
-            }
-            {legacyYears === 0 &&
+            )}
+            {legacyYears === 0 && (
               <Alert className="bg-blue-50 border-blue-200 text-blue-800">
-                <AlertDescription>
-                  Not applicable with years in withdrawal period set to 0.
-                </AlertDescription>
+                <AlertDescription>Not applicable with years in withdrawal period set to 0.</AlertDescription>
               </Alert>
-            }
+            )}
           </ChartSection>
         </TabsContent>
-        
+
         <TabsContent value="comparison">
-          <ChartSection 
+          <ChartSection
             title="Investment Comparison"
             description="Compare real estate returns with traditional investment vehicles"
           >
             <div className="space-y-4">
-              <ComparisonExplainer results={results}/>
-              
-              <ComparisonChart 
+              <ComparisonExplainer results={results} />
+
+              <ComparisonChart
                 projectionYears={projectionYears}
-                equityData={results.graphingData.map(data => data.equity)}
+                equityData={results.graphingData.map((data) => data.equity)}
                 initialHomes={homes}
                 results={results}
               />
-              
+
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4 px-4">
                 <Card className="p-4">
                   <h3 className="font-semibold text-orange-600">Real Estate Advantages</h3>
