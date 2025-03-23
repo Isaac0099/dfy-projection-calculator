@@ -47,7 +47,7 @@ class House {
 
     if (isExistingProperty) {
       // -----------------------------
-      // Existing property logicinit
+      // Existing property logic
       // -----------------------------
       // We treat "monthOfPurchase" as 0 since it's already owned at the start.
       this.monthOfPurchase = 0;
@@ -323,6 +323,9 @@ class House {
       // Additional expenses for medium-term rentals (cleaning, maintenance, etc.)
       misc: this.isMediumTerm ? grossRent * 0.12 : grossRent * 0.1,
     };
+
+    console.log("expenses", expenses);
+
     totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
 
     return grossRent - totalExpenses;
