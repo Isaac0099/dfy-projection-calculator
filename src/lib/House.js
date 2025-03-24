@@ -37,7 +37,7 @@ class House {
     this.percentAnnualInterestRate = percentAnnualInterestRate;
     this.loanTermYears = loanTermYears;
     this.percentDownPayment = percentDownPayment;
-    this.willReinvest = willReinvest;
+    // this.willReinvest = willReinvest;
 
     // We always have an instance of our amortization calculator
     this.amoCalc = new AmortizationCalculator();
@@ -169,15 +169,13 @@ class House {
 
   // 5) total out-of-pocket if purchased new (not typically used for existing)
   getTOPValue() {
-    // Base calculation
-    const fractionOfHomePriceForTOP = (this.percentDownPayment + 7) / 100;
+    const closingCostPercent = 7; // 7% of home value for closing costs
+    const furnishingCostPercent = 5; // 5% of home value for furnishing
+    const fractionOfHomePriceForTOP =
+      (this.isMediumTerm
+        ? this.percentDownPayment + closingCostPercent + furnishingCostPercent
+        : this.percentDownPayment + closingCostPercent) / 100;
     let topValue = this.initialHomePrice * fractionOfHomePriceForTOP;
-
-    // Add furnishing costs for medium-term rentals
-    if (this.isMediumTerm) {
-      const furnishingCost = this.initialHomePrice * 0.05; // 5% of home value for furnishing
-      topValue += furnishingCost;
-    }
 
     return topValue;
   }
@@ -207,9 +205,6 @@ class House {
   getPossibleRefinancePayout(currentMonth) {
     if (currentMonth === this.monthOfLatestMortgageOrRefinance) {
       throw new Error("Cannot check refinance potential in the same month you refinanced");
-    }
-    if (!this.willReinvest) {
-      return 0; // If user doesn’t intend to reinvest, we skip
     }
 
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
@@ -249,8 +244,6 @@ class House {
     if (currentMonth === this.monthOfLatestMortgageOrRefinance) {
       throw new Error("Can't do multiple refinances in the same month");
     }
-    // If user doesn't want reinvest, skip
-    if (!this.willReinvest) return 0;
 
     const currentHomeValue = this.getCurrentHomeValue(currentMonth);
     const currentBalance = this.getRemainingBalance(currentMonth);

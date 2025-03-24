@@ -161,7 +161,7 @@ export const SimulationResults = ({
               <AlertDescription>
                 {`This chart shows your complete investment journey, from initial purchase through retirement. 
                 The vertical line marks your transition to retirement${
-                  results.homes[0].willReinvest ? ", where you begin accessing equity through refinancing" : ""
+                  growthStrategy === "reinvestment" ? ", where you begin accessing equity through refinancing" : ""
                 }.`}
               </AlertDescription>
             </Alert>

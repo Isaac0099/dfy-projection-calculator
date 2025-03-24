@@ -1,29 +1,26 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Calendar, Percent } from 'lucide-react';
-import { InputGroup } from '@/components/ui/InputGroup';
-import { Separator } from '@radix-ui/react-select';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronDown, ChevronUp, Calendar, Percent } from "lucide-react";
+import { InputGroup } from "@/components/ui/InputGroup";
+import { Separator } from "@radix-ui/react-select";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const AdvancedSettings = ({ 
-  isOpen, 
-  onToggle, 
-  yearsBetweenRefinances, 
+const AdvancedSettings = ({
+  isOpen,
+  onToggle,
+  yearsBetweenRefinances,
   onYearsBetweenRefinancesChange,
   percentAppreciationToWithdraw,
   onPercentAppreciationChange,
-  isReinvestmentStrategy 
+  isReinvestmentStrategy,
 }) => {
   return (
     <div className="mt-4">
-      <button
-        onClick={onToggle}
-        className="flex items-center space-x-2 text-sm text-gray-600 hover:text-orange-400"
-      >
+      <button onClick={onToggle} className="flex items-center space-x-2 text-sm text-gray-600 hover:text-orange-400">
         {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        <span>{isOpen ? 'Hide' : 'Show'} advanced settings</span>
+        <span>{isOpen ? "Hide" : "Show"} advanced settings</span>
       </button>
-      
+
       {isOpen && (
         <Card className="mt-2 bg-gray-50">
           <CardContent className="space-y-4 pt-4">
@@ -64,7 +61,7 @@ const AdvancedSettings = ({
             <InputGroup
               icon={Percent}
               label="Percent of Appreciation to Withdraw"
-              hint="What percentage of your property's appreciation you want to access through refinancing (default is 50%)"
+              hint="What percentage of your property's appreciation you want to access through refinancing (default is 75%)"
               disabled={!isReinvestmentStrategy}
             >
               <Select
@@ -99,7 +96,7 @@ const AdvancedSettings = ({
           </CardContent>
         </Card>
       )}
-      
+
       {isOpen && <Separator className="mt-4" />}
     </div>
   );

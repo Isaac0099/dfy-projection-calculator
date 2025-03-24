@@ -27,7 +27,7 @@ const processNewHomesPurchases = (month, startingHomes) => {
   return { newHomesThisMonth, remainingHomes };
 };
 
-const processRefinancing = (month, existingHomes) => {
+const processRefinancing = (month, existingHomes, growthStrategy) => {
   const newHomesFromRefinancing = [];
 
   for (const home of existingHomes) {
@@ -45,7 +45,7 @@ const processRefinancing = (month, existingHomes) => {
     const costForNewHome = newHomeRecommendationValues.cost * fractionForNewHome;
 
     // If our homes are set to reinvest and if we can afford to buy a new home from doing a refinance on our current one we do that.
-    if (home.willReinvest && home.getPossibleRefinancePayout(month) > costForNewHome) {
+    if (growthStrategy === "reinvestment" && home.getPossibleRefinancePayout(month) > costForNewHome) {
       const payout = home.doARefinance(month);
       const additionalHomeCount = Math.floor(payout / costForNewHome);
       for (let i = 0; i < additionalHomeCount; i++) {
@@ -116,13 +116,13 @@ const simulateWithdrawalPeriod = (
   percentAppreciationToWithdraw
 ) => {
   const homesCopy = copyHomes(homes);
-  // IMPORTANT FIX: If using equity income in retirement, override willReinvest
-  // This ensures homes can be refinanced during retirement regardless of growth strategy
-  if (useEquityIncome) {
-    homesCopy.forEach((home) => {
-      home.willReinvest = true;
-    });
-  }
+  // // IMPORTANT FIX: If using equity income in retirement, override willReinvest
+  // // This ensures homes can be refinanced during retirement regardless of growth strategy
+  // if (useEquityIncome) {
+  //   homesCopy.forEach((home) => {
+  //     home.willReinvest = true;
+  //   });
+  // }
   const withdrawalData = {
     graphingData: [],
     legacyEquity: 0,
@@ -227,7 +227,8 @@ export const runSimulation = (
   legacyYears,
   yearsBetweenRefinances,
   percentAppreciationToWithdraw,
-  retirementIncomeStrategy
+  retirementIncomeStrategy,
+  growthStrategy
 ) => {
   if (startingHomes.length === 0) return null;
 
@@ -245,7 +246,7 @@ export const runSimulation = (
     const { newHomesThisMonth, remainingHomes } = processNewHomesPurchases(month, remainingStartingHomes);
     remainingStartingHomes = remainingHomes;
 
-    const newHomesFromRefinancing = homes.length > 0 ? processRefinancing(month, homes) : [];
+    const newHomesFromRefinancing = homes.length > 0 ? processRefinancing(month, homes, growthStrategy) : [];
     homes.push(...newHomesThisMonth, ...newHomesFromRefinancing);
 
     // Calculate and store monthly metrics

@@ -1,25 +1,43 @@
-import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { ChevronDown, ChevronUp, Calendar, DollarSign, Shield, Settings, Clock, Percent, TrendingUp, Home as HomeIcon } from 'lucide-react';
-import { formatCurrency, getWeightedAverageAppreciation } from '@/lib/utils/utils';
+import React, { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  DollarSign,
+  Shield,
+  Settings,
+  Clock,
+  Percent,
+  TrendingUp,
+  Home as HomeIcon,
+} from "lucide-react";
+import { formatCurrency, getWeightedAverageAppreciation } from "@/lib/utils/utils";
 
-const SettingsSummary = ({ projectionYears, legacyYears, growthStrategy, retirementIncomeStrategy, results, percentAppreciationUsed }) => {
+const SettingsSummary = ({
+  projectionYears,
+  legacyYears,
+  growthStrategy,
+  retirementIncomeStrategy,
+  results,
+  percentAppreciationUsed,
+}) => {
   const [expanded, setExpanded] = useState(false);
-  const homes = results.inputHomes
+  const homes = results.inputHomes;
   const formatStrategy = (strategy) => {
-    switch(strategy) {
-      case 'reinvestment':
-        return 'Reinvesting';
-      case 'payOffPrincipal':
-        return 'Pay Off Principal';
-      case 'refinancing':
-        return 'Refinancing Income';
-      case 'rental':
-        return 'Rental Income';
+    switch (strategy) {
+      case "reinvestment":
+        return "Reinvesting";
+      case "payOffPrincipal":
+        return "Pay Off Principal";
+      case "refinancing":
+        return "Refinancing Income";
+      case "rental":
+        return "Rental Income";
       default:
         return strategy;
     }
-  };  
+  };
   const growthStrategyText = formatStrategy(growthStrategy);
   const retirementIncomeStrategyText = formatStrategy(retirementIncomeStrategy);
   return (
@@ -35,57 +53,18 @@ const SettingsSummary = ({ projectionYears, legacyYears, growthStrategy, retirem
             className="text-sm text-gray-600 hover:text-gray-800 flex items-center"
           >
             {expanded ? (
-              <>Show Less <ChevronUp className="h-4 w-4 ml-1" /></>
+              <>
+                Show Less <ChevronUp className="h-4 w-4 ml-1" />
+              </>
             ) : (
-              <>Show Details <ChevronDown className="h-4 w-4 ml-1" /></>
+              <>
+                Show Details <ChevronDown className="h-4 w-4 ml-1" />
+              </>
             )}
           </button>
         </div>
       </CardHeader>
       <CardContent className="py-0 px-4 pb-3">
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-orange-500" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">Simulation Timeline</div>
-              <div className="text-lg font-semibold">
-                {projectionYears} years building + {legacyYears} years retirement
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-orange-500" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">Growth Strategy</div>
-              <div className="text-lg font-semibold">
-                {formatStrategy(growthStrategy)}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5 text-orange-500" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">Retirement Income</div>
-              <div className="text-lg font-semibold">
-                {formatStrategy(retirementIncomeStrategy)}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Shield className="h-5 w-5 text-orange-500" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">Withdrawal Settings</div>
-              <div className="text-lg font-semibold">
-                {retirementIncomeStrategy === "refinancing" ? 
-                  `${percentAppreciationUsed}% of appreciation` : 
-                  "Based on rental income"}
-              </div>
-            </div>
-          </div>
-        </div> */}
         <div className="space-y-2">
           {/* Metrics row */}
           <div className="flex items-center space-x-4">
@@ -99,7 +78,9 @@ const SettingsSummary = ({ projectionYears, legacyYears, growthStrategy, retirem
             </div>
             <div className="flex items-center space-x-2">
               <HomeIcon className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{homes.length} {homes.length > 1 ? "Properties" : "Property"}</span>
+              <span className="text-sm">
+                {homes.length} {homes.length > 1 ? "Properties" : "Property"}
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <Settings className="h-4 w-4 text-orange-600" />
@@ -111,29 +92,32 @@ const SettingsSummary = ({ projectionYears, legacyYears, growthStrategy, retirem
             </div>
             <div className="flex items-center space-x-2">
               <Percent className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{(getWeightedAverageAppreciation(homes)*100).toFixed(1)}% Avg. Appreciation</span>
+              <span className="text-sm">
+                {(getWeightedAverageAppreciation(homes) * 100).toFixed(1)}% Avg. Appreciation
+              </span>
             </div>
-            {retirementIncomeStrategy === "Buy Borrow Beyond" &&
+            {retirementIncomeStrategy === "Buy Borrow Beyond" && (
               <div className="flex items-center space-x-2">
-              <Percent className="h-4 w-4 text-orange-600" />
-              <span className="text-sm">{percentAppreciationUsed}% of appreciation used for income</span>
-            </div> 
-            }
+                <Percent className="h-4 w-4 text-orange-600" />
+                <span className="text-sm">{percentAppreciationUsed}% of appreciation used for income</span>
+              </div>
+            )}
           </div>
 
           {/* Expandable property details */}
           {expanded && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-2 border-t border-gray-200">
               {homes.map((home, index) => (
-                <div 
-                  key={index} 
-                  className="p-2 bg-white rounded-lg border border-gray-200 text-sm"
-                >
+                <div key={index} className="p-2 bg-white rounded-lg border border-gray-200 text-sm">
                   <div className="font-medium">
                     Property {index + 1}: ${home.initialHomePrice.toLocaleString()}
                   </div>
                   <div className="text-gray-600">
-                    {home.isExistingProperty ? `${home.monthsPaidSoFar} months ago • Original Loan Amount ${formatCurrency(home.originalLoanAmount)} • ${home.percentAnnualHomeAppreciation}% apr` : `Month ${home.monthOfPurchase} • ${home.percentDownPayment}% down • ${home.percentAnnualHomeAppreciation}% apr • ${home.loanTermYears} yr mortgage`}
+                    {home.isExistingProperty
+                      ? `${home.monthsPaidSoFar} months ago • Original Loan Amount ${formatCurrency(
+                          home.originalLoanAmount
+                        )} • ${home.percentAnnualHomeAppreciation}% apr`
+                      : `Month ${home.monthOfPurchase} • ${home.percentDownPayment}% down • ${home.percentAnnualHomeAppreciation}% apr • ${home.loanTermYears} yr mortgage`}
                   </div>
                 </div>
               ))}

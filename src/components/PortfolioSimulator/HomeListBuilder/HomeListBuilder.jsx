@@ -24,8 +24,9 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   const [legacyYears, setLegacyYears] = useState(initialData?.legacyYears || 25);
   const [growthStrategy, setGrowthStrategy] = useState(() => {
     if (initialData?.homes) {
-      return initialData.homes[0].willReinvest ? "reinvestment" : "payOffPrincipal";
+      return initialData?.growthStrategy === "reinvestment" ? "reinvestment" : "payOffPrincipal";
     }
+    console.log(initialData);
     return "reinvestment";
   });
   const [retirementIncomeStrategy, setRetirementIncomeStrategy] = useState(() => {
@@ -367,14 +368,12 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             <InputGroup
               icon={Percent}
               label="Growth Strategy"
-              warning="Changing this clears your portfolio"
               description="Determines whether simulation focuses on equity-based or rent-based income."
             >
               <Select
                 defaultValue={growthStrategy}
                 onValueChange={(value) => {
                   setGrowthStrategy(value);
-                  setHomes([]);
                 }}
               >
                 <SelectTrigger>
