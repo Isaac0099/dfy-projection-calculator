@@ -115,7 +115,7 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">10%</div>
+                      <div className="text-orange-500 font-medium mt-0.5">15%</div>
                     </div>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Utilities and Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">12%</div>
+                      <div className="text-orange-500 font-medium mt-0.5">15%</div>
                     </div>
                   </div>
                 </div>
