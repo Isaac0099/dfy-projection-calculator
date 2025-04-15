@@ -159,10 +159,7 @@ const RentIncomeExplainer = () => {
               <li>Mid-term rentals generate approximately 2x the gross income</li>
               <li>Mid-term rentals have higher management fees (20% vs. flat $99/mo w/ inflation)</li>
               <li>Mid-term rentals require initial furnishing investment (5% of purchase price)</li>
-              <li>
-                Mid-term rentals also have utilities for us to cover. Here we show that in our misc. percent (12% vs
-                10%)
-              </li>
+              <li>Mid-term rentals also have utilities for us to cover. Here we show that in our misc. percent</li>
             </ul>
           </div>
         </div>
