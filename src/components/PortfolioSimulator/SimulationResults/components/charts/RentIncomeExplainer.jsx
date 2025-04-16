@@ -115,7 +115,7 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">15%</div>
+                      <div className="text-orange-500 font-medium mt-0.5">12%</div>
                     </div>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ const RentIncomeExplainer = () => {
                     </div>
                     <div className="p-2 bg-white">
                       <div className="text-gray-600">Utilities and Misc.</div>
-                      <div className="text-orange-500 font-medium mt-0.5">15%</div>
+                      <div className="text-orange-500 font-medium mt-0.5">10%</div>
                     </div>
                   </div>
                 </div>
@@ -159,7 +159,10 @@ const RentIncomeExplainer = () => {
               <li>Mid-term rentals generate approximately 2x the gross income</li>
               <li>Mid-term rentals have higher management fees (20% vs. flat $99/mo w/ inflation)</li>
               <li>Mid-term rentals require initial furnishing investment (5% of purchase price)</li>
-              <li>Mid-term rentals also have utilities for us to cover. Here we show that in our misc. percent</li>
+              <li>
+                Mid-term rentals also have utilities for us to cover, but the cleaning fees are included in the
+                management fee so misc. expenses ends up being lower
+              </li>
             </ul>
           </div>
         </div>
