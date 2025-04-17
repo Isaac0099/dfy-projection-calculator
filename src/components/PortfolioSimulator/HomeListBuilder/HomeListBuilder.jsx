@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InputGroup } from "@/components/ui/InputGroup";
 import WelcomeBanner from "./components/WelcomeBanner";
-import { Trash2, Plus, Home, DollarSign, Calendar, Percent, TrendingUp } from "lucide-react";
+import { Trash2, Plus, Home, DollarSign, Calendar, Percent, TrendingUp, Pencil } from "lucide-react";
 import House from "@/lib/House";
 import { generateId } from "@/lib/utils/utils.js";
 import ExistingPropertyToggle from "./components/ExistingPropertyToggle";
@@ -43,6 +43,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     initialData?.percentAppreciationToWithdraw || 75
   );
 
+  // Edit Mode State
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingHomeId, setEditingHomeId] = useState(null);
+
   // =====================
   // 2. Form State
   // =====================
@@ -67,7 +71,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     monthsPaidSoFar: 0,
   });
 
-  const [homes, setHomes] = useState(() => {
+  // Changed to store home configurations instead of House objects
+  const [homeConfigs, setHomeConfigs] = useState(() => {
     if (!initialData?.homes) return [];
 
     return initialData.homes.map((home) => {
@@ -77,9 +82,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         percentAnnualInterestRate: home.percentAnnualInterestRate,
         willReinvest: home.willReinvest,
         isExistingProperty: home.isExistingProperty,
+        isMediumTerm: home.isMediumTerm || false,
       };
 
-      const homeConfig = home.isExistingProperty
+      return home.isExistingProperty
         ? {
             ...baseConfig,
             datePurchased: home.datePurchased,
@@ -95,8 +101,6 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             percentDownPayment: home.percentDownPayment,
             loanTermYears: home.loanTermYears,
           };
-
-      return new House(homeConfig);
     });
   });
 
@@ -148,6 +152,57 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
     }));
   };
 
+  const resetForm = () => {
+    setCurrentForm({
+      // Fields for brand-new purchase:
+      monthOfPurchase: 0,
+      homePrice: 275000,
+      percentDownPayment: 25,
+      loanTermYears: 30,
+
+      // Common to both:
+      percentAnnualInterestRate: "6.5",
+      percentAnnualHomeAppreciation: "5.0",
+      isMediumTerm: false,
+
+      // Fields for existing property:
+      isExistingProperty: false,
+      purchaseDate: "",
+      originalLoanAmount: "",
+      originalLoanTermYears: 30,
+      currentHomeValue: "",
+      monthsPaidSoFar: 0,
+    });
+    setIsEditMode(false);
+    setEditingHomeId(null);
+  };
+
+  const handleEditHome = (id) => {
+    const homeToEdit = homeConfigs.find(home => home.id === id);
+    if (homeToEdit) {
+      setCurrentForm({
+        isExistingProperty: homeToEdit.isExistingProperty,
+        isMediumTerm: homeToEdit.isMediumTerm || false,
+        percentAnnualHomeAppreciation: homeToEdit.percentAnnualHomeAppreciation.toString(),
+        percentAnnualInterestRate: homeToEdit.percentAnnualInterestRate.toString(),
+        ...(homeToEdit.isExistingProperty ? {
+          purchaseDate: homeToEdit.datePurchased,
+          originalLoanAmount: homeToEdit.originalLoanAmount,
+          originalLoanTermYears: homeToEdit.originalLoanTermYears,
+          currentHomeValue: homeToEdit.currentHomeValue,
+        } : {
+          monthOfPurchase: homeToEdit.monthOfPurchase,
+          homePrice: homeToEdit.homePrice,
+          percentDownPayment: homeToEdit.percentDownPayment,
+          loanTermYears: homeToEdit.loanTermYears,
+        })
+      });
+      
+      setIsEditMode(true);
+      setEditingHomeId(id);
+    }
+  };
+
   const addHome = () => {
     setError("");
     if (currentForm.isExistingProperty) {
@@ -181,7 +236,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       }
       const monthsPaidSoFar = Math.max(0, Math.floor((now - purchaseDt) / (1000 * 60 * 60 * 24 * 30.43)));
 
-      const newHouse = new House({
+      const newHomeConfig = {
         id: generateId(),
         isExistingProperty: true,
         percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
@@ -193,9 +248,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         originalLoanTermYears: Number(currentForm.originalLoanTermYears),
         monthsPaidSoFar: monthsPaidSoFar,
         currentHomeValue: Number(currentForm.currentHomeValue),
-      });
+      };
 
-      setHomes((prev) => [...prev, newHouse]);
+      setHomeConfigs((prev) => [...prev, newHomeConfig]);
+      resetForm();
     } else {
       if (
         !currentForm.percentDownPayment ||
@@ -244,7 +300,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         Number(currentForm.monthOfPurchase)
       );
 
-      const newHouse = new House({
+      const newHomeConfig = {
         id: generateId(),
         isExistingProperty: false,
         monthOfPurchase: Number(currentForm.monthOfPurchase),
@@ -255,10 +311,132 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         loanTermYears: Number(currentForm.loanTermYears),
         willReinvest: growthStrategy === "reinvestment",
         isMediumTerm: currentForm.isMediumTerm,
-      });
+      };
 
-      setHomes((prev) => [...prev, newHouse]);
+      setHomeConfigs((prev) => [...prev, newHomeConfig]);
+      resetForm();
     }
+  };
+
+  const updateHome = () => {
+    setError("");
+    
+    if (currentForm.isExistingProperty) {
+      if (!currentForm.purchaseDate || !currentForm.originalLoanAmount || !currentForm.currentHomeValue) {
+        setError(
+          "Please fill out the purchase date, original loan amount, and current home value for an existing property."
+        );
+        return;
+      }
+      const now = new Date();
+      const purchaseDt = new Date(currentForm.purchaseDate);
+      if (purchaseDt > now) {
+        setError("Purchase date cannot be in the future.");
+        return;
+      }
+      if (
+        !currentForm.percentAnnualHomeAppreciation ||
+        currentForm.percentAnnualHomeAppreciation < 3.5 ||
+        currentForm.percentAnnualHomeAppreciation > 6.5
+      ) {
+        setError("Please enter a home value appreciation rate in the range of 3.5% to 6.5%");
+        return;
+      }
+      if (
+        !currentForm.percentAnnualInterestRate ||
+        currentForm.percentAnnualInterestRate < 1 ||
+        currentForm.percentAnnualInterestRate > 10
+      ) {
+        setError("Please enter an interest rate between 1% to 10%");
+        return;
+      }
+      
+      const monthsPaidSoFar = Math.max(0, Math.floor((now - purchaseDt) / (1000 * 60 * 60 * 24 * 30.43)));
+
+      const updatedConfig = {
+        id: editingHomeId,
+        isExistingProperty: true,
+        percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
+        percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
+        willReinvest: growthStrategy === "reinvestment",
+        isMediumTerm: currentForm.isMediumTerm,
+        datePurchased: currentForm.purchaseDate,
+        originalLoanAmount: Number(currentForm.originalLoanAmount),
+        originalLoanTermYears: Number(currentForm.originalLoanTermYears),
+        monthsPaidSoFar: monthsPaidSoFar,
+        currentHomeValue: Number(currentForm.currentHomeValue),
+      };
+
+      setHomeConfigs(prev => prev.map(config => 
+        config.id === editingHomeId ? updatedConfig : config
+      ));
+    } else {
+      if (
+        !currentForm.percentDownPayment ||
+        currentForm.percentDownPayment < 1 ||
+        currentForm.percentDownPayment > 100
+      ) {
+        setError("Please enter a down payment percent between 1 and 100");
+        return;
+      }
+      if (!currentForm.homePrice || currentForm.homePrice < 200_000 || currentForm.homePrice > 1_000_000) {
+        setError("Please enter a home price between 200,000 and 1,000,000");
+        return;
+      }
+      if (!currentForm.loanTermYears || ![15, 20, 30].includes(Number(currentForm.loanTermYears))) {
+        setError("Please enter loan term that is either 15, 20, or 30 years");
+        return;
+      }
+      if (
+        !currentForm.percentAnnualHomeAppreciation ||
+        currentForm.percentAnnualHomeAppreciation < 3.5 ||
+        currentForm.percentAnnualHomeAppreciation > 6.5
+      ) {
+        setError("Please enter a home value appreciation rate in the range of 3.5% to 6.5%");
+        return;
+      }
+      if (
+        currentForm.monthOfPurchase === "" ||
+        currentForm.monthOfPurchase < 0 ||
+        currentForm.monthOfPurchase > projectionYears * 12
+      ) {
+        setError("Please enter a purchase month from 0 to the month the simulation ends");
+        return;
+      }
+      if (
+        !currentForm.percentAnnualInterestRate ||
+        currentForm.percentAnnualInterestRate < 1 ||
+        currentForm.percentAnnualInterestRate > 10
+      ) {
+        setError("Please enter an interest rate between 1% to 10%");
+        return;
+      }
+
+      const adjustedHomePrice = getAdjustedPurchasePrice(
+        Number(currentForm.homePrice),
+        Number(currentForm.percentAnnualHomeAppreciation),
+        Number(currentForm.monthOfPurchase)
+      );
+
+      const updatedConfig = {
+        id: editingHomeId,
+        isExistingProperty: false,
+        monthOfPurchase: Number(currentForm.monthOfPurchase),
+        homePrice: Number(adjustedHomePrice),
+        percentAnnualHomeAppreciation: Number(currentForm.percentAnnualHomeAppreciation),
+        percentDownPayment: Number(currentForm.percentDownPayment),
+        percentAnnualInterestRate: Number(currentForm.percentAnnualInterestRate),
+        loanTermYears: Number(currentForm.loanTermYears),
+        willReinvest: growthStrategy === "reinvestment",
+        isMediumTerm: currentForm.isMediumTerm,
+      };
+
+      setHomeConfigs(prev => prev.map(config => 
+        config.id === editingHomeId ? updatedConfig : config
+      ));
+    }
+    
+    resetForm();
   };
 
   const getAdjustedPurchasePrice = (initialPrice, appreciationRate, months) => {
@@ -266,7 +444,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
   };
 
   const removeHome = (id) => {
-    setHomes(homes.filter((home) => home.id !== id));
+    setHomeConfigs(homeConfigs.filter((home) => home.id !== id));
   };
 
   const handleCalculate = () => {
@@ -279,8 +457,37 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       setError("Please enter a number of years in retirement from 0 to 60");
       return;
     }
+    
+    // Convert configurations to House objects only when needed for calculation
+    const houseObjects = homeConfigs.map(config => {
+      // Create a new config object with the correctly named properties
+      const houseConfig = { ...config };
+      
+      // For new properties, handle different naming conventions
+      if (!config.isExistingProperty) {
+        // If homePrice is missing but initialHomePrice exists, use that
+        if (config.homePrice === undefined && config.initialHomePrice !== undefined) {
+          houseConfig.homePrice = config.initialHomePrice;
+          delete houseConfig.initialHomePrice;
+        }
+        // If neither is defined, set a default to avoid errors
+        if (houseConfig.homePrice === undefined && houseConfig.initialHomePrice === undefined) {
+          console.warn('Home price missing, using default value');
+          houseConfig.homePrice = 275000;
+        }
+      }
+      
+      // For existing properties, ensure currentHomeValue exists
+      if (config.isExistingProperty && config.currentHomeValue === undefined) {
+        console.warn('Current home value missing for existing property, using initialHomePrice as fallback');
+        houseConfig.currentHomeValue = config.initialHomePrice || 275000;
+      }
+      
+      return new House(houseConfig);
+    });
+    
     onCalculate({
-      homes,
+      homes: houseObjects,
       growthStrategy,
       retirementIncomeStrategy,
       projectionYears,
@@ -458,8 +665,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Property Configuration</CardTitle>
-              <CardDescription>Define property details and financing</CardDescription>
+              <CardTitle className="text-lg">{isEditMode ? "Edit Property" : "Property Configuration"}</CardTitle>
+              <CardDescription>{isEditMode ? "Modify property details" : "Define property details and financing"}</CardDescription>
             </div>
             <div className="flex flex-col gap-2">
               <ExistingPropertyToggle isChecked={currentForm.isExistingProperty} onToggle={toggleExistingProperty} />
@@ -668,10 +875,24 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             )}
 
             <div className="flex justify-end">
-              <Button onClick={addHome} className="bg-orange-500 hover:bg-orange-600">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Property
+              <Button onClick={isEditMode ? updateHome : addHome} className="bg-orange-500 hover:bg-orange-600">
+                {isEditMode ? (
+                  <>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Update Property
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Property
+                  </>
+                )}
               </Button>
+              {isEditMode && (
+                <Button onClick={resetForm} variant="outline" className="ml-2">
+                  Cancel
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -682,13 +903,13 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
         <CardHeader>
           <CardTitle className="text-lg">Property Portfolio</CardTitle>
           <CardDescription>
-            {homes.length === 0
+            {homeConfigs.length === 0
               ? "Add properties to begin the simulation"
-              : `${homes.length} ${homes.length === 1 ? "property" : "properties"} in portfolio`}
+              : `${homeConfigs.length} ${homeConfigs.length === 1 ? "property" : "properties"} in portfolio`}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {homes.length === 0 ? (
+          {homeConfigs.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Home className="h-12 w-12 mx-auto mb-4 text-gray-400" />
               <p>No properties added yet</p>
@@ -696,8 +917,10 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
             </div>
           ) : (
             <div className="space-y-2">
-              {homes.map((home) => {
+              {homeConfigs.map((home) => {
                 const monthsAgo = home.monthsPaidSoFar || 0;
+                const displayPrice = home.isExistingProperty ? home.currentHomeValue : home.homePrice;
+                console.log('Home config for display:', home, 'Display price:', displayPrice);
                 return (
                   <div
                     key={home.id}
@@ -705,7 +928,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                   >
                     <div className="space-y-1">
                       <div className="font-medium flex items-center gap-2">
-                        ${Math.round(home.initialHomePrice).toLocaleString()}
+                        ${displayPrice ? Math.round(displayPrice).toLocaleString() : "0"}
                         {home.isMediumTerm && (
                           <span className="text-xs bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">
                             Medium-Term
@@ -722,14 +945,24 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                             } ${home.percentAnnualHomeAppreciation}% appreciation`}
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeHome(home.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditHome(home.id)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeHome(home.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
@@ -742,7 +975,7 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
       <div className="flex justify-end">
         <Button
           onClick={handleCalculate}
-          disabled={homes.length === 0}
+          disabled={homeConfigs.length === 0}
           className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 px-8"
         >
           Run Simulation
