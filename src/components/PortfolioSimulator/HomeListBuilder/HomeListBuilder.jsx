@@ -889,7 +889,8 @@ export const HomeListBuilder = ({ onCalculate, initialData }) => {
                 )}
               </Button>
               {isEditMode && (
-                <Button onClick={resetForm} variant="outline" className="ml-2">
+                <Button 
+                  onClick={resetForm} variant="outline" className="ml-2 bg-white hover:bg-gray-50">
                   Cancel
                 </Button>
               )}
