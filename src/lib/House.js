@@ -314,7 +314,7 @@ class House {
       propertyTax: grossRent * 0.14,
       insurance: grossRent * 0.05,
       // Additional expenses for medium-term rentals (cleaning, maintenance, etc.)
-      misc: this.isMediumTerm ? grossRent * 0.1 : grossRent * 0.12,
+      misc: this.isMediumTerm ? grossRent * 0.12 : grossRent * 0.14,
     };
 
     totalExpenses += Object.values(expenses).reduce((sum, e) => sum + e, 0);
